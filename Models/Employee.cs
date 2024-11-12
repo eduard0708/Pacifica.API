@@ -23,6 +23,7 @@ namespace Pacifica.API.Models
 
         // Optional roles, if needed in this model (IdentityUser already includes role management)
         public virtual ICollection<IdentityRole>? Roles { get; set; }
+        public ICollection<EmployeeBranch>? EmployeeBranches { get; set; }
 
         // Audit fields
         [Required]

@@ -6,31 +6,26 @@ namespace Pacifica.API.Models
     {
         public int Id { get; set; }  // Primary Key
         public string TransactionTypeName { get; set; } = string.Empty;  // Name of the transaction (e.g., Received, Sold, Transferred)
-        public string Description { get; set; } = string.Empty;     // Description of the transaction type
+        public string Description { get; set; } = string.Empty;  // Description of the transaction type
 
+        // Navigation property to related stock transactions
+        public ICollection<StockTransactionInOut>? StockTransactionInOuts { get; set; }  
 
-         // Navigation property
-        public ICollection<StockTransactionInOut>? StockTransactionInOuts { get; set; }
-        
-         // Audit fields
-        [Required]
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        // Audit fields
+        [Required]  
+        public DateTime CreatedAt { get; set; } = DateTime.Now;  // Date when the transaction type was created
 
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }  // Date when the transaction type was last updated
 
-        // Soft Delete: Marks when the employee record was deleted (null means not deleted)
-        public DateTime? DeletedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }  // Soft delete timestamp (null means not deleted)
 
-        // Tracks who created the employee record
-        [StringLength(100)] // Maximum length for CreatedBy field
-        public string? CreatedBy { get; set; }
+        [StringLength(100)]  
+        public string? CreatedBy { get; set; }  // User who created the transaction type
 
-        [Required] // Make IsActive a required field
-        public bool IsActive { get; set; } = true;
+        [Required]  
+        public bool IsActive { get; set; } = true;  // Indicates if the transaction type is active
 
-        // Optional: This can help with tracking when the employee was last updated
-        [StringLength(100)] // Maximum length for UpdatedBy field
-        public string? UpdatedBy { get; set; }
-
+        [StringLength(100)]  
+        public string? UpdatedBy { get; set; }  // User who last updated the transaction type
     }
 }

@@ -7,72 +7,54 @@ namespace Pacifica.API.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public int Id { get; set; }  // Primary Key
 
-        [Required]  // Ensures FirstName is provided
-        [StringLength(100)]  // Limits the length of the FirstName to 100 characters
-        public string? FirstName { get; set; }
+        [Required]
+        [StringLength(100)]
+        public string? FirstName { get; set; }  // Employee's first name
 
-        [StringLength(100)]  // Limits the length of the MiddleName to 100 characters
-        public string? MiddleName { get; set; }
+        [StringLength(100)]
+        public string? MiddleName { get; set; }  // Employee's middle name
 
-        [Required]  // Ensures LastName is provided
-        [StringLength(100)]  // Limits the length of the LastName to 100 characters
-        public string? LastName { get; set; }
+        [Required]
+        [StringLength(100)]
+        public string? LastName { get; set; }  // Employee's last name
 
-        [StringLength(50)]  // Limits the length of the Position to 50 characters
-        public string? Position { get; set; }
+        public DateTime? DateOfBirth { get; set; }  // Employee's date of birth
 
-        [StringLength(50)]  // Limits the length of the Department to 50 characters
-        public string? Department { get; set; }
+        public DateTime? DateOfHire { get; set; }  // Employee's date of hire
 
-        // Date validation for DateOfBirth (optional: can be adjusted to a specific age range if needed)
-        public DateTime? DateOfBirth { get; set; }
+        [StringLength(15)]
+        [Phone]
+        public string? PhoneNumber { get; set; }  // Employee's phone number
 
-        public DateTime? DateOfHire { get; set; }
+        [StringLength(20)]
+        public string? Gender { get; set; }  // Employee's gender
 
-        [StringLength(15)]  // Limits the PhoneNumber to 15 characters
-        [Phone]  // Ensures the PhoneNumber is in a valid phone number format
-        public string? PhoneNumber { get; set; }
+        [StringLength(50)]
+        public string? EmploymentStatus { get; set; }  // Employment status (Full-Time, Part-Time, etc.)
 
-        [EmailAddress]  // Ensures the Email is in a valid email format
-        [StringLength(100)]  // Limits the Email length to 100 characters
-        public string? Email { get; set; }
+        public string? EmployeeId { get; set; }  // Foreign key to IdentityUser (Employee)
+        public virtual Employee? Employee { get; set; }  // Navigation to Employee entity
 
-        [StringLength(20)]  // Limits the Gender to 20 characters (this is optional and can be adjusted)
-        public string? Gender { get; set; }
+        [Required]
+        public int AddressId { get; set; }  // Foreign key to Address
+        public virtual Address? Address { get; set; }  // Navigation to Address entity
 
-        [StringLength(50)]  // Limits the EmploymentStatus to 50 characters
-        public string? EmploymentStatus { get; set; }  // e.g., Full-Time, Part-Time, Contractual
+        public DateTime? DeletedAt { get; set; }  // Soft delete: Marks when the profile was deleted
 
-        // Foreign key to Employee (One-to-One Relationship)
-        public string? EmployeeId { get; set; } // Foreign key to IdentityUser (Employee)
-        public virtual Employee? Employee { get; set; }
+        [StringLength(100)]
+        public string? CreatedBy { get; set; }  // Tracks who created the record
 
-        // One-to-One relationship with Address
-        [Required]  // Ensures AddressId is provided
-        public int AddressId { get; set; }
-        public virtual Address? Address { get; set; }
+        [Required]
+        public bool IsActive { get; set; } = true;  // Indicates if the profile is active
 
-        // Soft Delete: Marks when the employee profile record was deleted (null means not deleted)
-        public DateTime? DeletedAt { get; set; }
+        [StringLength(100)]
+        public string? UpdatedBy { get; set; }  // Tracks who last updated the profile
 
-        // Tracks who created the employee profile record (e.g., user ID or name)
-        [StringLength(100)]  // Limits the CreatedBy field length to 100 characters
-        public string? CreatedBy { get; set; }
+        [Required]
+        public DateTime CreatedAt { get; set; } = DateTime.Now;  // Date the profile was created
 
-        // Indicates if the employee profile is active (true means active)
-        [Required]  // Ensures IsActive is always provided
-        public bool IsActive { get; set; } = true;
-
-        // Optional: This can help with tracking when the employee profile was last updated
-        [StringLength(100)]  // Limits the UpdatedBy field length to 100 characters
-        public string? UpdatedBy { get; set; }
-
-        // Date fields for tracking creation and updates
-        [Required]  // Ensures CreatedAt has a value
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }  // Date the profile was last updated
     }
 }

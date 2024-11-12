@@ -1,25 +1,33 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Pacifica.API.Models
 {
     public class Supplier
     {
-        public int Id { get; set; }
-        public string? SupplierName { get; set; }
-        public string? ContactPerson { get; set; }
-        public string? ContactNumber { get; set; }
+        public int Id { get; set; }  // Unique identifier for the supplier
 
-        // public string Contact_Email { get; set; }
-        // public string Contact_Phone { get; set; }
-        // public string Address { get; set; }
-        // public string City { get; set; }
-        // public string Province { get; set; }
-        // public string Postal_Code { get; set; }
-        // public string Country { get; set; }
-        // public string Website { get; set; }
-        // public string Payment_Terms { get; set; }
-        public bool IsActive { get; set; }
-        public DateTime Created_On { get; set; }
-        public DateTime Last_Updated { get; set; }
+        public string? SupplierName { get; set; }  // Name of the supplier
+
+        public string? ContactPerson { get; set; }  // Name of the contact person at the supplier
+
+        public string? ContactNumber { get; set; }  // Contact number for the supplier
+
+        // Audit fields
+        [Required]  
+        public DateTime CreatedAt { get; set; } = DateTime.Now;  // Date the supplier was created
+
+        public DateTime? UpdatedAt { get; set; }  // Date the supplier was last updated
+
+        public DateTime? DeletedAt { get; set; }  // Soft delete timestamp (null means not deleted)
+
+        [StringLength(100)]  
+        public string? CreatedBy { get; set; }  // User who created the supplier record
+
+        [Required]  
+        public bool IsActive { get; set; } = true;  // Indicates whether the supplier is active
+
+        [StringLength(100)]  
+        public string? UpdatedBy { get; set; }  // User who last updated the supplier record
     }
 }

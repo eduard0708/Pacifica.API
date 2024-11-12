@@ -4,30 +4,27 @@ namespace Pacifica.API.Models
 {
     public class TransactionReference
     {
-        public int Id { get; set; }  // Primary Key
+        public int Id { get; set; }  // Primary key
         public string TransactionReferenceName { get; set; } = string.Empty;  // Name of the transaction (e.g., Received, Sold, Transferred)
-        public string Description { get; set; } = string.Empty;     // Description of the transaction type
+        public string Description { get; set; } = string.Empty;  // Description of the transaction type
 
         // Navigation property
-        public ICollection<StockTransactionInOut>? StockTransactionInOuts { get; set; }
+        public ICollection<StockTransactionInOut>? StockTransactionInOuts { get; set; }  // Related stock transactions
 
         // Audit fields
-        [Required]
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        [Required]  
+        public DateTime CreatedAt { get; set; } = DateTime.Now;  // Date the transaction reference was created
+        public DateTime? UpdatedAt { get; set; }  // Date the transaction reference was last updated
 
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }  // Soft delete timestamp (null means not deleted)
 
-        public DateTime? DeletedAt { get; set; }
+        [StringLength(100)]  
+        public string? CreatedBy { get; set; }  // User who created the transaction reference
 
-        // Tracks who created the employee record
-        [StringLength(100)] 
-        public string? CreatedBy { get; set; }
+        [Required]  
+        public bool IsActive { get; set; } = true;  // Indicates if the transaction reference is active
 
-        [Required] // Make IsActive a required field
-        public bool IsActive { get; set; } = true;
-
-        // Optional: This can help with tracking when the employee was last updated
-        [StringLength(100)] // Maximum length for UpdatedBy field
-        public string? UpdatedBy { get; set; }
+        [StringLength(100)]  
+        public string? UpdatedBy { get; set; }  // User who last updated the transaction reference
     }
 }
