@@ -1,4 +1,9 @@
 using AutoMapper;
+using Pacifica.API.Dtos.Branch;
+using Pacifica.API.Dtos.BranchProduct;
+using Pacifica.API.Dtos.Category;
+using Pacifica.API.Dtos.Product;
+using Pacifica.API.Dtos.Supplier;
 using Pacifica.API.Dtos.TransactionReference;
 using Pacifica.API.Dtos.TransactionType;
 using PacificaAPI.Dtos.Admin;
@@ -14,11 +19,23 @@ namespace Pacifica.API.Mapper
             CreateMap<LoginDto, Employee>().ReverseMap();
             CreateMap<RegisterDto, Employee>().ReverseMap();
 
-            CreateMap<TransactionType, TransactionTypeDto>();
+            CreateMap<TransactionType, TransactionTypeDto>().ReverseMap();
             CreateMap<TransactionTypeDto, TransactionType>();
 
-            CreateMap<TransactionReference, TransactionReferenceDto>();
-            CreateMap<TransactionReferenceDto, TransactionReference>();
+            CreateMap<TransactionReference, TransactionReferenceDto>().ReverseMap();
+
+            CreateMap<Category, CategoryDto>().ReverseMap();
+
+            CreateMap<Branch, BranchDto>().ReverseMap();
+
+            CreateMap<Product, ProductDto>().ReverseMap();
+
+            CreateMap<Supplier, SupplierDto>().ReverseMap();
+
+            CreateMap<BranchProduct, BranchProductDto>();
+            CreateMap<BranchProductDto, BranchProduct>();
+
+
         }
     }
 }

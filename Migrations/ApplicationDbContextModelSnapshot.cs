@@ -228,11 +228,11 @@ namespace Pacifica.API.Migrations
 
             modelBuilder.Entity("Pacifica.API.Models.Branch", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("BranchLocation")
                         .IsRequired()
@@ -268,7 +268,7 @@ namespace Pacifica.API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
                     b.ToTable("Branches");
                 });
@@ -689,8 +689,16 @@ namespace Pacifica.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BranchId1")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(100)
@@ -703,9 +711,14 @@ namespace Pacifica.API.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProductId1")
                         .HasColumnType("int");
 
                     b.Property<string>("Remarks")
@@ -724,7 +737,13 @@ namespace Pacifica.API.Migrations
                     b.Property<int>("TransactionReferenceId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("TransactionReferenceId1")
+                        .HasColumnType("int");
+
                     b.Property<int>("TransactionTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TransactionTypeId1")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -736,13 +755,23 @@ namespace Pacifica.API.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BranchId");
+
+                    b.HasIndex("BranchId1");
+
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("ProductId1");
 
                     b.HasIndex("TransactionReferenceId");
 
+                    b.HasIndex("TransactionReferenceId1");
+
                     b.HasIndex("TransactionTypeId");
 
-                    b.ToTable("StockTransactions");
+                    b.HasIndex("TransactionTypeId1");
+
+                    b.ToTable("stockTransactionInOuts");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Supplier", b =>
@@ -1015,23 +1044,47 @@ namespace Pacifica.API.Migrations
 
             modelBuilder.Entity("Pacifica.API.Models.StockTransactionInOut", b =>
                 {
-                    b.HasOne("Pacifica.API.Models.Product", "Product")
+                    b.HasOne("Pacifica.API.Models.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pacifica.API.Models.Branch", null)
                         .WithMany("StockTransactionInOuts")
+                        .HasForeignKey("BranchId1");
+
+                    b.HasOne("Pacifica.API.Models.Product", "Product")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Pacifica.API.Models.TransactionReference", "TransactionReference")
+                    b.HasOne("Pacifica.API.Models.Product", null)
                         .WithMany("StockTransactionInOuts")
+                        .HasForeignKey("ProductId1");
+
+                    b.HasOne("Pacifica.API.Models.TransactionReference", "TransactionReference")
+                        .WithMany()
                         .HasForeignKey("TransactionReferenceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Pacifica.API.Models.TransactionType", "TransactionType")
+                    b.HasOne("Pacifica.API.Models.TransactionReference", null)
                         .WithMany("StockTransactionInOuts")
+                        .HasForeignKey("TransactionReferenceId1");
+
+                    b.HasOne("Pacifica.API.Models.TransactionType", "TransactionType")
+                        .WithMany()
                         .HasForeignKey("TransactionTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Pacifica.API.Models.TransactionType", null)
+                        .WithMany("StockTransactionInOuts")
+                        .HasForeignKey("TransactionTypeId1");
+
+                    b.Navigation("Branch");
 
                     b.Navigation("Product");
 
@@ -1050,6 +1103,8 @@ namespace Pacifica.API.Migrations
                     b.Navigation("BranchProducts");
 
                     b.Navigation("EmployeeBranches");
+
+                    b.Navigation("StockTransactionInOuts");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Category", b =>

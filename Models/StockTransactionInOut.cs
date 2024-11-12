@@ -31,6 +31,9 @@ namespace Pacifica.API.Models
         public int TransactionReferenceId { get; set; }  // Reference ID (e.g., Sales Order)
         public TransactionReference? TransactionReference { get; set; }  // Navigation property for TransactionReference
 
+        [Required]
+        public int BranchId { get; set; } 
+        public Branch? Branch { get; set; }
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.Now;  // Date when the transaction was created
@@ -47,5 +50,7 @@ namespace Pacifica.API.Models
 
         [StringLength(100)]
         public string? UpdatedBy { get; set; }  // User who last updated the transaction
+
+        
     }
 }

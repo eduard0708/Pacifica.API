@@ -6,7 +6,7 @@ namespace Pacifica.API.Models
 {
     public class Branch
     {
-        public int ID { get; set; }  // Primary key for the Branch entity
+        public int Id { get; set; }  // Primary key for the Branch entity
 
         [Required(ErrorMessage = "Branch name is required.")]
         [MaxLength(255, ErrorMessage = "Branch name cannot exceed 255 characters.")]
@@ -19,6 +19,8 @@ namespace Pacifica.API.Models
         public ICollection<EmployeeBranch>? EmployeeBranches { get; set; }  // Many-to-many relation with Employee
 
         public ICollection<BranchProduct>? BranchProducts { get; set; }  // Many-to-many relation with Product
+
+        public ICollection<StockTransactionInOut>? StockTransactionInOuts { get; set; }  // Many-to-many relation with Product
 
         [Required(ErrorMessage = "Creation date is required.")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;  // Date when the branch was created

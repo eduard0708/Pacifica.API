@@ -8,6 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Pacifica.API.Data;
 using Pacifica.API.Mapper;
+using Pacifica.API.Services.BranchProductService;
+using Pacifica.API.Services.BranchService;
+using Pacifica.API.Services.CategoryService;
+using Pacifica.API.Services.ProductService;
+using Pacifica.API.Services.SupplierService;
 using Pacifica.API.Services.TransactionReferenceService;
 using Pacifica.API.Services.TransactionTypeService;
 using PacificaAPI.Services.AuthService;
@@ -42,7 +47,11 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ITransactionTypeService, TransactionTypeService>();
 builder.Services.AddScoped<ITransactionReferenceService, TransactionReferenceService>();
-
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IBranchService, BranchService>();  
+builder.Services.AddScoped<IProductService, ProductService>();  
+builder.Services.AddScoped<ISupplierService, SupplierService >();  
+builder.Services.AddScoped<IBranchProductService, BranchProductService >(); 
 
 // Adding JWT Authentication (if you plan to use JWT tokens for Authentication)
 builder.Services.AddAuthentication(options =>
@@ -58,7 +67,7 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]!))
     };
 });
 
