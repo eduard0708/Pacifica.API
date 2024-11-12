@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PacificaAPI.Services.RoleService;
 
@@ -21,29 +17,57 @@ namespace PacificaAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<ApiResponse<List<string>>>> GetAllRoles()
         {
-            var response = await _roleService.GetAllRolesAsync();
-            return Ok(response);
+            try
+            {
+                var response = await _roleService.GetAllRolesAsync();
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<List<string>> { Success = false, Message = $"Error retrieving roles: {ex.Message}" });
+            }
         }
 
         [HttpPost]
         public async Task<ActionResult<ApiResponse<string>>> CreateRole([FromBody] string roleName)
         {
-            var response = await _roleService.CreateRoleAsync(roleName);
-            return Ok(response);
+            try
+            {
+                var response = await _roleService.CreateRoleAsync(roleName);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<string> { Success = false, Message = $"Error creating role: {ex.Message}" });
+            }
         }
 
         [HttpPost("assign/{employeeId}/{roleName}")]
         public async Task<ActionResult<ApiResponse<bool>>> AssignRole(string employeeId, string roleName)
         {
-            var response = await _roleService.AssignRoleToEmployeeAsync(employeeId, roleName);
-            return Ok(response);
+            try
+            {
+                var response = await _roleService.AssignRoleToEmployeeAsync(employeeId, roleName);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<bool> { Success = false, Message = $"Error assigning role: {ex.Message}" });
+            }
         }
 
         [HttpPost("remove/{employeeId}/{roleName}")]
         public async Task<ActionResult<ApiResponse<bool>>> RemoveRole(string employeeId, string roleName)
         {
-            var response = await _roleService.RemoveRoleFromEmployeeAsync(employeeId, roleName);
-            return Ok(response);
+            try
+            {
+                var response = await _roleService.RemoveRoleFromEmployeeAsync(employeeId, roleName);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<bool> { Success = false, Message = $"Error removing role: {ex.Message}" });
+            }
         }
     }
 }

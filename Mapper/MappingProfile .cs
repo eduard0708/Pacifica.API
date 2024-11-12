@@ -1,7 +1,7 @@
 using AutoMapper;
 using PacificaAPI.Dtos.Admin;
 
-namespace PacificaAPI.Mapper
+namespace Pacifica.API.Mapper
 {
     public class MappingProfile : Profile
     {

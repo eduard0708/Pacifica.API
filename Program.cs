@@ -1,4 +1,5 @@
 global using Pacifica.API.Models; 
+global using PacificaAPI.Models; 
 global using PacificaAPI.Helper;
 
 using System.Text;
@@ -7,10 +8,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Pacifica.API.Data;
-using PacificaAPI.Mapper;
+using Pacifica.API.Mapper;
 using PacificaAPI.Services.AuthService;
 using PacificaAPI.Services.EmployeeService;
 using PacificaAPI.Services.RoleService;
+using PacificaAPI.Services.TokenService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +38,8 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+
 
 // Adding JWT Authentication (if you plan to use JWT tokens for Authentication)
 builder.Services.AddAuthentication(options =>
