@@ -7,7 +7,7 @@ namespace Pacifica.API.Models
     {
         // Composite Key: EmployeeId and BranchId
         [Key]
-        public int EmployeeId { get; set; }
+        public string EmployeeId { get; set; }
         public Employee? Employee { get; set; }
 
         [Key]

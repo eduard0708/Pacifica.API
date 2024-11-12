@@ -9,6 +9,7 @@ using PacificaAPI.Services.EmployeeService;
 namespace PacificaAPI.Controllers
 {
     [ApiController]
+    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     public class EmployeeController : ControllerBase
     {

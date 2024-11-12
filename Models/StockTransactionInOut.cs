@@ -6,45 +6,46 @@ namespace Pacifica.API.Models
     {
         public int Id { get; set; }  // Unique identifier for the transaction
 
-        [Required]  
+        [Required]
         public DateTime TransactionDate { get; set; }  // Date of transaction
 
-        [Required]  
+        [Required]
         public int StockQuantity { get; set; }  // Quantity of products involved
 
-        [Required]  
+        [Required]
         public int TransactionNumber { get; set; }  // Unique transaction reference
 
         public DateTime? DateReported { get; set; }  // Date when the transaction was reported (optional)
 
         public string Remarks { get; set; } = string.Empty;  // Additional transaction notes
 
-        [Required]  
+        [Required]
         public int ProductId { get; set; }  // Product involved in the transaction
         public Product? Product { get; set; }  // Navigation property for Product
 
-        [Required]  
+        [Required]
         public int TransactionTypeId { get; set; }  // Type of the transaction (e.g., In, Out)
         public TransactionType? TransactionType { get; set; }  // Navigation property for TransactionType
 
-        [Required]  
+        [Required]
         public int TransactionReferenceId { get; set; }  // Reference ID (e.g., Sales Order)
         public TransactionReference? TransactionReference { get; set; }  // Navigation property for TransactionReference
 
-        [Required]  
+
+        [Required]
         public DateTime CreatedAt { get; set; } = DateTime.Now;  // Date when the transaction was created
 
         public DateTime? UpdatedAt { get; set; }  // Date when the transaction was last updated
 
         public DateTime? DeletedAt { get; set; }  // Soft delete timestamp (null if active)
 
-        [StringLength(100)]  
+        [StringLength(100)]
         public string? CreatedBy { get; set; }  // User who created the transaction
 
-        [Required]  
+        [Required]
         public bool IsActive { get; set; } = true;  // Indicates if the transaction is active
 
-        [StringLength(100)]  
+        [StringLength(100)]
         public string? UpdatedBy { get; set; }  // User who last updated the transaction
     }
 }

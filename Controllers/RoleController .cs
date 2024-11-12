@@ -4,7 +4,9 @@ using PacificaAPI.Services.RoleService;
 namespace PacificaAPI.Controllers
 {
     [ApiController]
+    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
+
     public class RoleController : ControllerBase
     {
         private readonly IRoleService _roleService;
@@ -56,12 +58,12 @@ namespace PacificaAPI.Controllers
             }
         }
 
-        [HttpPost("remove/{employeeId}/{roleName}")]
-        public async Task<ActionResult<ApiResponse<bool>>> RemoveRole(string employeeId, string roleName)
+        [HttpPost("remove/{Id}/{roleName}")]
+        public async Task<ActionResult<ApiResponse<bool>>> RemoveRole(string Id, string roleName)
         {
             try
             {
-                var response = await _roleService.RemoveRoleFromEmployeeAsync(employeeId, roleName);
+                var response = await _roleService.RemoveRoleFromEmployeeAsync(Id, roleName);
                 return Ok(response);
             }
             catch (Exception ex)

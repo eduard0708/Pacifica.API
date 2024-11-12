@@ -9,7 +9,7 @@ namespace Pacifica.API.Models
         [Key]
         [Required]
         [StringLength(128)]  // Maximum length for EmployeeId, set by your system design
-        public string EmployeeId { get; set; }
+        public string  EmployeeId { get; set; }
 
         [StringLength(100)] // Set max length for Position
         public string? Position { get; set; }

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Pacifica.API.Models
 {
@@ -7,24 +8,26 @@ namespace Pacifica.API.Models
         // Foreign Key to the Branch entity (Many-to-One relationship)
         [Required(ErrorMessage = "Branch ID is required.")]
         public int BranchId { get; set; }
-        
+
         // Navigation property to the associated Branch entity
         public Branch? Branch { get; set; }
 
         // Foreign Key to the Product entity (Many-to-One relationship)
         [Required(ErrorMessage = "Product ID is required.")]
         public int ProductId { get; set; }
-        
+
         // Navigation property to the associated Product entity
         public Product? Product { get; set; }
 
         // Cost Price of the product in the branch (Required field)
         [Required(ErrorMessage = "Cost price is required.")]
         [Range(0, double.MaxValue, ErrorMessage = "Cost price must be a positive value.")]
+        [Column(TypeName = "decimal(18,2)")]  // Specifies decimal precision and scale
         public decimal CostPrice { get; set; }
 
         // Retail Price of the product in the branch (Required field)
         [Required(ErrorMessage = "Retail price is required.")]
+        [Column(TypeName = "decimal(18,2)")]  // Specifies decimal precision and scale
         [Range(0, double.MaxValue, ErrorMessage = "Retail price must be a positive value.")]
         public decimal RetailPrice { get; set; }
 

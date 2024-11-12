@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Pacifica.API.Models
 {
@@ -14,10 +15,12 @@ namespace Pacifica.API.Models
 
         // Cost price of the product (purchase price)
         [Required]  // Ensures CostPrice is provided
+        [Column(TypeName = "decimal(18,2)")]  // Specifies decimal precision and scale
         public decimal CostPrice { get; set; }
 
         // Retail price of the product (selling price)
         [Required]  // Ensures RetailPrice is provided
+        [Column(TypeName = "decimal(18,2)")]  // Specifies decimal precision and scale
         public decimal RetailPrice { get; set; }
 
         // Quantity of the product in stock
@@ -62,9 +65,9 @@ namespace Pacifica.API.Models
 
         // Navigation property for related branch products (branch-specific prices and stock)
         public ICollection<BranchProduct>? BranchProducts { get; set; }
+        
 
         // Audit fields to track creation, update, and soft delete
-
         [Required]  // Ensures CreatedAt is provided
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 

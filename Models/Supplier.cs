@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Pacifica.API.Models
@@ -12,22 +11,24 @@ namespace Pacifica.API.Models
         public string? ContactPerson { get; set; }  // Name of the contact person at the supplier
 
         public string? ContactNumber { get; set; }  // Contact number for the supplier
+        public ICollection<Product>? Products { get; set; }
+
 
         // Audit fields
-        [Required]  
+        [Required]
         public DateTime CreatedAt { get; set; } = DateTime.Now;  // Date the supplier was created
 
         public DateTime? UpdatedAt { get; set; }  // Date the supplier was last updated
 
         public DateTime? DeletedAt { get; set; }  // Soft delete timestamp (null means not deleted)
 
-        [StringLength(100)]  
+        [StringLength(100)]
         public string? CreatedBy { get; set; }  // User who created the supplier record
 
-        [Required]  
+        [Required]
         public bool IsActive { get; set; } = true;  // Indicates whether the supplier is active
 
-        [StringLength(100)]  
+        [StringLength(100)]
         public string? UpdatedBy { get; set; }  // User who last updated the supplier record
     }
 }

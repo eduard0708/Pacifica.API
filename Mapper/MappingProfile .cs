@@ -1,4 +1,6 @@
 using AutoMapper;
+using Pacifica.API.Dtos.TransactionReference;
+using Pacifica.API.Dtos.TransactionType;
 using PacificaAPI.Dtos.Admin;
 
 namespace Pacifica.API.Mapper
@@ -11,6 +13,12 @@ namespace Pacifica.API.Mapper
             CreateMap<EmployeeProfile, EmployeeProfileDto>().ReverseMap();
             CreateMap<LoginDto, Employee>().ReverseMap();
             CreateMap<RegisterDto, Employee>().ReverseMap();
+
+            CreateMap<TransactionType, TransactionTypeDto>();
+            CreateMap<TransactionTypeDto, TransactionType>();
+
+            CreateMap<TransactionReference, TransactionReferenceDto>();
+            CreateMap<TransactionReferenceDto, TransactionReference>();
         }
     }
 }

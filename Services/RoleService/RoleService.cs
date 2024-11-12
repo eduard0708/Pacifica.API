@@ -37,9 +37,9 @@ namespace PacificaAPI.Services.RoleService
             return new ApiResponse<string> { Success = false, Message = "Error creating role" };
         }
 
-        public async Task<ApiResponse<bool>> AssignRoleToEmployeeAsync(string employeeId, string roleName)
+        public async Task<ApiResponse<bool>> AssignRoleToEmployeeAsync(string Id, string roleName)
         {
-            var employee = await _userManager.FindByIdAsync(employeeId);
+            var employee = await _userManager.FindByIdAsync(Id);
             if (employee == null) return new ApiResponse<bool> { Success = false, Message = "Employee not found" };
 
             var result = await _userManager.AddToRoleAsync(employee, roleName);

@@ -1,5 +1,4 @@
 global using Pacifica.API.Models; 
-global using PacificaAPI.Models; 
 global using PacificaAPI.Helper;
 
 using System.Text;
@@ -9,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Pacifica.API.Data;
 using Pacifica.API.Mapper;
+using Pacifica.API.Services.TransactionReferenceService;
+using Pacifica.API.Services.TransactionTypeService;
 using PacificaAPI.Services.AuthService;
 using PacificaAPI.Services.EmployeeService;
 using PacificaAPI.Services.RoleService;
@@ -39,6 +40,8 @@ builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<ITransactionTypeService, TransactionTypeService>();
+builder.Services.AddScoped<ITransactionReferenceService, TransactionReferenceService>();
 
 
 // Adding JWT Authentication (if you plan to use JWT tokens for Authentication)

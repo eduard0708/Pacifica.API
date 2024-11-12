@@ -2,3 +2,9 @@ CONNECTION STRING IN OFFICE
  "ConnectionStrings": {
     "DefaultConnection": "Server=DESKTOP-0C201QJ\\SQLEXPRESS;Database=PacificaDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True;"
   },
+
+CONNECTION STRING IN HOME
+
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=SPEEDPC\\SQLEXPRESS;Database=PacificaDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True;"
+  },
