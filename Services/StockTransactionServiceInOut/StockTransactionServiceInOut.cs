@@ -1,15 +1,14 @@
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Pacifica.API.Dtos.StockTransactionInOut;
 
-namespace Pacifica.API.Services.StockTransactionService
+namespace Pacifica.API.Services.StockTransactionServiceInout
 {
-    public class StockTransactionService : IStockTransactionService
+    public class StockTransactionServiceInOut : IStockTransactionServiceInOut
     {
         private readonly ApplicationDbContext _context;
         public IMapper _mapper { get; }
 
-        public StockTransactionService(ApplicationDbContext context, IMapper mapper)
+        public StockTransactionServiceInOut(ApplicationDbContext context, IMapper mapper)
         {
             _mapper = mapper;
             _context = context;

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Pacifica.API.Dtos.StockTransactionInOut;
-using Pacifica.API.Services.StockTransactionService;
+using Pacifica.API.Services.StockTransactionServiceInout;
 
 namespace Pacifica.API.Controllers
 {
@@ -8,14 +8,14 @@ namespace Pacifica.API.Controllers
     [ApiController]
     public class StockTransactionController : ControllerBase
     {
-        private readonly IStockTransactionService _stockTransactionService;
+        private readonly IStockTransactionServiceInOut _stockTransactionService;
 
-        public StockTransactionController(IStockTransactionService stockTransactionService)
+        public StockTransactionController(IStockTransactionServiceInOut stockTransactionService)
         {
             _stockTransactionService = stockTransactionService;
         }
 
-        [HttpPost("ProcessTransaction")]
+        [HttpPost("StockTransactionInOut")]
         public async Task<ActionResult<ApiResponse<string>>> ProcessTransaction([FromBody] CreateStockTransactionInOutDto transaction)
         {
             if (!ModelState.IsValid)

@@ -1,8 +1,7 @@
-global using Pacifica.API.Models; 
+global using Pacifica.API.Models;
 global using Pacifica.API.Helper;
 global using Pacifica.API.Data;
 global using AutoMapper;
-
 
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -20,6 +19,7 @@ using Pacifica.API.Services.AuthService;
 using Pacifica.API.Services.EmployeeService;
 using Pacifica.API.Services.RoleService;
 using Pacifica.API.Services.TokenService;
+using Pacifica.API.Services.StockTransactionServiceInout;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,10 +48,12 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ITransactionReferenceService, TransactionReferenceService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<IBranchService, BranchService>();  
-builder.Services.AddScoped<IProductService, ProductService>();  
-builder.Services.AddScoped<ISupplierService, SupplierService >();  
-builder.Services.AddScoped<IBranchProductService, BranchProductService >(); 
+builder.Services.AddScoped<IBranchService, BranchService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ISupplierService, SupplierService>();
+builder.Services.AddScoped<IBranchProductService, BranchProductService>();
+builder.Services.AddScoped<IStockTransactionServiceInOut, StockTransactionServiceInOut>();
+
 
 // Adding JWT Authentication (if you plan to use JWT tokens for Authentication)
 builder.Services.AddAuthentication(options =>
@@ -72,7 +74,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 // Add Authorization service to the DI container
-builder.Services.AddAuthorization();  
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 

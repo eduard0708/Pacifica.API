@@ -1,11 +1,10 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Pacifica.API.Dtos.BranchProduct;
 using Pacifica.API.Services.BranchProductService;
 
 namespace Pacifica.API.Controllers
 {    
-    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
+    //[ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
     public class BranchProductController : ControllerBase
