@@ -61,6 +61,8 @@ namespace Pacifica.API.Services.StockTransactionServiceInout
             {
 
                 var createStock = _mapper.Map<StockTransactionInOut>(transaction);
+                createStock.StockTransactionType = transaction.TransactionType;
+
                 // Save transaction and update stock quantity
                 _context.StockTransactionInOuts.Add(createStock);
                 await _context.SaveChangesAsync();
@@ -77,10 +79,69 @@ namespace Pacifica.API.Services.StockTransactionServiceInout
                 return new ApiResponse<string>
                 {
                     Success = false,
-                    Message = $"Error processing transaction: {ex.Message}",
+                    Message = $"Error processing transaction: {ex.InnerException?.Message}",
                     Data = null
                 };
             }
         }
+
+        public async Task<ApiResponse<List<GetStockTransactionInOutDto>>> GetAllTransactionsAsync()
+        {
+            var transactions = await _context.StockTransactionInOuts
+                .Select(t => _mapper.Map<GetStockTransactionInOutDto>(t))
+                .ToListAsync();
+
+            return new ApiResponse<List<GetStockTransactionInOutDto>>
+            {
+                Success = true,
+                Message = "Transactions retrieved successfully.",
+                Data = transactions
+            };
+        }
+
+        public async Task<ApiResponse<List<GetByReferenceNumberStockTransactionInOutDto>>> GetTransactionByReferenceNumberAsync(int referenceNumber)
+        {
+            var transactions = await _context.StockTransactionInOuts
+                .Where(t => t.TransactionNumber == referenceNumber)
+                .Join(_context.Branches, t => t.BranchId, b => b.Id, (t, b) => new { t, b })
+                .Join(_context.Products, tb => tb.t.ProductId, p => p.Id, (tb, p) => new { tb.t, tb.b, p })
+                .Join(_context.TransactionReferences, tbp => tbp.t.TransactionReferenceId, tr => tr.Id, (tbp, tr) => new { tbp.t, tbp.b, tbp.p, tr })
+                .Select(x => new GetByReferenceNumberStockTransactionInOutDto
+                {
+                    Id = x.t.Id,
+                    BranchId = x.t.BranchId,
+                    ProductId = x.t.ProductId,
+                    ReferenceNumber = x.t.TransactionNumber,
+                    TransactionNumber = x.t.TransactionNumber,
+                    TransactionTypeId = x.t.StockTransactionType,
+                    // TransactionTypeName = x.
+                    StockQuantity = x.t.StockQuantity,
+                    TransactionDate = x.t.TransactionDate,
+                    BranchName = x.b.BranchName,  // Assuming branch name is stored in the Branch entity
+                    ProductName = x.p.ProductName,  // Assuming product name is stored in the Product entity
+                    ProductCategory = x.p.Category!.CategoryName,  // Assuming category is stored in the Product entity
+                    TransactionReferenceName = x.tr.TransactionReferenceName  // Assuming reference name is stored in the TransactionReference entity
+                })
+                .ToListAsync();
+
+            if (transactions == null || transactions.Count == 0)
+            {
+                return new ApiResponse<List<GetByReferenceNumberStockTransactionInOutDto>>
+                {
+                    Success = false,
+                    Message = "Transaction not found.",
+                    Data = null
+                };
+            }
+
+            return new ApiResponse<List<GetByReferenceNumberStockTransactionInOutDto>>
+            {
+                Success = true,
+                Message = "Transactions retrieved successfully.",
+                Data = transactions
+            };
+        }
+
     }
+
 }

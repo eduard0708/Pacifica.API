@@ -4,8 +4,6 @@ namespace Pacifica.API.Dtos.StockTransactionInOut
 {
     public class CreateStockTransactionInOutDto
     {
-        [Required]
-        public DateTime TransactionDate { get; set; }
 
         [Required]
         public int StockQuantity { get; set; }
