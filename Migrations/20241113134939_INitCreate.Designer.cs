@@ -12,8 +12,8 @@ using Pacifica.API.Data;
 namespace Pacifica.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241113083200_UpdateDbcontext")]
-    partial class UpdateDbcontext
+    [Migration("20241113134939_INitCreate")]
+    partial class INitCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -477,7 +477,7 @@ namespace Pacifica.API.Migrations
 
             modelBuilder.Entity("Pacifica.API.Models.EmployeeBranch", b =>
                 {
-                    b.Property<string>("EmployeeId")
+                    b.Property<string>("Id")
                         .HasColumnType("nvarchar(128)");
 
                     b.Property<int>("BranchId")
@@ -512,7 +512,7 @@ namespace Pacifica.API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("EmployeeId", "BranchId");
+                    b.HasKey("Id", "BranchId");
 
                     b.HasIndex("BranchId");
 
@@ -725,6 +725,9 @@ namespace Pacifica.API.Migrations
                     b.Property<int>("StockQuantity")
                         .HasColumnType("int");
 
+                    b.Property<int>("StockTransactionType")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("TransactionDate")
                         .HasColumnType("datetime2");
 
@@ -732,9 +735,6 @@ namespace Pacifica.API.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("TransactionReferenceId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TransactionTypeId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -751,8 +751,6 @@ namespace Pacifica.API.Migrations
                     b.HasIndex("ProductId");
 
                     b.HasIndex("TransactionReferenceId");
-
-                    b.HasIndex("TransactionTypeId");
 
                     b.ToTable("StockTransactionInOuts");
                 });
@@ -848,51 +846,6 @@ namespace Pacifica.API.Migrations
                     b.ToTable("TransactionReferences");
                 });
 
-            modelBuilder.Entity("Pacifica.API.Models.TransactionType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<string>("TransactionTypeName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TransactionTypes");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.HasOne("Pacifica.API.Models.Employee", null)
@@ -980,7 +933,7 @@ namespace Pacifica.API.Migrations
 
                     b.HasOne("Pacifica.API.Models.Employee", "Employee")
                         .WithMany("EmployeeBranches")
-                        .HasForeignKey("EmployeeId")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1045,19 +998,11 @@ namespace Pacifica.API.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Pacifica.API.Models.TransactionType", "TransactionType")
-                        .WithMany("StockTransactionInOuts")
-                        .HasForeignKey("TransactionTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Branch");
 
                     b.Navigation("Product");
 
                     b.Navigation("TransactionReference");
-
-                    b.Navigation("TransactionType");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Address", b =>
@@ -1101,11 +1046,6 @@ namespace Pacifica.API.Migrations
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.TransactionReference", b =>
-                {
-                    b.Navigation("StockTransactionInOuts");
-                });
-
-            modelBuilder.Entity("Pacifica.API.Models.TransactionType", b =>
                 {
                     b.Navigation("StockTransactionInOuts");
                 });

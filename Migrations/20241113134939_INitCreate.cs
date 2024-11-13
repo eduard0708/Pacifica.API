@@ -154,26 +154,6 @@ namespace Pacifica.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TransactionTypes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TransactionTypeName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TransactionTypes", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
                 {
@@ -297,7 +277,7 @@ namespace Pacifica.API.Migrations
                 name: "EmployeeBranches",
                 columns: table => new
                 {
-                    EmployeeId = table.Column<string>(type: "nvarchar(128)", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(128)", nullable: false),
                     BranchId = table.Column<int>(type: "int", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
@@ -309,10 +289,10 @@ namespace Pacifica.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EmployeeBranches", x => new { x.EmployeeId, x.BranchId });
+                    table.PrimaryKey("PK_EmployeeBranches", x => new { x.Id, x.BranchId });
                     table.ForeignKey(
-                        name: "FK_EmployeeBranches_AspNetUsers_EmployeeId",
-                        column: x => x.EmployeeId,
+                        name: "FK_EmployeeBranches_AspNetUsers_Id",
+                        column: x => x.Id,
                         principalTable: "AspNetUsers",
                         principalColumn: "EmployeeId",
                         onDelete: ReferentialAction.Cascade);
@@ -446,7 +426,7 @@ namespace Pacifica.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "stockTransactionInOuts",
+                name: "StockTransactionInOuts",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -457,7 +437,7 @@ namespace Pacifica.API.Migrations
                     DateReported = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Remarks = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProductId = table.Column<int>(type: "int", nullable: false),
-                    TransactionTypeId = table.Column<int>(type: "int", nullable: false),
+                    StockTransactionType = table.Column<int>(type: "int", nullable: false),
                     TransactionReferenceId = table.Column<int>(type: "int", nullable: false),
                     BranchId = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
@@ -465,59 +445,29 @@ namespace Pacifica.API.Migrations
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    BranchId1 = table.Column<int>(type: "int", nullable: true),
-                    ProductId1 = table.Column<int>(type: "int", nullable: true),
-                    TransactionReferenceId1 = table.Column<int>(type: "int", nullable: true),
-                    TransactionTypeId1 = table.Column<int>(type: "int", nullable: true)
+                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_stockTransactionInOuts", x => x.Id);
+                    table.PrimaryKey("PK_StockTransactionInOuts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_stockTransactionInOuts_Branches_BranchId",
+                        name: "FK_StockTransactionInOuts_Branches_BranchId",
                         column: x => x.BranchId,
                         principalTable: "Branches",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_stockTransactionInOuts_Branches_BranchId1",
-                        column: x => x.BranchId1,
-                        principalTable: "Branches",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_stockTransactionInOuts_Products_ProductId",
+                        name: "FK_StockTransactionInOuts_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_stockTransactionInOuts_Products_ProductId1",
-                        column: x => x.ProductId1,
-                        principalTable: "Products",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_stockTransactionInOuts_TransactionReferences_TransactionReferenceId",
+                        name: "FK_StockTransactionInOuts_TransactionReferences_TransactionReferenceId",
                         column: x => x.TransactionReferenceId,
                         principalTable: "TransactionReferences",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_stockTransactionInOuts_TransactionReferences_TransactionReferenceId1",
-                        column: x => x.TransactionReferenceId1,
-                        principalTable: "TransactionReferences",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_stockTransactionInOuts_TransactionTypes_TransactionTypeId",
-                        column: x => x.TransactionTypeId,
-                        principalTable: "TransactionTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_stockTransactionInOuts_TransactionTypes_TransactionTypeId1",
-                        column: x => x.TransactionTypeId1,
-                        principalTable: "TransactionTypes",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -598,44 +548,19 @@ namespace Pacifica.API.Migrations
                 column: "SupplierId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_stockTransactionInOuts_BranchId",
-                table: "stockTransactionInOuts",
+                name: "IX_StockTransactionInOuts_BranchId",
+                table: "StockTransactionInOuts",
                 column: "BranchId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_stockTransactionInOuts_BranchId1",
-                table: "stockTransactionInOuts",
-                column: "BranchId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_stockTransactionInOuts_ProductId",
-                table: "stockTransactionInOuts",
+                name: "IX_StockTransactionInOuts_ProductId",
+                table: "StockTransactionInOuts",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_stockTransactionInOuts_ProductId1",
-                table: "stockTransactionInOuts",
-                column: "ProductId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_stockTransactionInOuts_TransactionReferenceId",
-                table: "stockTransactionInOuts",
+                name: "IX_StockTransactionInOuts_TransactionReferenceId",
+                table: "StockTransactionInOuts",
                 column: "TransactionReferenceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_stockTransactionInOuts_TransactionReferenceId1",
-                table: "stockTransactionInOuts",
-                column: "TransactionReferenceId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_stockTransactionInOuts_TransactionTypeId",
-                table: "stockTransactionInOuts",
-                column: "TransactionTypeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_stockTransactionInOuts_TransactionTypeId1",
-                table: "stockTransactionInOuts",
-                column: "TransactionTypeId1");
         }
 
         /// <inheritdoc />
@@ -666,7 +591,7 @@ namespace Pacifica.API.Migrations
                 name: "EmployeeProfiles");
 
             migrationBuilder.DropTable(
-                name: "stockTransactionInOuts");
+                name: "StockTransactionInOuts");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -682,9 +607,6 @@ namespace Pacifica.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "TransactionReferences");
-
-            migrationBuilder.DropTable(
-                name: "TransactionTypes");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
