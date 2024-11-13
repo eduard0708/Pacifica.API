@@ -1,14 +1,14 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Pacifica.API.Dtos.TransactionReference;
+using Pacifica.API.Helper;
 using Pacifica.API.Services.TransactionReferenceService;
 
 namespace Pacifica.API.Controllers
 {
+    //[ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
-    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
-
     public class TransactionReferenceController : ControllerBase
     {
         private readonly ITransactionReferenceService _transactionReferenceService;

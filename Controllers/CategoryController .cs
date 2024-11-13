@@ -5,9 +5,9 @@ using Pacifica.API.Services.CategoryService;
 
 namespace Pacifica.API.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
-    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -54,7 +54,7 @@ namespace Pacifica.API.Controllers
 
         // POST: api/Category
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<CategoryDto>>> PostCategory(CategoryDto categoryDto)
+        public async Task<ActionResult<ApiResponse<CategoryDto>>> CreateCategory(CreateCategoryDto categoryDto)
         {
             var category = _mapper.Map<Category>(categoryDto);
             var response = await _categoryService.CreateCategoryAsync(category);
@@ -75,7 +75,7 @@ namespace Pacifica.API.Controllers
 
         // PUT: api/Category/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCategory(int id, CategoryDto categoryDto)
+        public async Task<IActionResult> UpdateCategory(int id, UpdateCategoryDto categoryDto)
         {
             var category = _mapper.Map<Category>(categoryDto);
             var response = await _categoryService.UpdateCategoryAsync(id, category);

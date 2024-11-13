@@ -1,4 +1,4 @@
-namespace PacificaAPI.Services.RoleService
+namespace Pacifica.API.Services.RoleService
 {
     public interface IRoleService
     {

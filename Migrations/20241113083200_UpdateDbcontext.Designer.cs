@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pacifica.API.Data;
 
@@ -11,9 +12,11 @@ using Pacifica.API.Data;
 namespace Pacifica.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241113083200_UpdateDbcontext")]
+    partial class UpdateDbcontext
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -474,7 +477,7 @@ namespace Pacifica.API.Migrations
 
             modelBuilder.Entity("Pacifica.API.Models.EmployeeBranch", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("EmployeeId")
                         .HasColumnType("nvarchar(128)");
 
                     b.Property<int>("BranchId")
@@ -509,7 +512,7 @@ namespace Pacifica.API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("Id", "BranchId");
+                    b.HasKey("EmployeeId", "BranchId");
 
                     b.HasIndex("BranchId");
 
@@ -977,7 +980,7 @@ namespace Pacifica.API.Migrations
 
                     b.HasOne("Pacifica.API.Models.Employee", "Employee")
                         .WithMany("EmployeeBranches")
-                        .HasForeignKey("Id")
+                        .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

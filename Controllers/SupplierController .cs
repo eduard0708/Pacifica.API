@@ -1,10 +1,12 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Pacifica.API.Dtos.Supplier;
+using Pacifica.API.Helper;
 using Pacifica.API.Services.SupplierService;
 
 namespace Pacifica.API.Controllers
 {
+   // [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
     public class SupplierController : ControllerBase
@@ -53,7 +55,7 @@ namespace Pacifica.API.Controllers
 
         // POST: api/Supplier
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<SupplierDto>>> CreateSupplier([FromBody] SupplierDto supplierDto)
+        public async Task<ActionResult<ApiResponse<SupplierDto>>> CreateSupplier([FromBody] CreateSupplierDto supplierDto)
         {
             var supplier = _mapper.Map<Supplier>(supplierDto);
             var response = await _supplierService.CreateSupplierAsync(supplier);
@@ -74,7 +76,7 @@ namespace Pacifica.API.Controllers
 
         // PUT: api/Supplier/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<ApiResponse<SupplierDto>>> UpdateSupplier(int id, [FromBody] SupplierDto supplierDto)
+        public async Task<ActionResult<ApiResponse<SupplierDto>>> UpdateSupplier(int id, [FromBody] UpdateSupplierDto supplierDto)
         {
             var supplier = _mapper.Map<Supplier>(supplierDto);
             var response = await _supplierService.UpdateSupplierAsync(id, supplier);

@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using PacificaAPI.Dtos.Admin;
-using PacificaAPI.Services.AuthService;
+using Pacifica.API.Dtos.Admin;
+using Pacifica.API.Helper;
+using Pacifica.API.Services.AuthService;
 
-namespace PacificaAPI.Controllers
+namespace Pacifica.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

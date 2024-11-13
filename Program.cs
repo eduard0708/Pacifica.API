@@ -1,5 +1,6 @@
 global using Pacifica.API.Models; 
-global using PacificaAPI.Helper;
+global using Pacifica.API.Helper;
+
 
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -15,10 +16,10 @@ using Pacifica.API.Services.ProductService;
 using Pacifica.API.Services.SupplierService;
 using Pacifica.API.Services.TransactionReferenceService;
 using Pacifica.API.Services.TransactionTypeService;
-using PacificaAPI.Services.AuthService;
-using PacificaAPI.Services.EmployeeService;
-using PacificaAPI.Services.RoleService;
-using PacificaAPI.Services.TokenService;
+using Pacifica.API.Services.AuthService;
+using Pacifica.API.Services.EmployeeService;
+using Pacifica.API.Services.RoleService;
+using Pacifica.API.Services.TokenService;
 
 var builder = WebApplication.CreateBuilder(args);
 

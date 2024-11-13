@@ -19,6 +19,8 @@ namespace Pacifica.API.Models
 
         public string Remarks { get; set; } = string.Empty;  // Additional transaction notes
 
+        
+        //Navigation 
         [Required]
         public int ProductId { get; set; }  // Product involved in the transaction
         public Product? Product { get; set; }  // Navigation property for Product

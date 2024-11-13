@@ -1,4 +1,4 @@
-namespace PacificaAPI.Helper
+namespace Pacifica.API.Helper
 {
     public class ApiResponse<T>
     {

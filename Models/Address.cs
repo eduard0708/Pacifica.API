@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Pacifica.API.Models
 {
     public class Address
+    
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

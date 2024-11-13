@@ -1,6 +1,7 @@
-using PacificaAPI.Dtos.Admin;
+using Pacifica.API.Dtos.Admin;
+using Pacifica.API.Helper;
 
-namespace PacificaAPI.Services.AuthService
+namespace Pacifica.API.Services.AuthService
 {
     public interface IAuthService
     {

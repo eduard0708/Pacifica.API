@@ -1,8 +1,9 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using PacificaAPI.Dtos.Admin;
+using Microsoft.EntityFrameworkCore;
+using Pacifica.API.Dtos.Admin;
 
-namespace PacificaAPI.Services.EmployeeService
+namespace Pacifica.API.Services.EmployeeService
 {
     public class EmployeeService : IEmployeeService
     {
@@ -18,7 +19,7 @@ namespace PacificaAPI.Services.EmployeeService
         public async Task<ApiResponse<EmployeeDto>> CreateEmployeeAsync(RegisterDto registerDto)
         {
             var employee = _mapper.Map<Employee>(registerDto);
-            var result = await _userManager.CreateAsync(employee, registerDto.Password);
+            var result = await _userManager.CreateAsync(employee, registerDto.Password!);
 
             if (result.Succeeded)
             {
@@ -38,7 +39,7 @@ namespace PacificaAPI.Services.EmployeeService
 
         public async Task<ApiResponse<List<EmployeeDto>>> GetAllEmployeesAsync()
         {
-            var employees = _userManager.Users.ToList();
+            var employees = await _userManager.Users.ToListAsync();
             return new ApiResponse<List<EmployeeDto>> { Success = true, Data = _mapper.Map<List<EmployeeDto>>(employees) };
         }
 

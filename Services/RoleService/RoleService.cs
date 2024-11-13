@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
-namespace PacificaAPI.Services.RoleService
+namespace Pacifica.API.Services.RoleService
 {
 
     public class RoleService : IRoleService
@@ -20,8 +21,8 @@ namespace PacificaAPI.Services.RoleService
 
         public async Task<ApiResponse<List<string>>> GetAllRolesAsync()
         {
-            var roles = _roleManager.Roles.Select(r => r.Name).ToList();
-            return new ApiResponse<List<string>> { Success = true, Data = roles };
+            var roles = await _roleManager.Roles.Select(r => r.Name).ToListAsync();
+            return new ApiResponse<List<string>> { Success = true, Data = roles! };
         }
 
         public async Task<ApiResponse<string>> CreateRoleAsync(string roleName)

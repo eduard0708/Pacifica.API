@@ -1,6 +1,6 @@
-using PacificaAPI.Dtos.Admin;
+using Pacifica.API.Dtos.Admin;
 
-namespace PacificaAPI.Services.EmployeeService
+namespace Pacifica.API.Services.EmployeeService
 {
     public interface IEmployeeService
     {

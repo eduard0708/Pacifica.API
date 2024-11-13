@@ -1,12 +1,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Pacifica.API.Data;
-using Pacifica.API.Models;
-using PacificaAPI.Helper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Pacifica.API.Dtos.Supplier;
 
 namespace Pacifica.API.Services.SupplierService
 {
@@ -94,6 +89,7 @@ namespace Pacifica.API.Services.SupplierService
 
         public async Task<ApiResponse<Supplier>> CreateSupplierAsync(Supplier supplier)
         {
+            
             try
             {
                 _context.Suppliers.Add(supplier);

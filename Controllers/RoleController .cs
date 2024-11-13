@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
-using PacificaAPI.Services.RoleService;
+using Pacifica.API.Helper;
+using Pacifica.API.Services.RoleService;
 
-namespace PacificaAPI.Controllers
+namespace Pacifica.API.Controllers
 {
-    [ApiController]
     [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
+    [ApiController]
     [Route("api/[controller]")]
 
     public class RoleController : ControllerBase

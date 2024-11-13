@@ -1,13 +1,14 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Pacifica.API.Dtos.TransactionType;
+using Pacifica.API.Helper;
 using Pacifica.API.Services.TransactionTypeService;
 
 namespace Pacifica.API.Controllers
 {
+    //[ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
-    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     public class TransactionTypeController : ControllerBase
     {
         private readonly ITransactionTypeService _transactionTypeService;

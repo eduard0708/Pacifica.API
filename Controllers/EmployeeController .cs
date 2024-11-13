@@ -1,15 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using PacificaAPI.Dtos.Admin;
-using PacificaAPI.Services.EmployeeService;
+using Pacifica.API.Dtos.Admin;
+using Pacifica.API.Helper;
+using Pacifica.API.Services.EmployeeService;
 
-namespace PacificaAPI.Controllers
+namespace Pacifica.API.Controllers
 {
-    [ApiController]
     [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
+    [ApiController]
     [Route("api/[controller]")]
     public class EmployeeController : ControllerBase
     {

@@ -1,12 +1,13 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Pacifica.API.Dtos.Branch;
+using Pacifica.API.Helper;
 using Pacifica.API.Services.BranchService;
 
 namespace Pacifica.API.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
-    // [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [ApiController]
     public class BranchController : ControllerBase
     {
@@ -54,7 +55,7 @@ namespace Pacifica.API.Controllers
 
         // POST: api/Branch
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<BranchDto>>> PostBranch(BranchDto branchDto)
+        public async Task<ActionResult<ApiResponse<BranchDto>>> CreateBranch(CreateBranchDto branchDto)
         {
             var branch = _mapper.Map<Branch>(branchDto);
             var response = await _branchService.CreateBranchAsync(branch);
@@ -75,7 +76,7 @@ namespace Pacifica.API.Controllers
 
         // PUT: api/Branch/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBranch(int id, BranchDto branchDto)
+        public async Task<IActionResult> UpdateBranch(int id, UpdateBranchDto branchDto)
         {
             var branch = _mapper.Map<Branch>(branchDto);
             var response = await _branchService.UpdateBranchAsync(id, branch);

@@ -1,4 +1,4 @@
-namespace PacificaAPI.Dtos.Admin
+namespace Pacifica.API.Dtos.Admin
 {
     public class EmployeeDto
     {

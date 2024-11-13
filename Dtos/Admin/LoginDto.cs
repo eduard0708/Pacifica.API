@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace PacificaAPI.Dtos.Admin
+namespace Pacifica.API.Dtos.Admin
 {
     public class LoginDto
     {

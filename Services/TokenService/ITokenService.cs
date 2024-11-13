@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PacificaAPI.Services.TokenService
+namespace Pacifica.API.Services.TokenService
 {
     public interface ITokenService
     {
