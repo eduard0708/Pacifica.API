@@ -21,7 +21,7 @@ namespace Pacifica.API.Controllers
 
         // GET: api/BranchProduct/BranchId
         [HttpGet("GetAllByBranch/{branchId}")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<BranchProductDto>>>> GetAllProductsByBranch(int branchId)
+        public async Task<ActionResult<ApiResponse<IEnumerable<GetAllBranchProductResponseDto>>>> GetAllProductsByBranch(int branchId)
         {
             var response = await _branchProductService.GetAllProductsByBranchAsync(branchId);
 
@@ -30,8 +30,8 @@ namespace Pacifica.API.Controllers
                 return NotFound(response);
             }
 
-            var branchProductDtos = _mapper.Map<IEnumerable<BranchProductDto>>(response.Data);
-            return Ok(new ApiResponse<IEnumerable<BranchProductDto>>
+            var branchProductDtos = _mapper.Map<IEnumerable<GetAllBranchProductResponseDto>>(response.Data);
+            return Ok(new ApiResponse<IEnumerable<GetAllBranchProductResponseDto>>
             {
                 Success = response.Success,
                 Message = response.Message,
@@ -41,7 +41,7 @@ namespace Pacifica.API.Controllers
 
         // POST: api/BranchProduct/AddProduct
         [HttpPost("AddProduct")]
-        public async Task<ActionResult<ApiResponse<BranchProductDto>>> AddProductToBranch([FromBody] BranchProductDto branchProductDto)
+        public async Task<ActionResult<ApiResponse<BranchProductResponseDto>>> AddProductToBranch([FromBody] BranchProductDto branchProductDto)
         {
             var branchProduct = _mapper.Map<BranchProduct>(branchProductDto);
             var response = await _branchProductService.AddProductToBranchAsync(branchProduct);
@@ -51,12 +51,12 @@ namespace Pacifica.API.Controllers
                 return BadRequest(response);
             }
 
-            var addedBranchProductDto = _mapper.Map<BranchProductDto>(response.Data);
-            return CreatedAtAction(nameof(GetAllProductsByBranch), new { branchId = branchProduct.BranchId }, new ApiResponse<BranchProductDto>
+            // var addedBranchProductDto = _mapper.Map<BranchProductDto>(response.Data);
+            return CreatedAtAction(nameof(GetAllProductsByBranch), new { branchId = branchProduct.BranchId }, new ApiResponse<BranchProductResponseDto>
             {
                 Success = true,
                 Message = response.Message,
-                Data = addedBranchProductDto
+                Data = response.Data
             });
         }
     }

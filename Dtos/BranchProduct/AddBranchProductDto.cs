@@ -1,6 +1,6 @@
 namespace Pacifica.API.Dtos.BranchProduct
 {
-    public class BranchProductDto
+    public class AddBranchProductDto
     {
         public int BranchId { get; set; }
         public int ProductId { get; set; }

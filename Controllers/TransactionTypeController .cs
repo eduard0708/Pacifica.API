@@ -1,12 +1,11 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Pacifica.API.Dtos.TransactionType;
-using Pacifica.API.Helper;
 using Pacifica.API.Services.TransactionTypeService;
 
 namespace Pacifica.API.Controllers
 {
-    //[ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
+    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
     public class TransactionTypeController : ControllerBase
@@ -55,7 +54,7 @@ namespace Pacifica.API.Controllers
 
         // POST: api/TransactionType
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<TransactionTypeDto>>> PostTransactionType(TransactionTypeDto transactionTypeDto)
+        public async Task<ActionResult<ApiResponse<TransactionTypeDto>>> CreateTransactionType(CreateTransactionTypeDto transactionTypeDto)
         {
             var transactionType = _mapper.Map<TransactionType>(transactionTypeDto);
             var response = await _transactionTypeService.CreateTransactionTypeAsync(transactionType);
@@ -76,7 +75,7 @@ namespace Pacifica.API.Controllers
 
         // PUT: api/TransactionType/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTransactionType(int id, TransactionTypeDto transactionTypeDto)
+        public async Task<IActionResult> UpdateTransactionType(int id, UpdateTransactionTypeDto transactionTypeDto)
         {
             var transactionType = _mapper.Map<TransactionType>(transactionTypeDto);
             var response = await _transactionTypeService.UpdateTransactionTypeAsync(id, transactionType);
@@ -87,6 +86,7 @@ namespace Pacifica.API.Controllers
             }
 
             var updatedTransactionTypeDto = _mapper.Map<TransactionTypeDto>(response.Data);
+
             return Ok(new ApiResponse<TransactionTypeDto>
             {
                 Success = response.Success,

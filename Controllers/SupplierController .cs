@@ -1,12 +1,11 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Pacifica.API.Dtos.Supplier;
-using Pacifica.API.Helper;
 using Pacifica.API.Services.SupplierService;
 
 namespace Pacifica.API.Controllers
 {
-   // [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
+   [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
     public class SupplierController : ControllerBase

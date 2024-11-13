@@ -1,7 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Pacifica.API.Dtos.Product;
-using Pacifica.API.Helper;
 using Pacifica.API.Services.ProductService;
 
 namespace Pacifica.API.Controllers
@@ -55,7 +54,7 @@ namespace Pacifica.API.Controllers
 
         // POST: api/Product
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<ProductDto>>> PostProduct(ProductDto productDto)
+        public async Task<ActionResult<ApiResponse<ProductDto>>> CreateProduct(CreateProductDto productDto)
         {
             var product = _mapper.Map<Product>(productDto);
             var response = await _productService.CreateProductAsync(product);
@@ -76,7 +75,7 @@ namespace Pacifica.API.Controllers
 
         // PUT: api/Product/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct(int id, ProductDto productDto)
+        public async Task<IActionResult> UpdateProduct(int id, UpdateProductDto productDto)
         {
             var product = _mapper.Map<Product>(productDto);
             var response = await _productService.UpdateProductAsync(id, product);

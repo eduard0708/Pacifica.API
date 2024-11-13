@@ -1,7 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Pacifica.API.Dtos.Branch;
-using Pacifica.API.Helper;
 using Pacifica.API.Services.BranchService;
 
 namespace Pacifica.API.Controllers

@@ -20,9 +20,12 @@ namespace Pacifica.API.Mapper
             CreateMap<RegisterDto, Employee>().ReverseMap();
 
             CreateMap<TransactionType, TransactionTypeDto>().ReverseMap();
-            CreateMap<TransactionTypeDto, TransactionType>();
+            CreateMap<TransactionType, CreateTransactionTypeDto>().ReverseMap();
+            CreateMap<TransactionType, UpdateTransactionTypeDto>().ReverseMap();
 
             CreateMap<TransactionReference, TransactionReferenceDto>().ReverseMap();
+            CreateMap<TransactionReference, CreateTransactionReferenceDto>().ReverseMap();
+            CreateMap<TransactionReference, UpdateTransactionReferenceDto>().ReverseMap();
 
             CreateMap<Category, CategoryDto>().ReverseMap();
             CreateMap<Category, UpdateCategoryDto>().ReverseMap();
@@ -33,17 +36,17 @@ namespace Pacifica.API.Mapper
             CreateMap<Branch, UpdateBranchDto>().ReverseMap();
 
             CreateMap<Product, ProductDto>().ReverseMap();
-            CreateMap<Product, ProductDto>().ReverseMap();
-            CreateMap<Product, ProductDto>().ReverseMap();
+            CreateMap<Product, CreateProductDto>().ReverseMap();
+            CreateMap<Product, UpdateProductDto>().ReverseMap();
 
             CreateMap<Supplier, SupplierDto>().ReverseMap();
             CreateMap<Supplier, CreateSupplierDto>().ReverseMap();
             CreateMap<Supplier, UpdateSupplierDto>().ReverseMap();
 
-
-            CreateMap<BranchProduct, BranchProductDto>();
-            CreateMap<BranchProductDto, BranchProduct>();
-
+            CreateMap<BranchProduct, BranchProductDto>().ReverseMap();
+            CreateMap<BranchProduct, AddBranchProductDto>().ReverseMap();
+            CreateMap<BranchProduct, UpdateBranchProductDto>().ReverseMap();
+            CreateMap<BranchProduct, UpdateBranchProductDto>().ReverseMap();
 
         }
     }
