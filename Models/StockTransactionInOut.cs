@@ -19,16 +19,14 @@ namespace Pacifica.API.Models
 
         public string Remarks { get; set; } = string.Empty;  // Additional transaction notes
 
-        
         //Navigation 
         [Required]
         public int ProductId { get; set; }  // Product involved in the transaction
         public Product? Product { get; set; }  // Navigation property for Product
 
         [Required]
-        public int TransactionTypeId { get; set; }  // Type of the transaction (e.g., In, Out)
-        public TransactionType? TransactionType { get; set; }  // Navigation property for TransactionType
-
+        public StockTransactionType StockTransactionType { get; set; }  // Type of the transaction (e.g., In, Out)
+        
         [Required]
         public int TransactionReferenceId { get; set; }  // Reference ID (e.g., Sales Order)
         public TransactionReference? TransactionReference { get; set; }  // Navigation property for TransactionReference

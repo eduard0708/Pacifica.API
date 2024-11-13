@@ -1,5 +1,7 @@
 global using Pacifica.API.Models; 
 global using Pacifica.API.Helper;
+global using Pacifica.API.Data;
+global using AutoMapper;
 
 
 using System.Text;
@@ -7,7 +9,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Pacifica.API.Data;
 using Pacifica.API.Mapper;
 using Pacifica.API.Services.BranchProductService;
 using Pacifica.API.Services.BranchService;
@@ -15,7 +16,6 @@ using Pacifica.API.Services.CategoryService;
 using Pacifica.API.Services.ProductService;
 using Pacifica.API.Services.SupplierService;
 using Pacifica.API.Services.TransactionReferenceService;
-using Pacifica.API.Services.TransactionTypeService;
 using Pacifica.API.Services.AuthService;
 using Pacifica.API.Services.EmployeeService;
 using Pacifica.API.Services.RoleService;
@@ -46,7 +46,6 @@ builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<ITransactionTypeService, TransactionTypeService>();
 builder.Services.AddScoped<ITransactionReferenceService, TransactionReferenceService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBranchService, BranchService>();  

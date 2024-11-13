@@ -5,8 +5,8 @@ using Pacifica.API.Dtos.Category;
 using Pacifica.API.Dtos.Product;
 using Pacifica.API.Dtos.Supplier;
 using Pacifica.API.Dtos.TransactionReference;
-using Pacifica.API.Dtos.TransactionType;
 using Pacifica.API.Dtos.Admin;
+using Pacifica.API.Dtos.StockTransactionInOut;
 
 namespace Pacifica.API.Mapper
 {
@@ -18,10 +18,6 @@ namespace Pacifica.API.Mapper
             CreateMap<EmployeeProfile, EmployeeProfileDto>().ReverseMap();
             CreateMap<LoginDto, Employee>().ReverseMap();
             CreateMap<RegisterDto, Employee>().ReverseMap();
-
-            CreateMap<TransactionType, TransactionTypeDto>().ReverseMap();
-            CreateMap<TransactionType, CreateTransactionTypeDto>().ReverseMap();
-            CreateMap<TransactionType, UpdateTransactionTypeDto>().ReverseMap();
 
             CreateMap<TransactionReference, TransactionReferenceDto>().ReverseMap();
             CreateMap<TransactionReference, CreateTransactionReferenceDto>().ReverseMap();
@@ -47,6 +43,9 @@ namespace Pacifica.API.Mapper
             CreateMap<BranchProduct, AddBranchProductDto>().ReverseMap();
             CreateMap<BranchProduct, UpdateBranchProductDto>().ReverseMap();
             CreateMap<BranchProduct, UpdateBranchProductDto>().ReverseMap();
+
+            CreateMap<StockTransactionInOut, CreateStockTransactionInOutDto>().ReverseMap();
+
 
         }
     }

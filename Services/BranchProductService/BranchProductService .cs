@@ -39,7 +39,7 @@ namespace Pacifica.API.Services.BranchProductService
                 var listBranchProducts = await _context.BranchProducts
                     .Where(bp => bp.BranchId == branchId)  // Filter by branch ID
                     .Include(bp => bp.Product)             // Include Product
-                        .ThenInclude(p => p.Category)      // Include Category within Product
+                        .ThenInclude(p => p!.Category)      // Include Category within Product
                     .ToListAsync();
 
                 var branch = await _context.Branches.FindAsync(branchId);
@@ -57,24 +57,6 @@ namespace Pacifica.API.Services.BranchProductService
                     SKU = bp.SKU,
                     IsActive = bp.IsActive
                 }).ToList();
-
-                // var branch = await _context.Branches.FindAsync(branchId);
-                // var product = await _context.Products.Include(c => c.Category).FirstOrDefaultAsync(p => p.Id == branchId);
-                // var branchProduct = await _context.BranchProducts.FindAsync(branchId);
-
-                // var responseDto = new GetAllBranchProductResponseDto
-                // {
-                //     BranchId = branch!.Id,
-                //     BranchName = branch.BranchName,
-                //     ProductId = product!.Id,  // Include full product details
-                //     ProductName = product.ProductName,  // Include full product details
-                //     ProductCategory = product!.Category!.CategoryName,
-                //     CostPrice = branchProduct!.CostPrice,
-                //     RetailPrice = branchProduct.RetailPrice,
-                //     StockQuantity = branchProduct.StockQuantity,
-                //     SKU = branchProduct.SKU,
-                //     IsActive = branchProduct.IsActive
-                // };
 
                 return new ApiResponse<IEnumerable<GetAllBranchProductResponseDto>>
                 {
