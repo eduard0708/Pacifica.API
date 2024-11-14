@@ -19,9 +19,9 @@ using Pacifica.API.Services.AuthService;
 using Pacifica.API.Services.EmployeeService;
 using Pacifica.API.Services.RoleService;
 using Pacifica.API.Services.TokenService;
-using Pacifica.API.Services.StockTransactionServiceInout;
 using Pacifica.API.Services.TransactionTypeService;
 using Pacifica.API.Services.ProductStatusService;
+using Pacifica.API.Services.StockTransactionServiceInOut;
 
 var builder = WebApplication.CreateBuilder(args);
 

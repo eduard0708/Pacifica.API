@@ -6,6 +6,12 @@ namespace Pacifica.API.Dtos.StockTransactionInOut
     {
 
         [Required]
+        public int BranchId { get; set; }
+
+        [Required]
+        public int TransactionTypeId { get; set; }
+
+        [Required]
         public int StockQuantity { get; set; }
 
         [Required]
@@ -19,18 +25,12 @@ namespace Pacifica.API.Dtos.StockTransactionInOut
         public int ProductId { get; set; }
 
         [Required]
-        public StockTransactionType TransactionType { get; set; }
-
-        [Required]
         public int TransactionReferenceId { get; set; }
-
-        [Required]
-        public int BranchId { get; set; }
 
         [Required]
         public bool IsActive { get; set; } = true;
 
-         public string? CreatedBy { get; set; }
-    
+        public string? CreatedBy { get; set; }
+
     }
 }

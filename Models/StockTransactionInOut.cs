@@ -25,7 +25,7 @@ namespace Pacifica.API.Models
         public Product? Product { get; set; }  // Navigation property for Product
 
         [Required]
-        public StockTransactionType StockTransactionType { get; set; }  // Type of the transaction (e.g., In, Out)
+        public int StockTransactionType { get; set; }  // Type of the transaction (e.g., In, Out)
         
         [Required]
         public int TransactionReferenceId { get; set; }  // Reference ID (e.g., Sales Order)

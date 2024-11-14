@@ -7,7 +7,7 @@ namespace Pacifica.API.Dtos.StockTransactionInOut
         public int ProductId { get; set; }
         public int ReferenceNumber { get; set; }
         public int TransactionNumber { get; set; }
-        public StockTransactionType TransactionTypeId { get; set; }
+        public int TransactionTypeId { get; set; }
         public string? TransactionTypeName { get; set; }
 
         public int StockQuantity { get; set; }

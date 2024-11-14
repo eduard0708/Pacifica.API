@@ -1,4 +1,3 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Pacifica.API.Dtos.TransactionReference;
 using Pacifica.API.Services.TransactionTypeService;
