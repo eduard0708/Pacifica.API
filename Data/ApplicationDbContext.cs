@@ -21,7 +21,7 @@ namespace Pacifica.API.Data
             public DbSet<StockTransactionInOut> StockTransactionInOuts { get; set; }
             public DbSet<Supplier> Suppliers { get; set; }
             public DbSet<TransactionReference> TransactionReferences { get; set; }
-            // public DbSet<TransactionType> TransactionTypes { get; set; }
+            public DbSet<TransactionType> TransactionTypes { get; set; }
       //   public object StockTransactions { get; internal set; }
 
         // Configurations for model building
@@ -153,11 +153,11 @@ namespace Pacifica.API.Data
                         entity.Property(tr => tr.IsActive).HasDefaultValue(true);
                   });
 
-                  // modelBuilder.Entity<TransactionType>(entity =>
-                  // {
-                  //       entity.Property(tt => tt.CreatedAt).HasDefaultValueSql("GETDATE()");
-                  //       entity.Property(tt => tt.IsActive).HasDefaultValue(true);
-                  // });
+                  modelBuilder.Entity<TransactionType>(entity =>
+                  {
+                        entity.Property(tt => tt.CreatedAt).HasDefaultValueSql("GETDATE()");
+                        entity.Property(tt => tt.IsActive).HasDefaultValue(true);
+                  });
 
                   // Configure StockTransactionInOut entity
                   modelBuilder.Entity<StockTransactionInOut>(entity =>
@@ -181,10 +181,10 @@ namespace Pacifica.API.Data
                         .HasForeignKey(st => st.TransactionReferenceId)
                         .OnDelete(DeleteBehavior.Restrict); // Add delete behavior as needed
 
-                        // entity.HasOne(st => st.TransactionType)
-                        // .WithMany(b => b.StockTransactionInOuts)
-                        // .HasForeignKey(st => st.TransactionTypeId)
-                        // .OnDelete(DeleteBehavior.Restrict); // Add delete behavior as needed
+                        entity.HasOne(st => st.TransactionType)
+                        .WithMany(b => b.StockTransactionInOuts)
+                        .HasForeignKey(st => st.TransactionTypeId)
+                        .OnDelete(DeleteBehavior.Restrict); // Add delete behavior as needed
 
                                     // Configure common audit fields
                         entity.Property(st => st.CreatedAt).HasDefaultValueSql("GETDATE()");

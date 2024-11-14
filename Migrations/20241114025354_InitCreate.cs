@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Pacifica.API.Migrations
 {
     /// <inheritdoc />
-    public partial class INitCreate : Migration
+    public partial class InitCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -151,6 +151,26 @@ namespace Pacifica.API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TransactionReferences", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TransactionTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TransactionTypeName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TransactionTypes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -439,6 +459,7 @@ namespace Pacifica.API.Migrations
                     ProductId = table.Column<int>(type: "int", nullable: false),
                     StockTransactionType = table.Column<int>(type: "int", nullable: false),
                     TransactionReferenceId = table.Column<int>(type: "int", nullable: false),
+                    TransactionTypeId = table.Column<int>(type: "int", nullable: false),
                     BranchId = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -466,6 +487,12 @@ namespace Pacifica.API.Migrations
                         name: "FK_StockTransactionInOuts_TransactionReferences_TransactionReferenceId",
                         column: x => x.TransactionReferenceId,
                         principalTable: "TransactionReferences",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_StockTransactionInOuts_TransactionTypes_TransactionTypeId",
+                        column: x => x.TransactionTypeId,
+                        principalTable: "TransactionTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -561,6 +588,11 @@ namespace Pacifica.API.Migrations
                 name: "IX_StockTransactionInOuts_TransactionReferenceId",
                 table: "StockTransactionInOuts",
                 column: "TransactionReferenceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StockTransactionInOuts_TransactionTypeId",
+                table: "StockTransactionInOuts",
+                column: "TransactionTypeId");
         }
 
         /// <inheritdoc />
@@ -607,6 +639,9 @@ namespace Pacifica.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "TransactionReferences");
+
+            migrationBuilder.DropTable(
+                name: "TransactionTypes");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

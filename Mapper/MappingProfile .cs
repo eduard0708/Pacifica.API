@@ -23,6 +23,10 @@ namespace Pacifica.API.Mapper
             CreateMap<TransactionReference, CreateTransactionReferenceDto>().ReverseMap();
             CreateMap<TransactionReference, UpdateTransactionReferenceDto>().ReverseMap();
 
+            CreateMap<TransactionType, TransactionTypeDto>().ReverseMap();
+            CreateMap<TransactionType, CreateTransactionTypeDto>().ReverseMap();
+            CreateMap<TransactionType, UpdateTransactionTypeDto>().ReverseMap();
+
             CreateMap<Category, CategoryDto>().ReverseMap();
             CreateMap<Category, UpdateCategoryDto>().ReverseMap();
             CreateMap<Category, CreateCategoryDto>().ReverseMap();
@@ -46,9 +50,9 @@ namespace Pacifica.API.Mapper
 
             CreateMap<StockTransactionInOut, CreateStockTransactionInOutDto>().ReverseMap();
 
-             CreateMap<StockTransactionInOut, GetStockTransactionInOutDto>();
+            CreateMap<StockTransactionInOut, GetStockTransactionInOutDto>();
             CreateMap<CreateStockTransactionInOutDto, StockTransactionInOut>();
-              CreateMap<GetByReferenceNumberStockTransactionInOutDto, StockTransactionInOut>().ReverseMap();
+            CreateMap<GetByReferenceNumberStockTransactionInOutDto, StockTransactionInOut>().ReverseMap();
 
 
         }

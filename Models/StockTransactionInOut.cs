@@ -30,6 +30,10 @@ namespace Pacifica.API.Models
         [Required]
         public int TransactionReferenceId { get; set; }  // Reference ID (e.g., Sales Order)
         public TransactionReference? TransactionReference { get; set; }  // Navigation property for TransactionReference
+          
+        [Required]
+        public int TransactionTypeId { get; set; }  // Reference ID (e.g., Sales Order)
+        public TransactionType? TransactionType { get; set; }  // Navigation property for TransactionReference
 
         [Required]
         public int BranchId { get; set; } 
