@@ -1,6 +1,6 @@
 namespace Pacifica.API.Dtos.Product
 {
-    public class UpdateProductDto
+    public class GetFilterProductDto
     {
         public string? ProductName { get; set; }
         public string? SKU { get; set; }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Pacifica.API.Dtos.BranchProduct;
 using Pacifica.API.Dtos.Product;
 using Pacifica.API.Services.ProductService;
 
@@ -105,5 +106,25 @@ namespace Pacifica.API.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("GetFilteredProducts")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<GetFilter_Products>>>> GetFilteredProducts(
+              [FromQuery] string? category = null,
+              [FromQuery] string? sku = null,
+              [FromQuery] string? productStatus = null,
+              [FromQuery] string? productName = null)
+
+        {
+            var response = await _productService.GetFilterProductsAsync(category, sku, productStatus, productName);
+
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+
     }
 }

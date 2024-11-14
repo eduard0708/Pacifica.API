@@ -3,7 +3,7 @@ using Pacifica.API.Dtos.BranchProduct;
 using Pacifica.API.Services.BranchProductService;
 
 namespace Pacifica.API.Controllers
-{    
+{
     //[ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
@@ -58,5 +58,22 @@ namespace Pacifica.API.Controllers
                 Data = response.Data
             });
         }
+
+        [HttpGet("GetFilteredProducts")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<GetBranchProductFilterSupplierCategorySKUDto>>>> GetFilteredProducts(
+          [FromQuery] int branchId,
+          [FromQuery] string? productCategory = null,
+          [FromQuery] string? sku = null)
+        {
+            var response = await _branchProductService.GetProductsFilteredByBranchAsync(branchId, productCategory, sku);
+
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
     }
 }

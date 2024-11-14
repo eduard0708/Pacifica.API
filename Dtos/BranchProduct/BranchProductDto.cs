@@ -9,5 +9,7 @@ namespace Pacifica.API.Dtos.BranchProduct
         public int StockQuantity { get; set; }
       
         public bool IsActive { get; set; } = true;
+
+        
     }
 }

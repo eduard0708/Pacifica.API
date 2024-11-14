@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Pacifica.API.Dtos.BranchProduct;
 
 namespace Pacifica.API.Services.ProductService
 {
@@ -12,5 +9,6 @@ namespace Pacifica.API.Services.ProductService
         Task<ApiResponse<Product>> CreateProductAsync(Product product);
         Task<ApiResponse<Product>> UpdateProductAsync(int id, Product product);
         Task<ApiResponse<bool>> DeleteProductAsync(int id);
+        Task<ApiResponse<IEnumerable<GetFilter_Products>>> GetFilterProductsAsync(string? category = null, string? sku = null, string? productStatus = null, string? productName = null);
     }
 }

@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Pacifica.API.Data;
+using Pacifica.API.Dtos.BranchProduct;
 using Pacifica.API.Models; // Assuming you have a Models namespace
 
 namespace Pacifica.API.Services.ProductService
@@ -136,10 +137,7 @@ namespace Pacifica.API.Services.ProductService
 
                 // Update fields
                 existingProduct.ProductName = product.ProductName;
-                // existingProduct.CostPrice = product.CostPrice;
-                // existingProduct.RetailPrice = product.RetailPrice;
-                // existingProduct.StockQuantity = product.StockQuantity;
-                 existingProduct.SKU = product.SKU;
+                existingProduct.SKU = product.SKU;
                 existingProduct.ReorderLevel = product.ReorderLevel;
                 existingProduct.MinStockLevel = product.MinStockLevel;
                 existingProduct.ProductStatus = product.ProductStatus;
@@ -167,43 +165,93 @@ namespace Pacifica.API.Services.ProductService
                 };
             }
         }
-
-        public async Task<ApiResponse<bool>> DeleteProductAsync(int id)
+        public async Task<ApiResponse<IEnumerable<GetFilter_Products>>> GetFilterProductsAsync(string? category = null, string? sku = null, string? productStatus = null, string? productName = null)
         {
             try
             {
-                var product = await _context.Products.FindAsync(id);
-                if (product == null || product.DeletedAt != null)
+                // Start with filtering products by DeletedAt and optional filters
+                var productQuery = _context.Products
+                    .Where(p => p.DeletedAt == null);
+
+                // Apply filters for Category, SKU, ProductStatus, and ProductName if provided
+                if (!string.IsNullOrEmpty(category))
                 {
-                    return new ApiResponse<bool>
+                    productQuery = productQuery.Where(p => p.Category!.CategoryName!.Contains(category));
+                }
+
+                if (!string.IsNullOrEmpty(sku))
+                {
+                    productQuery = productQuery.Where(p => p.SKU.Contains(sku));
+                }
+
+                if (!string.IsNullOrEmpty(productStatus))
+                {
+                    productQuery = productQuery.Where(p => p.ProductStatus.Contains(productStatus));
+                }
+
+                if (!string.IsNullOrEmpty(productName))
+                {
+                    productQuery = productQuery.Where(p => p.ProductName.Contains(productName));
+                }
+
+                productQuery = productQuery
+                    .Include(p => p.Category)
+                    .Include(p => p.Supplier);
+
+                // Fetch the filtered products
+                var products = await productQuery.ToListAsync();
+
+                if (!products.Any())
+                {
+                    return new ApiResponse<IEnumerable<GetFilter_Products>>
                     {
                         Success = false,
-                        Message = "Product not found or already deleted.",
-                        Data = false
+                        Message = "No products found matching the filter criteria.",
+                        Data = null
                     };
                 }
 
-                product.DeletedAt = DateTime.Now;  // Soft delete
-                _context.Products.Update(product);
-                await _context.SaveChangesAsync();
+                // Map to Product_ProductDto
+                var responseDtos = products.Select(p => new GetFilter_Products
+                {
+                    Id = p.Id,
+                    ProductName = p.ProductName,
+                    SKU = p.SKU,
+                    Category = new Product_CategoryDto
+                    {
+                        Id = p.CategoryId,
+                        Category = p.Category?.CategoryName ?? "Unknown",
+                        Description = p.Category?.Description ?? "No Description"
+                    },
+                    Status = new Product_StatusDto
+                    {
+                        Status = p.ProductStatus
+                    }
+                }).ToList();
 
-                return new ApiResponse<bool>
+                return new ApiResponse<IEnumerable<GetFilter_Products>>
                 {
                     Success = true,
-                    Message = "Product deleted successfully.",
-                    Data = true
+                    Message = "Filtered products retrieved successfully.",
+                    Data = responseDtos
                 };
             }
             catch (Exception ex)
             {
-                // Log exception
-                return new ApiResponse<bool>
+                return new ApiResponse<IEnumerable<GetFilter_Products>>
                 {
                     Success = false,
-                    Message = $"Error deleting product: {ex.Message}",
-                    Data = false
+                    Message = $"Error occurred while fetching filtered products: {ex.Message}",
+                    Data = null
                 };
             }
         }
+
+        public Task<ApiResponse<bool>> DeleteProductAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+
     }
 }
