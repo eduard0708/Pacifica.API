@@ -54,7 +54,7 @@ namespace Pacifica.API.Services.BranchProductService
                     CostPrice = bp.CostPrice,
                     RetailPrice = bp.RetailPrice,
                     StockQuantity = bp.StockQuantity,
-                    SKU = bp.SKU,
+                    // SKU = bp.SKU,
                     IsActive = bp.IsActive
                 }).ToList();
 
@@ -129,7 +129,7 @@ namespace Pacifica.API.Services.BranchProductService
                     CostPrice = branchProduct.CostPrice,
                     RetailPrice = branchProduct.RetailPrice,
                     StockQuantity = branchProduct.StockQuantity,
-                    SKU = branchProduct.SKU,
+                    // SKU = branchProduct.SKU,
                     IsActive = branchProduct.IsActive
                 };
 

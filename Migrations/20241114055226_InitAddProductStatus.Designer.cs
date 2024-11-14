@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pacifica.API.Data;
 
@@ -11,9 +12,11 @@ using Pacifica.API.Data;
 namespace Pacifica.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241114055226_InitAddProductStatus")]
+    partial class InitAddProductStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -278,7 +281,7 @@ namespace Pacifica.API.Migrations
                             Id = 1,
                             BranchLocation = "",
                             BranchName = "Roxas Center",
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(238),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 340, DateTimeKind.Local).AddTicks(4638),
                             IsActive = true
                         },
                         new
@@ -286,7 +289,7 @@ namespace Pacifica.API.Migrations
                             Id = 2,
                             BranchLocation = "",
                             BranchName = "Kalibo Toting Reyes",
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(762),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 340, DateTimeKind.Local).AddTicks(5263),
                             IsActive = true
                         },
                         new
@@ -294,7 +297,7 @@ namespace Pacifica.API.Migrations
                             Id = 3,
                             BranchLocation = "",
                             BranchName = "Iloilo Valeria",
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(765),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 340, DateTimeKind.Local).AddTicks(5266),
                             IsActive = true
                         },
                         new
@@ -302,7 +305,7 @@ namespace Pacifica.API.Migrations
                             Id = 4,
                             BranchLocation = "",
                             BranchName = "Antique",
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(766),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 340, DateTimeKind.Local).AddTicks(5267),
                             IsActive = true
                         },
                         new
@@ -310,7 +313,7 @@ namespace Pacifica.API.Migrations
                             Id = 5,
                             BranchLocation = "",
                             BranchName = "Iloilo Super Market",
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(767),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 340, DateTimeKind.Local).AddTicks(5268),
                             IsActive = true
                         });
                 });
@@ -412,35 +415,35 @@ namespace Pacifica.API.Migrations
                         {
                             Id = 1,
                             CategoryName = "Fish Foods",
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(1409),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 340, DateTimeKind.Local).AddTicks(5885),
                             IsActive = true
                         },
                         new
                         {
                             Id = 2,
                             CategoryName = "Aquarium Accessories",
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(1853),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 340, DateTimeKind.Local).AddTicks(6314),
                             IsActive = true
                         },
                         new
                         {
                             Id = 3,
                             CategoryName = "Hog Feeds",
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(1856),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 340, DateTimeKind.Local).AddTicks(6316),
                             IsActive = true
                         },
                         new
                         {
                             Id = 4,
                             CategoryName = "Chicken Feeds",
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(1857),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 340, DateTimeKind.Local).AddTicks(6317),
                             IsActive = true
                         },
                         new
                         {
                             Id = 5,
                             CategoryName = "Bird Feeds",
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(1857),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 340, DateTimeKind.Local).AddTicks(6318),
                             IsActive = true
                         });
                 });
@@ -753,7 +756,7 @@ namespace Pacifica.API.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(5353),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 340, DateTimeKind.Local).AddTicks(8917),
                             DateAdded = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true,
                             LastUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -768,7 +771,7 @@ namespace Pacifica.API.Migrations
                         {
                             Id = 2,
                             CategoryId = 2,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(6666),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 341, DateTimeKind.Local).AddTicks(376),
                             DateAdded = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true,
                             LastUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -783,7 +786,7 @@ namespace Pacifica.API.Migrations
                         {
                             Id = 3,
                             CategoryId = 3,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(6670),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 341, DateTimeKind.Local).AddTicks(380),
                             DateAdded = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true,
                             LastUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -798,7 +801,7 @@ namespace Pacifica.API.Migrations
                         {
                             Id = 4,
                             CategoryId = 4,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(6671),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 341, DateTimeKind.Local).AddTicks(381),
                             DateAdded = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = true,
                             LastUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -813,7 +816,7 @@ namespace Pacifica.API.Migrations
                         {
                             Id = 5,
                             CategoryId = 5,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(6673),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 341, DateTimeKind.Local).AddTicks(383),
                             DateAdded = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             IsActive = false,
                             LastUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -869,24 +872,6 @@ namespace Pacifica.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ProductStatuses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(3381),
-                            Description = "",
-                            IsActive = true,
-                            ProductStatusName = "Available"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(3810),
-                            Description = "",
-                            IsActive = true,
-                            ProductStatusName = "OutOfStock"
-                        });
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.StockTransactionInOut", b =>
@@ -1014,35 +999,35 @@ namespace Pacifica.API.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(2380),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 340, DateTimeKind.Local).AddTicks(6831),
                             IsActive = true,
                             SupplierName = "AKFF AKWARYUM PETS"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(2810),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 340, DateTimeKind.Local).AddTicks(7242),
                             IsActive = true,
                             SupplierName = "AQUA GOLD TRADING/AQUATINUM CORP"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(2813),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 340, DateTimeKind.Local).AddTicks(7244),
                             IsActive = true,
                             SupplierName = "ASVET INC."
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(2814),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 340, DateTimeKind.Local).AddTicks(7245),
                             IsActive = true,
                             SupplierName = "BELMAN LABORATORIES"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(2814),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 340, DateTimeKind.Local).AddTicks(7246),
                             IsActive = true,
                             SupplierName = "GENERAL ANIMAL FEED & NUTRITION"
                         });
@@ -1096,7 +1081,7 @@ namespace Pacifica.API.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 91, DateTimeKind.Local).AddTicks(8794),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 338, DateTimeKind.Local).AddTicks(3107),
                             Description = "",
                             IsActive = true,
                             TransactionReferenceName = "Supplier Delivery (BMEG)"
@@ -1104,7 +1089,7 @@ namespace Pacifica.API.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 93, DateTimeKind.Local).AddTicks(4581),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 339, DateTimeKind.Local).AddTicks(9373),
                             Description = "",
                             IsActive = true,
                             TransactionReferenceName = "Branch Sales Transaction"
@@ -1112,7 +1097,7 @@ namespace Pacifica.API.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 93, DateTimeKind.Local).AddTicks(4592),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 339, DateTimeKind.Local).AddTicks(9385),
                             Description = "",
                             IsActive = true,
                             TransactionReferenceName = "Branch Transfer-In"
@@ -1120,7 +1105,7 @@ namespace Pacifica.API.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 93, DateTimeKind.Local).AddTicks(4593),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 339, DateTimeKind.Local).AddTicks(9387),
                             Description = "",
                             IsActive = true,
                             TransactionReferenceName = "Branch Transfer-Out"
@@ -1175,7 +1160,7 @@ namespace Pacifica.API.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(4373),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 340, DateTimeKind.Local).AddTicks(7872),
                             Description = "",
                             IsActive = true,
                             TransactionTypeName = "Transaction Stock-In"
@@ -1183,7 +1168,7 @@ namespace Pacifica.API.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(4794),
+                            CreatedAt = new DateTime(2024, 11, 14, 8, 52, 25, 340, DateTimeKind.Local).AddTicks(8354),
                             Description = "",
                             IsActive = true,
                             TransactionTypeName = "Transaction Stock-Out"

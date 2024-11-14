@@ -27,6 +27,10 @@ namespace Pacifica.API.Mapper
             CreateMap<TransactionType, CreateTransactionTypeDto>().ReverseMap();
             CreateMap<TransactionType, UpdateTransactionTypeDto>().ReverseMap();
 
+            CreateMap<ProductStatus, ProductStatusDto>().ReverseMap();
+            CreateMap<ProductStatus, UpdateProductStatusDto>().ReverseMap();
+            CreateMap<ProductStatus, CreateTransactionTypeDto>().ReverseMap();
+
             CreateMap<Category, CategoryDto>().ReverseMap();
             CreateMap<Category, UpdateCategoryDto>().ReverseMap();
             CreateMap<Category, CreateCategoryDto>().ReverseMap();

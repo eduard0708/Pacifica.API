@@ -11,5 +11,8 @@ namespace Pacifica.API.Dtos.Product
         public int CategoryId { get; set; }
         public int SupplierId { get; set; }
         public bool IsActive { get; set; }
+        public string? CreatedBy { get; set; }
+
+
     }
 }

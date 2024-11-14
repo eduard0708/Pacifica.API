@@ -19,6 +19,14 @@ namespace Pacifica.API.Models
         // Navigation property to the associated Product entity
         public Product? Product { get; set; }
 
+          // Foreign Key to the Product entity (Many-to-One relationship)
+        [Required(ErrorMessage = "Product ID is required.")]
+        public int ProductStatusId { get; set; }
+
+        // Navigation property to the associated ProductStatus entity
+        public ProductStatus? ProductStatus { get; set; }
+
+
         // Cost Price of the product in the branch (Required field)
         [Required(ErrorMessage = "Cost price is required.")]
         [Range(0, double.MaxValue, ErrorMessage = "Cost price must be a positive value.")]
@@ -36,10 +44,6 @@ namespace Pacifica.API.Models
         [Range(0, int.MaxValue, ErrorMessage = "Stock quantity cannot be negative.")]
         public int StockQuantity { get; set; }
 
-        // SKU (Stock Keeping Unit) for the product (Required and unique within the branch)
-        [Required(ErrorMessage = "SKU is required.")]
-        [MaxLength(50, ErrorMessage = "SKU cannot exceed 50 characters.")]
-        public string SKU { get; set; } = string.Empty;
 
         // Audit Fields
 

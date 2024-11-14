@@ -136,10 +136,10 @@ namespace Pacifica.API.Services.ProductService
 
                 // Update fields
                 existingProduct.ProductName = product.ProductName;
-                existingProduct.CostPrice = product.CostPrice;
-                existingProduct.RetailPrice = product.RetailPrice;
-                existingProduct.StockQuantity = product.StockQuantity;
-                existingProduct.SKU = product.SKU;
+                // existingProduct.CostPrice = product.CostPrice;
+                // existingProduct.RetailPrice = product.RetailPrice;
+                // existingProduct.StockQuantity = product.StockQuantity;
+                 existingProduct.SKU = product.SKU;
                 existingProduct.ReorderLevel = product.ReorderLevel;
                 existingProduct.MinStockLevel = product.MinStockLevel;
                 existingProduct.ProductStatus = product.ProductStatus;

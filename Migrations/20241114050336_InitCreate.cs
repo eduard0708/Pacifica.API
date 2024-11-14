@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Pacifica.API.Migrations
 {
     /// <inheritdoc />
@@ -331,9 +333,6 @@ namespace Pacifica.API.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProductName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    CostPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    RetailPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    StockQuantity = table.Column<int>(type: "int", nullable: false),
                     SKU = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     DateAdded = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastUpdated = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -420,7 +419,6 @@ namespace Pacifica.API.Migrations
                     CostPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     RetailPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     StockQuantity = table.Column<int>(type: "int", nullable: false),
-                    SKU = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -495,6 +493,62 @@ namespace Pacifica.API.Migrations
                         principalTable: "TransactionTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Branches",
+                columns: new[] { "Id", "BranchLocation", "BranchName", "CreatedAt", "CreatedBy", "DeletedAt", "IsActive", "UpdatedAt", "UpdatedBy" },
+                values: new object[,]
+                {
+                    { 1, "", "Roxas Center", new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(6117), null, null, true, null, null },
+                    { 2, "", "Kalibo Toting Reyes", new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(6620), null, null, true, null, null },
+                    { 3, "", "Iloilo Valeria", new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(6623), null, null, true, null, null },
+                    { 4, "", "Antique", new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(6624), null, null, true, null, null },
+                    { 5, "", "Iloilo Super Market", new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(6624), null, null, true, null, null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "Id", "CategoryName", "CreatedAt", "CreatedBy", "DeletedAt", "Description", "IsActive", "UpdatedAt", "UpdatedBy" },
+                values: new object[,]
+                {
+                    { 1, "Fish Foods", new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(7232), null, null, null, true, null, null },
+                    { 2, "Aquarium Accessories", new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(7671), null, null, null, true, null, null },
+                    { 3, "Hog Feeds", new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(7674), null, null, null, true, null, null },
+                    { 4, "Chicken Feeds", new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(7675), null, null, null, true, null, null },
+                    { 5, "Bird Feeds", new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(7676), null, null, null, true, null, null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Suppliers",
+                columns: new[] { "Id", "ContactNumber", "ContactPerson", "CreatedAt", "CreatedBy", "DeletedAt", "IsActive", "SupplierName", "UpdatedAt", "UpdatedBy" },
+                values: new object[,]
+                {
+                    { 1, null, null, new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(8184), null, null, true, "AKFF AKWARYUM PETS", null, null },
+                    { 2, null, null, new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(8688), null, null, true, "AQUA GOLD TRADING/AQUATINUM CORP", null, null },
+                    { 3, null, null, new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(8691), null, null, true, "ASVET INC.", null, null },
+                    { 4, null, null, new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(8692), null, null, true, "BELMAN LABORATORIES", null, null },
+                    { 5, null, null, new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(8692), null, null, true, "GENERAL ANIMAL FEED & NUTRITION", null, null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "TransactionReferences",
+                columns: new[] { "Id", "CreatedAt", "CreatedBy", "DeletedAt", "Description", "IsActive", "TransactionReferenceName", "UpdatedAt", "UpdatedBy" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2024, 11, 14, 8, 3, 36, 289, DateTimeKind.Local).AddTicks(4691), null, null, "", true, "Supplier Delivery (BMEG)", null, null },
+                    { 2, new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(462), null, null, "", true, "Branch Sales Transaction", null, null },
+                    { 3, new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(472), null, null, "", true, "Branch Transfer-In", null, null },
+                    { 4, new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(473), null, null, "", true, "Branch Transfer-Out", null, null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "TransactionTypes",
+                columns: new[] { "Id", "CreatedAt", "CreatedBy", "DeletedAt", "Description", "IsActive", "TransactionTypeName", "UpdatedAt", "UpdatedBy" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(9248), null, null, "", true, "Transaction Stock-In", null, null },
+                    { 2, new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(9656), null, null, "", true, "Transaction Stock-Out", null, null }
                 });
 
             migrationBuilder.CreateIndex(

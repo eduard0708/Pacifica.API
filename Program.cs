@@ -20,6 +20,8 @@ using Pacifica.API.Services.EmployeeService;
 using Pacifica.API.Services.RoleService;
 using Pacifica.API.Services.TokenService;
 using Pacifica.API.Services.StockTransactionServiceInout;
+using Pacifica.API.Services.TransactionTypeService;
+using Pacifica.API.Services.ProductStatusService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,9 +31,12 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers(); // **This is the fix**
 
+
+
 // Adding the DbContext to the service container
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
+    ));
 
 // Registering Identity services for Employee
 builder.Services.AddIdentity<Employee, IdentityRole>()
@@ -50,6 +55,8 @@ builder.Services.AddScoped<ITransactionReferenceService, TransactionReferenceSer
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductStatusService, ProductStatusService>();
+builder.Services.AddScoped<ITransactionTypeService, TransactionTypeService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<IBranchProductService, BranchProductService>();
 builder.Services.AddScoped<IStockTransactionServiceInOut, StockTransactionServiceInOut>();

@@ -13,19 +13,19 @@ namespace Pacifica.API.Models
         [StringLength(255)]  // Limits the length of the ProductName
         public string ProductName { get; set; } = string.Empty;
 
-        // Cost price of the product (purchase price)
-        [Required]  // Ensures CostPrice is provided
-        [Column(TypeName = "decimal(18,2)")]  // Specifies decimal precision and scale
-        public decimal CostPrice { get; set; }
+        // // Cost price of the product (purchase price)
+        // [Required]  // Ensures CostPrice is provided
+        // [Column(TypeName = "decimal(18,2)")]  // Specifies decimal precision and scale
+        // public decimal CostPrice { get; set; }
 
-        // Retail price of the product (selling price)
-        [Required]  // Ensures RetailPrice is provided
-        [Column(TypeName = "decimal(18,2)")]  // Specifies decimal precision and scale
-        public decimal RetailPrice { get; set; }
+        // // Retail price of the product (selling price)
+        // [Required]  // Ensures RetailPrice is provided
+        // [Column(TypeName = "decimal(18,2)")]  // Specifies decimal precision and scale
+        // public decimal RetailPrice { get; set; }
 
-        // Quantity of the product in stock
-        [Required]  // Ensures StockQuantity is provided
-        public int StockQuantity { get; set; }
+        // // Quantity of the product in stock
+        // [Required]  // Ensures StockQuantity is provided
+        // public int StockQuantity { get; set; }
 
         // SKU (Stock Keeping Unit) identifier for the product
         [Required]  // Ensures SKU is provided
@@ -50,7 +50,7 @@ namespace Pacifica.API.Models
         // Status of the product (e.g., Available, Discontinued, Out of Stock)
         [Required]  // Ensures ProductStatus is provided
         [StringLength(50)]  // Limits the length of ProductStatus
-        public string ProductStatus { get; set; } = string.Empty;
+        public string ProductStatus { get; set; } = "Available";
 
         // Foreign Key: Relates the product to its category
         public int CategoryId { get; set; }

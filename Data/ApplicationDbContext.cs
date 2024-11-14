@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Pacifica.API.Data
 {
@@ -7,6 +8,13 @@ namespace Pacifica.API.Data
       {
             public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
             {
+            }
+
+            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            {
+                  // Ignore the PendingModelChangesWarning
+                  optionsBuilder
+                      .ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
             }
 
             // DbSets for entities
@@ -22,12 +30,17 @@ namespace Pacifica.API.Data
             public DbSet<Supplier> Suppliers { get; set; }
             public DbSet<TransactionReference> TransactionReferences { get; set; }
             public DbSet<TransactionType> TransactionTypes { get; set; }
-      //   public object StockTransactions { get; internal set; }
 
-        // Configurations for model building
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+            public DbSet<ProductStatus> ProductStatuses { get; set; }
+
+            //   public object StockTransactions { get; internal set; }
+
+            // Configurations for model building
+            protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
                   base.OnModelCreating(modelBuilder);
+
+
 
                   // Configure Employee entity
                   modelBuilder.Entity<Employee>(entity =>
@@ -118,6 +131,12 @@ namespace Pacifica.API.Data
                         .HasForeignKey(bp => bp.ProductId)
                         .OnDelete(DeleteBehavior.Cascade);
 
+                        
+                        entity.HasOne(bp => bp.ProductStatus)
+                        .WithMany(p => p.BranchProducts)
+                        .HasForeignKey(bp => bp.ProductId)
+                        .OnDelete(DeleteBehavior.Cascade);
+
                         entity.Property(bp => bp.CreatedAt).HasDefaultValueSql("GETDATE()");
                         entity.Property(bp => bp.IsActive).HasDefaultValue(true);
                   });
@@ -148,6 +167,13 @@ namespace Pacifica.API.Data
 
                   // Configure TransactionReference and TransactionType entities
                   modelBuilder.Entity<TransactionReference>(entity =>
+                  {
+                        entity.Property(tr => tr.CreatedAt).HasDefaultValueSql("GETDATE()");
+                        entity.Property(tr => tr.IsActive).HasDefaultValue(true);
+                  });
+
+                  // Configure ProductStatus  entities
+                  modelBuilder.Entity<ProductStatus>(entity =>
                   {
                         entity.Property(tr => tr.CreatedAt).HasDefaultValueSql("GETDATE()");
                         entity.Property(tr => tr.IsActive).HasDefaultValue(true);
@@ -186,7 +212,7 @@ namespace Pacifica.API.Data
                         .HasForeignKey(st => st.TransactionTypeId)
                         .OnDelete(DeleteBehavior.Restrict); // Add delete behavior as needed
 
-                                    // Configure common audit fields
+                        // Configure common audit fields
                         entity.Property(st => st.CreatedAt).HasDefaultValueSql("GETDATE()");
                         entity.Property(st => st.IsActive).HasDefaultValue(true);
                   });
@@ -198,6 +224,109 @@ namespace Pacifica.API.Data
                   modelBuilder.Entity<EmployeeBranch>().HasQueryFilter(eb => eb.DeletedAt == null);
                   modelBuilder.Entity<EmployeeProfile>().HasQueryFilter(ep => ep.DeletedAt == null);
                   modelBuilder.Entity<StockTransactionInOut>().HasQueryFilter(st => st.DeletedAt == null); // Exclude soft-deleted transactions
+
+                  // Seed data for TransactionReference
+                  modelBuilder.Entity<TransactionReference>().HasData(
+                      new TransactionReference { Id = 1, TransactionReferenceName = "Supplier Delivery (BMEG)" },
+                      new TransactionReference { Id = 2, TransactionReferenceName = "Branch Sales Transaction" },
+                      new TransactionReference { Id = 3, TransactionReferenceName = "Branch Transfer-In" },
+                      new TransactionReference { Id = 4, TransactionReferenceName = "Branch Transfer-Out" }
+                  );
+
+                  // Seed data for Branch
+                  modelBuilder.Entity<Branch>().HasData(
+                      new Branch { Id = 1, BranchName = "Roxas Center" },
+                      new Branch { Id = 2, BranchName = "Kalibo Toting Reyes" },
+                      new Branch { Id = 3, BranchName = "Iloilo Valeria" },
+                      new Branch { Id = 4, BranchName = "Antique" },
+                      new Branch { Id = 5, BranchName = "Iloilo Super Market" }
+                  );
+
+                  // Seed data for Category
+                  modelBuilder.Entity<Category>().HasData(
+                      new Category { Id = 1, CategoryName = "Fish Foods" },
+                      new Category { Id = 2, CategoryName = "Aquarium Accessories" },
+                      new Category { Id = 3, CategoryName = "Hog Feeds" },
+                      new Category { Id = 4, CategoryName = "Chicken Feeds" },
+                      new Category { Id = 5, CategoryName = "Bird Feeds" }
+                  );
+
+                  // Seed data for Supplier
+                  modelBuilder.Entity<Supplier>().HasData(
+                      new Supplier { Id = 1, SupplierName = "AKFF AKWARYUM PETS" },
+                      new Supplier { Id = 2, SupplierName = "AQUA GOLD TRADING/AQUATINUM CORP" },
+                      new Supplier { Id = 3, SupplierName = "ASVET INC." },
+                      new Supplier { Id = 4, SupplierName = "BELMAN LABORATORIES" },
+                      new Supplier { Id = 5, SupplierName = "GENERAL ANIMAL FEED & NUTRITION" }
+                  );
+
+                   // Seed data for ProductStatus
+                  modelBuilder.Entity<ProductStatus>().HasData(
+                      new ProductStatus { Id = 1, ProductStatusName = "Available" },
+                      new ProductStatus { Id = 2, ProductStatusName = "OutOfStock" }
+                  );
+
+                  // Seed data for TransactionType
+                  modelBuilder.Entity<TransactionType>().HasData(
+                      new TransactionType { Id = 1, TransactionTypeName = "Transaction Stock-In" },
+                      new TransactionType { Id = 2, TransactionTypeName = "Transaction Stock-Out" }
+                  );
+
+
+                  // Seed data for Product
+                  modelBuilder.Entity<Product>().HasData(
+                      new Product
+                      {
+                            Id = 1,
+                            ProductName = "Fish Food A",
+                            SKU = "SKU001",
+                            ProductStatus = "Available",
+                            CategoryId = 1,  // Linking to "Fish Foods"
+                            SupplierId = 1,  // Linking to "AKFF AKWARYUM PETS"
+                            IsActive = true
+                      },
+                      new Product
+                      {
+                            Id = 2,
+                            ProductName = "Aquarium Filter",
+                            SKU = "SKU002",
+                            ProductStatus = "OutOfStock",
+                            CategoryId = 2,  // Linking to "Aquarium Accessories"
+                            SupplierId = 2,  // Linking to "AQUA GOLD TRADING/AQUATINUM CORP"
+                            IsActive = true
+                      },
+                      new Product
+                      {
+                            Id = 3,
+                            ProductName = "Hog Feed B",
+                            SKU = "SKU003",
+                            ProductStatus = "Available",
+                            CategoryId = 3,  // Linking to "Hog Feeds"
+                            SupplierId = 3,  // Linking to "ASVET INC."
+                            IsActive = true
+                      },
+                      new Product
+                      {
+                            Id = 4,
+                            ProductName = "Chicken Feed C",
+                            SKU = "SKU004",
+                            ProductStatus = "Available",
+                            CategoryId = 4,  // Linking to "Chicken Feeds"
+                            SupplierId = 4,  // Linking to "BELMAN LABORATORIES"
+                            IsActive = true
+                      },
+                      new Product
+                      {
+                            Id = 5,
+                            ProductName = "Bird Feed D",
+                            SKU = "SKU005",
+                            ProductStatus = "OutOfStock",
+                            CategoryId = 5,  // Linking to "Bird Feeds"
+                            SupplierId = 5,  // Linking to "GENERAL ANIMAL FEED & NUTRITION"
+                            IsActive = false
+                      }
+                  );
+
             }
       }
 }

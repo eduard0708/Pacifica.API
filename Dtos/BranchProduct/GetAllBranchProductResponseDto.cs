@@ -1,3 +1,4 @@
+
 namespace Pacifica.API.Dtos.BranchProduct
 {
     public class GetAllBranchProductResponseDto
