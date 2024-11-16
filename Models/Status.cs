@@ -2,10 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Pacifica.API.Models
 {
-    public class ProductStatus
+    public class Status
     {
         public int Id { get; set; }  // Primary key
-        public string ProductStatusName { get; set; } = string.Empty;  // Name of the transaction (e.g., Received, Sold, Transferred)
+        public string StatusName { get; set; } = string.Empty;  // Name of the transaction (e.g., Received, Sold, Transferred)
         public string Description { get; set; } = string.Empty;  // Description of the transaction type
 
         // Navigation property

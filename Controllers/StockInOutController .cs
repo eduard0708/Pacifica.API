@@ -1,27 +1,26 @@
 using Microsoft.AspNetCore.Mvc;
-using Pacifica.API.Dtos.StockTransactionInOut;
-using Pacifica.API.Services.StockTransactionServiceInOut;
+using Pacifica.API.Dtos.StockInOut;
+using Pacifica.API.Services.StockInOutService;
 namespace Pacifica.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StockTransactionController : ControllerBase
+    public class StockInOutController : ControllerBase
     {
-        private readonly IStockTransactionServiceInOut _stockTransactionService;
+        private readonly IStockInOutService _stockInOutService;
         private readonly IMapper _mapper;
 
-        public StockTransactionController(IStockTransactionServiceInOut stockTransactionService, IMapper mapper)
+        public StockInOutController(IStockInOutService stockInOutService, IMapper mapper)
         {
-            _stockTransactionService = stockTransactionService;
+            _stockInOutService = stockInOutService;
             _mapper = mapper;
         }
 
 
         // POST: api/StockTransactionInOut/{transactionType}
-        [HttpPost("StockTransactionInOut/{transactionType}")]
+        [HttpPost]
         public async Task<ActionResult<ApiResponse<string>>> ProcessTransaction(
-            [FromRoute] int transactionType,
-            [FromBody] CreateStockTransactionInOutDto transaction)
+            [FromBody] CreateStockInOutDto transaction)
         {
             if (!ModelState.IsValid)
             {
@@ -36,7 +35,7 @@ namespace Pacifica.API.Controllers
             try
             {
                 // Pass transactionType to the service method if required
-                var response = await _stockTransactionService.ProcessTransactionAsync(transaction, transactionType);
+                var response = await _stockInOutService.CreateStockInOutAsync(transaction);
 
                 if (!response.Success)
                 {
@@ -67,10 +66,60 @@ namespace Pacifica.API.Controllers
         }
 
         // POST: api/StockTransactionInOut/{transactionType}
-        [HttpPost("AddListOfTransactionInOut/{transactionType}")]
-        public async Task<ActionResult<ApiResponse<string>>> AddListOfTransactionInOut(
-            [FromRoute] int transactionType,
-            [FromBody] List<CreateStockTransactionInOutDto> transactions)
+        // [HttpPost("CreateMultiple")]
+        // public async Task<ActionResult<ApiResponse<string>>> CreateStockInOut(
+        //     [FromBody] List<CreateStockTransactionInOutDto> transactions)
+        // {
+        //     if (!ModelState.IsValid)
+        //     {
+        //         return BadRequest(new ApiResponse<string>
+        //         {
+        //             Success = false,
+        //             Message = "Invalid transaction data.",
+        //             Data = null
+        //         });
+        //     }
+
+        //     try
+        //     {
+        //         // Loop through each transaction in the list
+        //         foreach (var transaction in transactions)
+        //         {
+        //             // Pass transactionType to the service method for each transaction
+        //             var response = await _stockInOutService.CreateStockInOutAsync(transaction);
+
+        //             if (!response.Success)
+        //             {
+        //                 return StatusCode(500, new ApiResponse<string>
+        //                 {
+        //                     Success = false,
+        //                     Message = response.Message,
+        //                     Data = null
+        //                 });
+        //             }
+        //         }
+
+        //         return Ok(new ApiResponse<string>
+        //         {
+        //             Success = true,
+        //             Message = "Transactions processed successfully.",
+        //             Data = null
+        //         });
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return BadRequest(new ApiResponse<string>
+        //         {
+        //             Success = false,
+        //             Message = ex.Message,
+        //             Data = null
+        //         });
+        //     }
+        // }
+
+        [HttpPost("CreateMultiple")]
+        public async Task<ActionResult<ApiResponse<string>>> CreateStockInOut(
+            [FromBody] List<CreateStockInOutDto> transactions)
         {
             if (!ModelState.IsValid)
             {
@@ -87,8 +136,8 @@ namespace Pacifica.API.Controllers
                 // Loop through each transaction in the list
                 foreach (var transaction in transactions)
                 {
-                    // Pass transactionType to the service method for each transaction
-                    var response = await _stockTransactionService.ProcessTransactionAsync(transaction, transactionType);
+                    // Check for the transaction existence and stock validity in the service
+                    var response = await _stockInOutService.CreateStockInOutAsync(transaction);
 
                     if (!response.Success)
                     {
@@ -120,64 +169,19 @@ namespace Pacifica.API.Controllers
         }
 
 
-        // // POST: api/StockTransactionInOut
-        // [HttpPost("StockTransactionInOut")]
-        // public async Task<ActionResult<ApiResponse<string>>> ProcessTransaction([FromBody] CreateStockTransactionInOutDto transaction)
-        // {
-        //     if (!ModelState.IsValid)
-        //     {
-        //         return BadRequest(new ApiResponse<string>
-        //         {
-        //             Success = false,
-        //             Message = "Invalid transaction data.",
-        //             Data = null
-        //         });
-        //     }
-
-        //     try
-        //     {
-        //         var response = await _stockTransactionService.ProcessTransactionAsync(transaction);
-
-        //         if (!response.Success)
-        //         {
-        //             return StatusCode(500, new ApiResponse<string>
-        //             {
-        //                 Success = false,
-        //                 Message = response.Message,
-        //                 Data = null
-        //             });
-        //         }
-
-        //         return Ok(new ApiResponse<string>
-        //         {
-        //             Success = true,
-        //             Message = "Transaction processed successfully.",
-        //             Data = null
-        //         });
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return BadRequest(new ApiResponse<string>
-        //         {
-        //             Success = false,
-        //             Message = ex.Message,
-        //             Data = null
-        //         });
-        //     }
-        // }
 
         // GET: api/StockTransaction/GetAllTransactions
-        [HttpGet("GetAllTransactions")]
-        public async Task<ActionResult<ApiResponse<List<GetStockTransactionInOutDto>>>> GetAllTransactions()
+        [HttpGet("GetAll")]
+        public async Task<ActionResult<ApiResponse<List<GetStockInOutDto>>>> GetAllTransactions()
         {
             try
             {
-                var response = await _stockTransactionService.GetAllTransactionsAsync();
+                var response = await _stockInOutService.GetAllTransactionsAsync();
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ApiResponse<List<GetStockTransactionInOutDto>>
+                return StatusCode(500, new ApiResponse<List<GetStockInOutDto>>
                 {
                     Success = false,
                     Message = $"Error retrieving transactions: {ex.Message}",
@@ -188,16 +192,16 @@ namespace Pacifica.API.Controllers
 
         // GET: api/StockTransaction/GetByReferenceNumber/{referenceNumber}
         [HttpGet("GetByReferenceNumber/{referenceNumber}")]
-        public async Task<ActionResult<ApiResponse<List<GetByReferenceNumberStockTransactionInOutDto>>>> GetByReferenceNumber(int referenceNumber)
+        public async Task<ActionResult<ApiResponse<List<GetByReferenceNumberStockInOutDto>>>> GetByReferenceNumber(int referenceNumber)
         {
             try
             {
                 // Call service method to retrieve the transaction by reference number
-                var transaction = await _stockTransactionService.GetTransactionByReferenceNumberAsync(referenceNumber);
+                var transaction = await _stockInOutService.GetTransactionByReferenceNumberAsync(referenceNumber);
 
                 if (!transaction.Success)
                 {
-                    return NotFound(new ApiResponse<List<GetByReferenceNumberStockTransactionInOutDto>>
+                    return NotFound(new ApiResponse<List<GetByReferenceNumberStockInOutDto>>
                     {
                         Success = false,
                         Message = "Transaction not found.",
@@ -208,7 +212,7 @@ namespace Pacifica.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ApiResponse<List<GetByReferenceNumberStockTransactionInOutDto>>
+                return StatusCode(500, new ApiResponse<List<GetByReferenceNumberStockInOutDto>>
                 {
                     Success = false,
                     Message = $"Error retrieving transaction: {ex.Message}",

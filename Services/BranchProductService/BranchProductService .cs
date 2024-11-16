@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Pacifica.API.Dtos.BranchProduct;
-using Pacifica.API.Dtos.Product;
 
 namespace Pacifica.API.Services.BranchProductService
 {
@@ -43,11 +42,13 @@ namespace Pacifica.API.Services.BranchProductService
                     BranchId = branch!.Id,
                     BranchName = branch.BranchName,
                     ProductId = bp.Product!.Id,
+                    ProductStatusId = bp.StatusId,
                     ProductName = bp.Product.ProductName,
                     ProductCategory = bp.Product.Category!.CategoryName,
                     CostPrice = bp.CostPrice,
                     RetailPrice = bp.RetailPrice,
                     StockQuantity = bp.StockQuantity,
+                    SKU = bp.Product.SKU,
                     IsActive = bp.IsActive
                 }).ToList();
 
@@ -70,7 +71,7 @@ namespace Pacifica.API.Services.BranchProductService
         }
 
         // New method to filter products by the new DTO structure
-        public async Task<ApiResponse<IEnumerable<GetBranchProductFilterSupplierCategorySKUDto>>> GetProductsFilteredByBranchAsync(int branchId, string? productCategory = null, string? sku = null)
+        public async Task<ApiResponse<IEnumerable<GetBranchProductFilterDto>>> GetProductsFilteredByBranchAsync(int branchId, string? productCategory = null, string? sku = null, string? productName = null)
         {
             try
             {
@@ -90,10 +91,16 @@ namespace Pacifica.API.Services.BranchProductService
                     branchProductsQuery = branchProductsQuery.Where(bp => bp.Product!.SKU.Contains(sku));
                 }
 
+                // Apply the filtering for SKU if provided
+                if (!string.IsNullOrEmpty(productName))
+                {
+                    branchProductsQuery = branchProductsQuery.Where(bp => bp.Product!.ProductName.Contains(productName));
+                }
+
                 // Now, include the related entities after applying filters
 
                 branchProductsQuery = branchProductsQuery.Include(b => b.Branch)
-                                                            .Include(ps => ps.ProductStatus)
+                                                            .Include(ps => ps.Status)
                                                             .Include(bp => bp.Product)
                                                             .ThenInclude(p => p!.Category);
 
@@ -102,7 +109,7 @@ namespace Pacifica.API.Services.BranchProductService
 
                 if (!branchProducts.Any())
                 {
-                    return new ApiResponse<IEnumerable<GetBranchProductFilterSupplierCategorySKUDto>>
+                    return new ApiResponse<IEnumerable<GetBranchProductFilterDto>>
                     {
                         Success = false,
                         Message = "No products found matching the filter criteria.",
@@ -110,31 +117,20 @@ namespace Pacifica.API.Services.BranchProductService
                     };
                 }
 
-                var responseDtos = branchProducts.Select(bp => new GetBranchProductFilterSupplierCategorySKUDto
+                var responseDtos = branchProducts.Select(bp => new GetBranchProductFilterDto
                 {
-                    Branch = new BranchProduct_BranchDto
-                    {
-                        Id = bp.Branch != null ? bp.Branch.Id : 0,
-                        Name = bp.Branch != null ? bp.Branch.BranchName : "Unknown",
-                        BranchLocation = bp.Branch!.BranchLocation ?? "Unknown"
-                    },
+
+                    BranchId = bp.Branch != null ? bp.Branch.Id : 0,
+                    BranchName = bp.Branch != null ? bp.Branch.BranchName : "Unknown",
 
                     Product = new BranchProduct_ProductDto
                     {
-                        Id = bp.Product != null ? bp.Product.Id : 0,
-                        Name = bp.Product?.ProductName ?? "Unknown",
-                        Category = new BranchProduct_CategoryDto
-                        {
-                            Id = bp.Product?.Category?.Id ?? 0,
-                            Category = bp.Product?.Category?.CategoryName ?? "Unknown",
-                            Description = bp.Product?.Category?.Description ?? "Unknown"
-                        },
-                        Status = new BranchProduct_StatusDto
-                        {
-                            Id = bp.ProductStatus?.Id ?? 0,
-                            Status = bp.ProductStatus?.ProductStatusName ?? "Unknown",
-                            Description = bp.ProductStatus?.Description ?? "Unknown"
-                        },
+                        ProductId = bp.Product != null ? bp.Product.Id : 0,
+                        ProductName = bp.Product?.ProductName ?? "Unknown",
+                        CategoryId = bp.Product?.Category?.Id ?? 0,
+                        CategoryName = bp.Product?.Category?.CategoryName ?? "Unknown",
+                        SupplierId = bp.Product?.Supplier?.Id ?? 0,
+                        SupplierName = bp.Product?.Supplier?.SupplierName ?? "Unknown",
                         SKU = bp.Product?.SKU ?? "Unknown"
                     },
 
@@ -142,10 +138,10 @@ namespace Pacifica.API.Services.BranchProductService
                     RetailPrice = bp.RetailPrice,
                     StockQuantity = bp.StockQuantity,
                     IsActive = bp.IsActive
-                    
+
                 }).ToList();
 
-                return new ApiResponse<IEnumerable<GetBranchProductFilterSupplierCategorySKUDto>>
+                return new ApiResponse<IEnumerable<GetBranchProductFilterDto>>
                 {
                     Success = true,
                     Message = "Filtered products retrieved successfully.",
@@ -154,7 +150,7 @@ namespace Pacifica.API.Services.BranchProductService
             }
             catch (Exception ex)
             {
-                return new ApiResponse<IEnumerable<GetBranchProductFilterSupplierCategorySKUDto>>
+                return new ApiResponse<IEnumerable<GetBranchProductFilterDto>>
                 {
                     Success = false,
                     Message = $"Error occurred while fetching filtered products: {ex.Message}",
@@ -163,64 +159,189 @@ namespace Pacifica.API.Services.BranchProductService
             }
         }
 
-        // Existing method to add product to branch
-        public async Task<ApiResponse<BranchProductResponseDto>> AddProductToBranchAsync(BranchProduct branchProductDto)
+        public async Task<ApiResponse<IEnumerable<BranchProductResponseDto>>> AddProductsToBranchAsync(IEnumerable<BranchProduct> branchProducts)
+        {
+            var responses = new List<BranchProductResponseDto>();
+            var errors = new List<string>(); // Track errors for individual products
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                foreach (var branchProduct in branchProducts)
+                {
+                    // Check if the product exists and has not been deleted
+                    var productExists = await _context.Products
+                        .AnyAsync(p => p.Id == branchProduct.ProductId && p.DeletedAt == null);
+
+                    if (!productExists)
+                    {
+                        errors.Add($"Product ID {branchProduct.ProductId} does not exist or has been deleted.");
+                        continue;
+                    }
+
+                    // Validate if the StatusId exists in the Statuses table
+                    var statusExists = await _context.Statuses
+                        .AnyAsync(s => s.Id == branchProduct.StatusId);
+
+                    if (!statusExists)
+                    {
+                        errors.Add($"StatusId {branchProduct.StatusId} does not exist.");
+                        continue;
+                    }
+
+                    // Check if the product is already associated with the branch
+                    var existingProduct = await _context.BranchProducts
+                        .FirstOrDefaultAsync(bp => bp.BranchId == branchProduct.BranchId
+                                                   && bp.ProductId == branchProduct.ProductId
+                                                   && bp.DeletedAt == null);
+
+                    if (existingProduct != null)
+                    {
+                        errors.Add($"Product ID {branchProduct.ProductId} is already associated with Branch ID {branchProduct.BranchId}.");
+                        continue;
+                    }
+
+                    // Add the product to the BranchProducts table
+                    _context.BranchProducts.Add(branchProduct);
+                }
+
+                // If there were no errors, save all changes to the database
+                if (!errors.Any())
+                {
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    // Map responses for all successfully added products
+                    foreach (var branchProduct in branchProducts)
+                    {
+                        var branch = await _context.Branches.FindAsync(branchProduct.BranchId);
+                        var product = await _context.Products
+                            .Include(p => p.Category)
+                            .FirstOrDefaultAsync(p => p.Id == branchProduct.ProductId);
+
+                        if (branch != null && product != null)
+                        {
+                            var responseDto = new BranchProductResponseDto
+                            {
+                                BranchId = branch.Id,
+                                BranchName = branch.BranchName,
+
+                                ProductId = product.Id,
+                                ProductName = product.ProductName,
+
+                                ProductCategoryId = product.CategoryId,
+                                ProductCategory = product.Category?.CategoryName ?? "No Category",
+
+                                ProductSupplierId = product.SupplierId,
+                                ProductSupplier = product.Supplier?.SupplierName ?? "No Supplier",
+
+                                ProductSKU = product.SKU,
+
+                                StatusId = branchProduct.StatusId,
+                                Status = branchProduct.Status?.StatusName ?? "No Status",
+
+                                CostPrice = branchProduct.CostPrice,
+                                RetailPrice = branchProduct.RetailPrice,
+                                StockQuantity = branchProduct.StockQuantity,
+
+                                IsActive = branchProduct.IsActive,
+                                CreatedBy = branchProduct.CreatedBy
+                            };
+
+                            responses.Add(responseDto);
+                        }
+                        else
+                        {
+                            errors.Add($"Branch or Product not found for BranchId: {branchProduct.BranchId} and ProductId: {branchProduct.ProductId}.");
+                        }
+                    }
+
+                    return new ApiResponse<IEnumerable<BranchProductResponseDto>>
+                    {
+                        Success = true,
+                        Message = "Products added successfully.",
+                        Data = responses
+                    };
+                }
+                else
+                {
+                    // Rollback transaction if errors
+                    await transaction.RollbackAsync();
+
+                    return new ApiResponse<IEnumerable<BranchProductResponseDto>>
+                    {
+                        Success = false,
+                        Message = $"Some products could not be added: {string.Join(", ", errors)}",
+                        Data = null
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                // Rollback the transaction in case of an unexpected error
+                await transaction.RollbackAsync();
+
+                return new ApiResponse<IEnumerable<BranchProductResponseDto>>
+                {
+                    Success = false,
+                    Message = $"Error occurred while adding products to branch: {ex.Message}",
+                    Data = null
+                };
+            }
+
+        }
+
+        // UPDATE Method using UpdateBranchProductDto
+        public async Task<ApiResponse<BranchProductResponseDto>> UpdateBranchProductAsync(int branchProductId, UpdateBranchProductDto updateDto)
         {
             try
             {
-                var branchProduct = _mapper.Map<BranchProduct>(branchProductDto);
+                // Find the existing BranchProduct
+                var existingBranchProduct = await _context.BranchProducts
+                    .FirstOrDefaultAsync(bp => bp.Id == branchProductId && bp.DeletedAt == null);
 
-                var productExists = await _context.Products
-                    .AnyAsync(p => p.Id == branchProduct.ProductId && p.DeletedAt == null);
-
-                if (!productExists)
+                if (existingBranchProduct == null)
                 {
                     return new ApiResponse<BranchProductResponseDto>
                     {
                         Success = false,
-                        Message = "The product does not exist.",
+                        Message = "Branch product not found.",
                         Data = null
                     };
                 }
 
-                var existingProduct = await _context.BranchProducts
-                    .FirstOrDefaultAsync(bp => bp.BranchId == branchProduct.BranchId && bp.ProductId == branchProduct.ProductId && bp.DeletedAt == null);
-
-                if (existingProduct != null)
+                // Ensure that the BranchId and ProductId match the existing record to avoid unauthorized updates
+                if (existingBranchProduct.BranchId != updateDto.BranchId || existingBranchProduct.ProductId != updateDto.ProductId)
                 {
                     return new ApiResponse<BranchProductResponseDto>
                     {
                         Success = false,
-                        Message = "This product already exists in the branch.",
+                        Message = "Branch or Product ID mismatch.",
                         Data = null
                     };
                 }
 
-                _context.BranchProducts.Add(branchProduct);
+                // Update fields from the DTO
+                existingBranchProduct.StatusId = updateDto.ProductStatusId;
+                existingBranchProduct.CostPrice = updateDto.CostPrice;
+                existingBranchProduct.RetailPrice = updateDto.RetailPrice;
+                existingBranchProduct.StockQuantity = updateDto.StockQuantity;
+                existingBranchProduct.IsActive = updateDto.IsActive;
+
+                // Optionally update the UpdatedBy field to track who made the change
+                existingBranchProduct.UpdatedBy = updateDto.UpdatedBy;
+                existingBranchProduct.UpdatedAt = DateTime.UtcNow; // Assuming you have an UpdatedAt field
+
+                // Save changes
                 await _context.SaveChangesAsync();
 
-                var branch = await _context.Branches.FindAsync(branchProduct.BranchId);
-                var product = await _context.Products.Include(c => c.Category).FirstOrDefaultAsync(p => p.Id == branchProduct.ProductId);
-
-                var productDto = _mapper.Map<ProductDto>(product);
-
-                var responseDto = new BranchProductResponseDto
-                {
-                    BranchId = branch!.Id,
-                    BranchName = branch.BranchName,
-                    ProductId = productDto.Id,
-                    ProductName = productDto.ProductName,
-                    ProductCategory = product!.Category!.CategoryName,
-                    CostPrice = branchProduct.CostPrice,
-                    RetailPrice = branchProduct.RetailPrice,
-                    StockQuantity = branchProduct.StockQuantity,
-                    IsActive = branchProduct.IsActive
-                };
+                // Map updated BranchProduct to response DTO
+                var responseDto = _mapper.Map<BranchProductResponseDto>(existingBranchProduct);
 
                 return new ApiResponse<BranchProductResponseDto>
                 {
                     Success = true,
-                    Message = "Product added successfully.",
+                    Message = "Branch product updated successfully.",
                     Data = responseDto
                 };
             }
@@ -229,10 +350,54 @@ namespace Pacifica.API.Services.BranchProductService
                 return new ApiResponse<BranchProductResponseDto>
                 {
                     Success = false,
-                    Message = $"Error occurred while adding product to branch: {ex.Message}",
+                    Message = $"Error occurred while updating branch product: {ex.Message}",
                     Data = null
+                };
+            }
+        }
+
+        // Soft DELETE Method
+        public async Task<ApiResponse<bool>> SoftDeleteBranchProductAsync(int branchProductId)
+        {
+            try
+            {
+                // Find the existing BranchProduct
+                var branchProduct = await _context.BranchProducts
+                    .FirstOrDefaultAsync(bp => bp.Id == branchProductId && bp.DeletedAt == null);
+
+                if (branchProduct == null)
+                {
+                    return new ApiResponse<bool>
+                    {
+                        Success = false,
+                        Message = "Branch product not found.",
+                        Data = false
+                    };
+                }
+
+                // Set the DeletedAt field to "soft delete" the record
+                branchProduct.DeletedAt = DateTime.UtcNow;
+
+                // Save changes
+                await _context.SaveChangesAsync();
+
+                return new ApiResponse<bool>
+                {
+                    Success = true,
+                    Message = "Branch product deleted successfully.",
+                    Data = true
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<bool>
+                {
+                    Success = false,
+                    Message = $"Error occurred while deleting branch product: {ex.Message}",
+                    Data = false
                 };
             }
         }
     }
 }
+

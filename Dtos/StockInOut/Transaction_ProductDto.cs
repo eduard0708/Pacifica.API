@@ -1,6 +1,6 @@
 using Pacifica.API.Dtos.BranchProduct;
 
-namespace Pacifica.API.Dtos.StockTransactionInOut
+namespace Pacifica.API.Dtos.StockInOut
 {
     public class Transaction_ProductDto
     {

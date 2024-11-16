@@ -1,1 +1,3 @@
 * Remove Table TransactionType - convert to Enum
+
+* Sort by 

@@ -29,10 +29,9 @@ namespace Pacifica.API.Models
         [Required]  // Ensures MinStockLevel is provided
         public int MinStockLevel { get; set; }
 
-        // Status of the product (e.g., Available, Discontinued, Out of Stock)
+        
         [Required]  // Ensures ProductStatus is provided
         [StringLength(50)]  // Limits the length of ProductStatus
-        public string ProductStatus { get; set; } = "Available";
 
         // Foreign Key: Relates the product to its category
         public int CategoryId { get; set; }
@@ -43,7 +42,7 @@ namespace Pacifica.API.Models
         public Supplier? Supplier { get; set; }
 
         // Navigation property for related stock transactions (inventory movements)
-        public ICollection<StockTransactionInOut>? StockTransactionInOuts { get; set; }
+        public ICollection<StockInOut>? StockInOuts { get; set; }
 
         // Navigation property for related branch products (branch-specific prices and stock)
         public ICollection<BranchProduct>? BranchProducts { get; set; }

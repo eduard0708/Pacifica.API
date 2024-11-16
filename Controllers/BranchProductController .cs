@@ -4,7 +4,7 @@ using Pacifica.API.Services.BranchProductService;
 
 namespace Pacifica.API.Controllers
 {
-   // [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
+    // [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
     public class BranchProductController : ControllerBase
@@ -37,35 +37,41 @@ namespace Pacifica.API.Controllers
                 Data = branchProductDtos
             });
         }
-
         // POST: api/BranchProduct/AddProduct
         [HttpPost("AddProduct")]
-        public async Task<ActionResult<ApiResponse<BranchProductResponseDto>>> AddProductToBranch([FromBody] BranchProductDto branchProductDto)
+        public async Task<ActionResult<ApiResponse<IEnumerable<BranchProductResponseDto>>>> AddProductsToBranch([FromBody] IEnumerable<AddBranchProductDto> branchProductDtos)
         {
-            var branchProduct = _mapper.Map<BranchProduct>(branchProductDto);
-            var response = await _branchProductService.AddProductToBranchAsync(branchProduct);
+            // Map DTO list to BranchProduct list
+            var branchProducts = _mapper.Map<IEnumerable<BranchProduct>>(branchProductDtos);
+
+            // Call the service to add all products at once
+            var response = await _branchProductService.AddProductsToBranchAsync(branchProducts);
 
             if (!response.Success)
             {
+                // If any product fails to be added, return a bad request with the error message
                 return BadRequest(response);
             }
 
-            // var addedBranchProductDto = _mapper.Map<BranchProductDto>(response.Data);
-            return CreatedAtAction(nameof(GetAllProductsByBranch), new { branchId = branchProduct.BranchId }, new ApiResponse<BranchProductResponseDto>
-            {
-                Success = true,
-                Message = response.Message,
-                Data = response.Data
-            });
+            // If all products are added successfully, return them in the response
+            return CreatedAtAction(nameof(GetAllProductsByBranch),
+                new { branchId = branchProducts.FirstOrDefault()?.BranchId },
+                new ApiResponse<IEnumerable<BranchProductResponseDto>>
+                {
+                    Success = true,
+                    Message = "Products added successfully",
+                    Data = response.Data
+                });
         }
 
         [HttpGet("GetFilteredProducts")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<GetBranchProductFilterSupplierCategorySKUDto>>>> GetFilteredProducts(
+        public async Task<ActionResult<ApiResponse<IEnumerable<GetBranchProductFilterDto>>>> GetFilteredProducts(
           [FromQuery] int branchId,
           [FromQuery] string? productCategory = null,
-          [FromQuery] string? sku = null)
+          [FromQuery] string? sku = null,
+          [FromQuery] string? productName = null)
         {
-            var response = await _branchProductService.GetProductsFilteredByBranchAsync(branchId, productCategory, sku);
+            var response = await _branchProductService.GetProductsFilteredByBranchAsync(branchId, productCategory, sku, productName);
 
             if (!response.Success)
             {
@@ -75,5 +81,34 @@ namespace Pacifica.API.Controllers
             return Ok(response);
         }
 
+        // PUT: api/BranchProduct/UpdateProduct/5
+        [HttpPut("Update/{Id}")]
+        public async Task<ActionResult<ApiResponse<BranchProductResponseDto>>> UpdateBranchProduct(int branchProductId, [FromBody] UpdateBranchProductDto updateDto)
+        {
+            var response = await _branchProductService.UpdateBranchProductAsync(branchProductId, updateDto);
+
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+        // DELETE: api/BranchProduct/DeleteProduct/5
+        [HttpDelete("Delete/{Id}")]
+        public async Task<ActionResult<ApiResponse<bool>>> SoftDeleteBranchProduct(int branchProductId)
+        {
+            var response = await _branchProductService.SoftDeleteBranchProductAsync(branchProductId);
+
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
     }
+
 }
+

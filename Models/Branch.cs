@@ -18,7 +18,7 @@ namespace Pacifica.API.Models
 
         public ICollection<BranchProduct>? BranchProducts { get; set; }  // Many-to-many relation with Product
 
-        public ICollection<StockTransactionInOut>? StockTransactionInOuts { get; set; }  // Many-to-many relation with Product
+        public ICollection<StockInOut>? StockInOuts { get; set; }  // Many-to-many relation with Product
 
         [Required(ErrorMessage = "Creation date is required.")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;  // Date when the branch was created

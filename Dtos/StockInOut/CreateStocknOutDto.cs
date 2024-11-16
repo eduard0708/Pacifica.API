@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Pacifica.API.Dtos.StockTransactionInOut
+namespace Pacifica.API.Dtos.StockInOut
 {
-    public class CreateStockTransactionInOutDto
+    public class CreateStockInOutDto
     {
 
         [Required]

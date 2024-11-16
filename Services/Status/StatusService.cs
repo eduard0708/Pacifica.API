@@ -1,28 +1,28 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
-namespace Pacifica.API.Services.ProductStatusService
+namespace Pacifica.API.Services.StatusService
 {
-    public class ProductStatusService : IProductStatusService
+    public class StatusService : IStatusService
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
 
-        public ProductStatusService(ApplicationDbContext context, IMapper mapper)
+        public StatusService(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
         }
 
-        public async Task<ApiResponse<IEnumerable<ProductStatus>>> GetAllProductStatusesAsync()
+        public async Task<ApiResponse<IEnumerable<Status>>> GetAllStatusesAsync()
         {
-            var productStatus = await _context.ProductStatuses
+            var Status = await _context.Statuses
                 .Where(tr => tr.DeletedAt == null)
                 .ToListAsync();
 
-            if (!productStatus.Any())
+            if (!Status.Any())
             {
-                return new ApiResponse<IEnumerable<ProductStatus>>
+                return new ApiResponse<IEnumerable<Status>>
                 {
                     Success = false,
                     Message = "No transaction references found.",
@@ -30,22 +30,22 @@ namespace Pacifica.API.Services.ProductStatusService
                 };
             }
 
-            return new ApiResponse<IEnumerable<ProductStatus>>
+            return new ApiResponse<IEnumerable<Status>>
             {
                 Success = true,
                 Message = "Transaction references retrieved successfully.",
-                Data = productStatus
+                Data = Status
             };
         }
 
-        public async Task<ApiResponse<ProductStatus>> GetProductStatusByIdAsync(int id)
+        public async Task<ApiResponse<Status>> GetStatusByIdAsync(int id)
         {
-            var productStatus = await _context.ProductStatuses
+            var Status = await _context.Statuses
                 .FirstOrDefaultAsync(tr => tr.Id == id && tr.DeletedAt == null);
 
-            if (productStatus == null)
+            if (Status == null)
             {
-                return new ApiResponse<ProductStatus>
+                return new ApiResponse<Status>
                 {
                     Success = false,
                     Message = "Transaction reference not found.",
@@ -53,33 +53,33 @@ namespace Pacifica.API.Services.ProductStatusService
                 };
             }
 
-            return new ApiResponse<ProductStatus>
+            return new ApiResponse<Status>
             {
                 Success = true,
                 Message = "Transaction reference retrieved successfully.",
-                Data = productStatus
+                Data = Status
             };
         }
 
-        public async Task<ApiResponse<ProductStatus>> CreateProductStatusAsync(ProductStatus productStatus)
+        public async Task<ApiResponse<Status>> CreateStatusAsync(Status Status)
         {
-            _context.ProductStatuses.Add(productStatus);
+            _context.Statuses.Add(Status);
             await _context.SaveChangesAsync();
 
-            return new ApiResponse<ProductStatus>
+            return new ApiResponse<Status>
             {
                 Success = true,
                 Message = "Transaction reference created successfully.",
-                Data = productStatus
+                Data = Status
             };
         }
 
-        public async Task<ApiResponse<ProductStatus>> UpdateProductStatusAsync(int id, ProductStatus productStatus)
+        public async Task<ApiResponse<Status>> UpdateStatusAsync(int id, Status Status)
         {
-            var existingProductStatus = await _context.ProductStatuses.FindAsync(id);
-            if (existingProductStatus == null || existingProductStatus.DeletedAt != null)
+            var existingStatus = await _context.Statuses.FindAsync(id);
+            if (existingStatus == null || existingStatus.DeletedAt != null)
             {
-                return new ApiResponse<ProductStatus>
+                return new ApiResponse<Status>
                 {
                     Success = false,
                     Message = "Transaction reference not found or already deleted.",
@@ -87,26 +87,26 @@ namespace Pacifica.API.Services.ProductStatusService
                 };
             }
 
-            existingProductStatus.ProductStatusName = productStatus.ProductStatusName;
-            existingProductStatus.Description = productStatus.Description;
-            existingProductStatus.UpdatedAt = DateTime.Now;
-            existingProductStatus.UpdatedBy = productStatus.UpdatedBy;
+            existingStatus.StatusName = Status.StatusName;
+            existingStatus.Description = Status.Description;
+            existingStatus.UpdatedAt = DateTime.Now;
+            existingStatus.UpdatedBy = Status.UpdatedBy;
 
-            _context.ProductStatuses.Update(existingProductStatus);
+            _context.Statuses.Update(existingStatus);
             await _context.SaveChangesAsync();
 
-            return new ApiResponse<ProductStatus>
+            return new ApiResponse<Status>
             {
                 Success = true,
                 Message = "Transaction reference updated successfully.",
-                Data = existingProductStatus
+                Data = existingStatus
             };
         }
 
-        public async Task<ApiResponse<bool>> DeleteProductStatusAsync(int id)
+        public async Task<ApiResponse<bool>> DeleteStatusAsync(int id)
         {
-            var productStatus = await _context.TransactionTypes.FindAsync(id);
-            if (productStatus == null || productStatus.DeletedAt != null)
+            var Status = await _context.TransactionTypes.FindAsync(id);
+            if (Status == null || Status.DeletedAt != null)
             {
                 return new ApiResponse<bool>
                 {
@@ -116,8 +116,8 @@ namespace Pacifica.API.Services.ProductStatusService
                 };
             }
 
-            productStatus.DeletedAt = DateTime.Now;
-            _context.TransactionTypes.Update(productStatus);
+            Status.DeletedAt = DateTime.Now;
+            _context.TransactionTypes.Update(Status);
             await _context.SaveChangesAsync();
 
             return new ApiResponse<bool>

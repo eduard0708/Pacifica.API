@@ -1,8 +1,9 @@
 namespace Pacifica.API.Dtos.BranchProduct
 {
-    public class GetBranchProductFilterSupplierCategorySKUDto
+    public class GetBranchProductFilterDto
     {
-        public BranchProduct_BranchDto Branch { get; set; } = new BranchProduct_BranchDto();
+        public int BranchId { get; set; }
+        public string? BranchName { get; set; }
         public BranchProduct_ProductDto Product { get; set; } = new BranchProduct_ProductDto(); // Nested product DTO
         public decimal CostPrice { get; set; }
         public decimal RetailPrice { get; set; }

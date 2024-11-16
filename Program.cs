@@ -20,8 +20,9 @@ using Pacifica.API.Services.EmployeeService;
 using Pacifica.API.Services.RoleService;
 using Pacifica.API.Services.TokenService;
 using Pacifica.API.Services.TransactionTypeService;
-using Pacifica.API.Services.ProductStatusService;
-using Pacifica.API.Services.StockTransactionServiceInOut;
+using Pacifica.API.Services.StatusService;
+using Pacifica.API.Services.StockInOutService;
+using Pacifica.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,8 +31,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers(); // **This is the fix**
-
-
 
 // Adding the DbContext to the service container
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -55,12 +54,11 @@ builder.Services.AddScoped<ITransactionReferenceService, TransactionReferenceSer
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<IProductStatusService, ProductStatusService>();
+builder.Services.AddScoped<IStatusService, StatusService>();
 builder.Services.AddScoped<ITransactionTypeService, TransactionTypeService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<IBranchProductService, BranchProductService>();
-builder.Services.AddScoped<IStockTransactionServiceInOut, StockTransactionServiceInOut>();
-
+builder.Services.AddScoped<IStockInOutService, StockInOutService>();
 
 // Adding JWT Authentication (if you plan to use JWT tokens for Authentication)
 builder.Services.AddAuthentication(options =>
@@ -84,6 +82,15 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+// Seed data on application startup
+// using (var scope = app.Services.CreateScope())
+// {
+//     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+//     // Call the SeedData.Initialize method to populate the database
+//     SeedData.Initialize(dbContext);
+// }
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

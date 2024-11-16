@@ -1,0 +1,252 @@
+[
+  {
+    "branchId": 1,
+    "productId": 1,
+    "statusId": 1,
+    "costPrice": 100,
+    "retailPrice": 150,
+    "stockQuantity": 50,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 1,
+    "productId": 2,
+    "statusId": 2,
+    "costPrice": 120,
+    "retailPrice": 180,
+    "stockQuantity": 30,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 1,
+    "productId": 3,
+    "statusId": 1,
+    "costPrice": 90,
+    "retailPrice": 130,
+    "stockQuantity": 60,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 1,
+    "productId": 4,
+    "statusId": 2,
+    "costPrice": 110,
+    "retailPrice": 160,
+    "stockQuantity": 40,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 1,
+    "productId": 5,
+    "statusId": 1,
+    "costPrice": 130,
+    "retailPrice": 200,
+    "stockQuantity": 20,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 2,
+    "productId": 1,
+    "statusId": 1,
+    "costPrice": 100,
+    "retailPrice": 150,
+    "stockQuantity": 50,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 2,
+    "productId": 2,
+    "statusId": 2,
+    "costPrice": 120,
+    "retailPrice": 180,
+    "stockQuantity": 30,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 2,
+    "productId": 3,
+    "statusId": 1,
+    "costPrice": 90,
+    "retailPrice": 130,
+    "stockQuantity": 60,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 2,
+    "productId": 4,
+    "statusId": 2,
+    "costPrice": 110,
+    "retailPrice": 160,
+    "stockQuantity": 40,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 2,
+    "productId": 5,
+    "statusId": 1,
+    "costPrice": 130,
+    "retailPrice": 200,
+    "stockQuantity": 20,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 3,
+    "productId": 1,
+    "statusId": 1,
+    "costPrice": 100,
+    "retailPrice": 150,
+    "stockQuantity": 50,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 3,
+    "productId": 2,
+    "statusId": 2,
+    "costPrice": 120,
+    "retailPrice": 180,
+    "stockQuantity": 30,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 3,
+    "productId": 3,
+    "statusId": 1,
+    "costPrice": 90,
+    "retailPrice": 130,
+    "stockQuantity": 60,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 3,
+    "productId": 4,
+    "statusId": 2,
+    "costPrice": 110,
+    "retailPrice": 160,
+    "stockQuantity": 40,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 3,
+    "productId": 5,
+    "statusId": 1,
+    "costPrice": 130,
+    "retailPrice": 200,
+    "stockQuantity": 20,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 4,
+    "productId": 1,
+    "statusId": 1,
+    "costPrice": 100,
+    "retailPrice": 150,
+    "stockQuantity": 50,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 4,
+    "productId": 2,
+    "statusId": 2,
+    "costPrice": 120,
+    "retailPrice": 180,
+    "stockQuantity": 30,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 4,
+    "productId": 3,
+    "statusId": 1,
+    "costPrice": 90,
+    "retailPrice": 130,
+    "stockQuantity": 60,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 4,
+    "productId": 4,
+    "statusId": 2,
+    "costPrice": 110,
+    "retailPrice": 160,
+    "stockQuantity": 40,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 4,
+    "productId": 5,
+    "statusId": 1,
+    "costPrice": 130,
+    "retailPrice": 200,
+    "stockQuantity": 20,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 5,
+    "productId": 1,
+    "statusId": 1,
+    "costPrice": 100,
+    "retailPrice": 150,
+    "stockQuantity": 50,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 5,
+    "productId": 2,
+    "statusId": 2,
+    "costPrice": 120,
+    "retailPrice": 180,
+    "stockQuantity": 30,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 5,
+    "productId": 3,
+    "statusId": 1,
+    "costPrice": 90,
+    "retailPrice": 130,
+    "stockQuantity": 60,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 5,
+    "productId": 4,
+    "statusId": 2,
+    "costPrice": 110,
+    "retailPrice": 160,
+    "stockQuantity": 40,
+    "isActive": true,
+    "createdBy": "Admin"
+  },
+  {
+    "branchId": 5,
+    "productId": 5,
+    "statusId": 1,
+    "costPrice": 130,
+    "retailPrice": 200,
+    "stockQuantity": 20,
+    "isActive": true,
+    "createdBy": "Admin"
+  }
+]

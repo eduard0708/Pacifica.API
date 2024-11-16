@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Pacifica.API.Models
 {
-    public class StockTransactionInOut
+    public class StockInOut
     {
         public int Id { get; set; }  // Unique identifier for the transaction
 
@@ -25,18 +25,20 @@ namespace Pacifica.API.Models
         public Product? Product { get; set; }  // Navigation property for Product
 
         [Required]
-        public int StockTransactionType { get; set; }  // Type of the transaction (e.g., In, Out)
-        
+        public int StockTransactionTypeId { get; set; }  // Type of the transaction (e.g., In, Out)
+        public StockTransactionType? StockTransactionType { get; set; }  
+
+
         [Required]
         public int TransactionReferenceId { get; set; }  // Reference ID (e.g., Sales Order)
         public TransactionReference? TransactionReference { get; set; }  // Navigation property for TransactionReference
-          
+
         [Required]
         public int TransactionTypeId { get; set; }  // Reference ID (e.g., Sales Order)
         public TransactionType? TransactionType { get; set; }  // Navigation property for TransactionReference
 
         [Required]
-        public int BranchId { get; set; } 
+        public int BranchId { get; set; }
         public Branch? Branch { get; set; }
 
         [Required]
@@ -55,6 +57,6 @@ namespace Pacifica.API.Models
         [StringLength(100)]
         public string? UpdatedBy { get; set; }  // User who last updated the transaction
 
-        
+
     }
 }

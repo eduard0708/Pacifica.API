@@ -6,7 +6,7 @@ using Pacifica.API.Dtos.Product;
 using Pacifica.API.Dtos.Supplier;
 using Pacifica.API.Dtos.TransactionReference;
 using Pacifica.API.Dtos.Admin;
-using Pacifica.API.Dtos.StockTransactionInOut;
+using Pacifica.API.Dtos.StockInOut;
 
 namespace Pacifica.API.Mapper
 {
@@ -27,9 +27,9 @@ namespace Pacifica.API.Mapper
             CreateMap<TransactionType, CreateTransactionTypeDto>().ReverseMap();
             CreateMap<TransactionType, UpdateTransactionTypeDto>().ReverseMap();
 
-            CreateMap<ProductStatus, ProductStatusDto>().ReverseMap();
-            CreateMap<ProductStatus, UpdateProductStatusDto>().ReverseMap();
-            CreateMap<ProductStatus, CreateTransactionTypeDto>().ReverseMap();
+            CreateMap<Status, StatusDto>().ReverseMap();
+            CreateMap<Status, UpdateStatusDto>().ReverseMap();
+            CreateMap<Status, CreateTransactionTypeDto>().ReverseMap();
 
             CreateMap<Category, CategoryDto>().ReverseMap();
             CreateMap<Category, UpdateCategoryDto>().ReverseMap();
@@ -38,10 +38,13 @@ namespace Pacifica.API.Mapper
             CreateMap<Branch, BranchDto>().ReverseMap();
             CreateMap<Branch, CreateBranchDto>().ReverseMap();
             CreateMap<Branch, UpdateBranchDto>().ReverseMap();
+            CreateMap<Branch, BranchProduct_BranchDto>().ReverseMap();
+
 
             CreateMap<Product, ProductDto>().ReverseMap();
             CreateMap<Product, CreateProductDto>().ReverseMap();
             CreateMap<Product, UpdateProductDto>().ReverseMap();
+
 
             CreateMap<Supplier, SupplierDto>().ReverseMap();
             CreateMap<Supplier, CreateSupplierDto>().ReverseMap();
@@ -52,11 +55,11 @@ namespace Pacifica.API.Mapper
             CreateMap<BranchProduct, UpdateBranchProductDto>().ReverseMap();
             CreateMap<BranchProduct, UpdateBranchProductDto>().ReverseMap();
 
-            CreateMap<StockTransactionInOut, CreateStockTransactionInOutDto>().ReverseMap();
+            CreateMap<StockInOut, CreateStockInOutDto>().ReverseMap();
 
-            CreateMap<StockTransactionInOut, GetStockTransactionInOutDto>();
-            CreateMap<CreateStockTransactionInOutDto, StockTransactionInOut>();
-            CreateMap<GetByReferenceNumberStockTransactionInOutDto, StockTransactionInOut>().ReverseMap();
+            CreateMap<StockInOut, GetStockInOutDto>();
+            CreateMap<CreateStockInOutDto, StockInOut>();
+            CreateMap<GetByReferenceNumberStockInOutDto, StockInOut>().ReverseMap();
 
 
         }

@@ -1,8 +1,5 @@
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Pacifica.API.Data;
 using Pacifica.API.Dtos.BranchProduct;
-using Pacifica.API.Models; // Assuming you have a Models namespace
 
 namespace Pacifica.API.Services.ProductService
 {
@@ -140,7 +137,6 @@ namespace Pacifica.API.Services.ProductService
                 existingProduct.SKU = product.SKU;
                 existingProduct.ReorderLevel = product.ReorderLevel;
                 existingProduct.MinStockLevel = product.MinStockLevel;
-                existingProduct.ProductStatus = product.ProductStatus;
                 existingProduct.UpdatedAt = DateTime.Now;
                 existingProduct.UpdatedBy = product.UpdatedBy;
 
@@ -165,7 +161,7 @@ namespace Pacifica.API.Services.ProductService
                 };
             }
         }
-        public async Task<ApiResponse<IEnumerable<GetFilter_Products>>> GetFilterProductsAsync(string? category = null, string? sku = null, string? productStatus = null, string? productName = null)
+        public async Task<ApiResponse<IEnumerable<GetFilter_Products>>> GetFilterProductsAsync(string? category = null, string? sku = null, string? productName = null)
         {
             try
             {
@@ -184,11 +180,7 @@ namespace Pacifica.API.Services.ProductService
                     productQuery = productQuery.Where(p => p.SKU.Contains(sku));
                 }
 
-                if (!string.IsNullOrEmpty(productStatus))
-                {
-                    productQuery = productQuery.Where(p => p.ProductStatus.Contains(productStatus));
-                }
-
+            
                 if (!string.IsNullOrEmpty(productName))
                 {
                     productQuery = productQuery.Where(p => p.ProductName.Contains(productName));
@@ -220,13 +212,10 @@ namespace Pacifica.API.Services.ProductService
                     Category = new Product_CategoryDto
                     {
                         Id = p.CategoryId,
-                        Category = p.Category?.CategoryName ?? "Unknown",
+                        Category = p.Category?.CategoryName ?? "No Category",
                         Description = p.Category?.Description ?? "No Description"
                     },
-                    Status = new Product_StatusDto
-                    {
-                        Status = p.ProductStatus
-                    }
+     
                 }).ToList();
 
                 return new ApiResponse<IEnumerable<GetFilter_Products>>

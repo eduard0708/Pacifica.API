@@ -9,7 +9,7 @@ namespace Pacifica.API.Models
         public string Description { get; set; } = string.Empty;  // Description of the transaction type
 
         // Navigation property
-        public ICollection<StockTransactionInOut>? StockTransactionInOuts { get; set; }  // Related stock transactions
+        public ICollection<StockInOut>? StockInOuts { get; set; }  // Related stock transactions
 
         // Audit fields
         [Required]  

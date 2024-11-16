@@ -1,5 +1,7 @@
+using Pacifica.API.Dtos.StockTransactionInOut;
 
-namespace Pacifica.API.Dtos.StockTransactionInOut
+namespace Pacifica.API.Dtos.StockInOut
+
 {
     public class TransactionGetbyReferenceNumber
     {

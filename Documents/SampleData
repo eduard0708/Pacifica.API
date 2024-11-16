@@ -1,0 +1,246 @@
+Product
+
+[
+  {
+    "productName": "Organic Pet Food",
+    "sku": "PETFOOD001",
+    "productStatus": "Available",
+    "categoryId": 1,
+    "supplierId": 1,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 1,
+    "transactionTypeId": 1
+  },
+  {
+    "productName": "Farm Fresh Chicken Feed",
+    "sku": "FARMFEED001",
+    "productStatus": "Available",
+    "categoryId": 2,
+    "supplierId": 2,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 1,
+    "transactionTypeId": 2
+  },
+  {
+    "productName": "Hydroponic Plant Starter Kit",
+    "sku": "AGRIKIT001",
+    "productStatus": "Available",
+    "categoryId": 3,
+    "supplierId": 3,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 1,
+    "transactionTypeId": 1
+  },
+  {
+    "productName": "Dog Leash - Adjustable",
+    "sku": "PETLEASH001",
+    "productStatus": "Out of Stock",
+    "categoryId": 1,
+    "supplierId": 4,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 2,
+    "transactionTypeId": 2
+  },
+  {
+    "productName": "Cat Litter Box",
+    "sku": "PETLITTER001",
+    "productStatus": "Available",
+    "categoryId": 1,
+    "supplierId": 5,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 1,
+    "transactionTypeId": 1
+  },
+  {
+    "productName": "Pet Grooming Brush",
+    "sku": "PETBRUSH001",
+    "productStatus": "Available",
+    "categoryId": 1,
+    "supplierId": 1,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 1,
+    "transactionTypeId": 2
+  },
+  {
+    "productName": "Cattle Feed - Premium",
+    "sku": "CATTLEFEED001",
+    "productStatus": "Available",
+    "categoryId": 2,
+    "supplierId": 2,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 1,
+    "transactionTypeId": 1
+  },
+  {
+    "productName": "Eco-Friendly Bird Seed",
+    "sku": "BIRDSEED001",
+    "productStatus": "Available",
+    "categoryId": 1,
+    "supplierId": 3,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 1,
+    "transactionTypeId": 1
+  },
+  {
+    "productName": "Horse Hoof Care Kit",
+    "sku": "HORSECARE001",
+    "productStatus": "Available",
+    "categoryId": 2,
+    "supplierId": 4,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 1,
+    "transactionTypeId": 2
+  },
+  {
+    "productName": "Organic Fertilizer",
+    "sku": "ORGFERT001",
+    "productStatus": "Available",
+    "categoryId": 3,
+    "supplierId": 5,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 1,
+    "transactionTypeId": 1
+  },
+  {
+    "productName": "Pet Fish Tank Filter",
+    "sku": "PETFILTER001",
+    "productStatus": "Out of Stock",
+    "categoryId": 1,
+    "supplierId": 1,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 2,
+    "transactionTypeId": 2
+  },
+  {
+    "productName": "Hydroponic Grow Light",
+    "sku": "AGRILIGHT001",
+    "productStatus": "Available",
+    "categoryId": 3,
+    "supplierId": 2,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 1,
+    "transactionTypeId": 1
+  },
+  {
+    "productName": "Bale Twine for Hay Bales",
+    "sku": "BALETWINE001",
+    "productStatus": "Available",
+    "categoryId": 2,
+    "supplierId": 3,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 1,
+    "transactionTypeId": 2
+  },
+  {
+    "productName": "Rabbit Cage - Medium",
+    "sku": "RABCAGE001",
+    "productStatus": "Available",
+    "categoryId": 1,
+    "supplierId": 4,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 1,
+    "transactionTypeId": 1
+  },
+  {
+    "productName": "Seed Starter Trays",
+    "sku": "AGRISEED001",
+    "productStatus": "Available",
+    "categoryId": 3,
+    "supplierId": 5,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 1,
+    "transactionTypeId": 1
+  },
+  {
+    "productName": "Pet Bed - Large",
+    "sku": "PETBED001",
+    "productStatus": "Available",
+    "categoryId": 1,
+    "supplierId": 1,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 1,
+    "transactionTypeId": 2
+  },
+  {
+    "productName": "Organic Chicken Coop Bedding",
+    "sku": "CHICKBED001",
+    "productStatus": "Available",
+    "categoryId": 2,
+    "supplierId": 2,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 1,
+    "transactionTypeId": 1
+  },
+  {
+    "productName": "Aquarium Heater",
+    "sku": "AQUAHEATER001",
+    "productStatus": "Available",
+    "categoryId": 1,
+    "supplierId": 3,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 1,
+    "transactionTypeId": 2
+  },
+  {
+    "productName": "Goat Milk Formula",
+    "sku": "GOATMILK001",
+    "productStatus": "Available",
+    "categoryId": 2,
+    "supplierId": 4,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 1,
+    "transactionTypeId": 1
+  },
+  {
+    "productName": "Indoor Plant Pots",
+    "sku": "PLANTPOT001",
+    "productStatus": "Available",
+    "categoryId": 3,
+    "supplierId": 5,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 1,
+    "transactionTypeId": 2
+  },
+  {
+    "productName": "Pet Fish Food",
+    "sku": "PETFISH001",
+    "productStatus": "Available",
+    "categoryId": 1,
+    "supplierId": 1,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 1,
+    "transactionTypeId": 1
+  },
+  {
+    "productName": "Farm Irrigation System",
+    "sku": "FARMIRRIG001",
+    "productStatus": "Available",
+    "categoryId": 2,
+    "supplierId": 2,
+    "isActive": true,
+    "createdBy": "admin",
+    "statusId": 1,
+    "transactionTypeId": 1
+  }
+]

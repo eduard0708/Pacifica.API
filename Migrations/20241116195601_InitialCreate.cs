@@ -3,12 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace Pacifica.API.Migrations
 {
     /// <inheritdoc />
-    public partial class InitCreate : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -112,6 +110,26 @@ namespace Pacifica.API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Statuses",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StatusName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Statuses", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -338,8 +356,7 @@ namespace Pacifica.API.Migrations
                     LastUpdated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ReorderLevel = table.Column<int>(type: "int", nullable: false),
                     MinStockLevel = table.Column<int>(type: "int", nullable: false),
-                    ProductStatus = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", maxLength: 50, nullable: false),
                     SupplierId = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -356,13 +373,13 @@ namespace Pacifica.API.Migrations
                         column: x => x.CategoryId,
                         principalTable: "Categories",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Products_Suppliers_SupplierId",
                         column: x => x.SupplierId,
                         principalTable: "Suppliers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -416,6 +433,8 @@ namespace Pacifica.API.Migrations
                 {
                     BranchId = table.Column<int>(type: "int", nullable: false),
                     ProductId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    StatusId = table.Column<int>(type: "int", nullable: false),
                     CostPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     RetailPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     StockQuantity = table.Column<int>(type: "int", nullable: false),
@@ -441,10 +460,16 @@ namespace Pacifica.API.Migrations
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BranchProducts_Statuses_StatusId",
+                        column: x => x.StatusId,
+                        principalTable: "Statuses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "StockTransactionInOuts",
+                name: "StockInOuts",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -455,7 +480,8 @@ namespace Pacifica.API.Migrations
                     DateReported = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Remarks = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProductId = table.Column<int>(type: "int", nullable: false),
-                    StockTransactionType = table.Column<int>(type: "int", nullable: false),
+                    StockTransactionTypeId = table.Column<int>(type: "int", nullable: false),
+                    StockTransactionType = table.Column<int>(type: "int", nullable: true),
                     TransactionReferenceId = table.Column<int>(type: "int", nullable: false),
                     TransactionTypeId = table.Column<int>(type: "int", nullable: false),
                     BranchId = table.Column<int>(type: "int", nullable: false),
@@ -468,87 +494,31 @@ namespace Pacifica.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StockTransactionInOuts", x => x.Id);
+                    table.PrimaryKey("PK_StockInOuts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_StockTransactionInOuts_Branches_BranchId",
+                        name: "FK_StockInOuts_Branches_BranchId",
                         column: x => x.BranchId,
                         principalTable: "Branches",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_StockTransactionInOuts_Products_ProductId",
+                        name: "FK_StockInOuts_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_StockTransactionInOuts_TransactionReferences_TransactionReferenceId",
+                        name: "FK_StockInOuts_TransactionReferences_TransactionReferenceId",
                         column: x => x.TransactionReferenceId,
                         principalTable: "TransactionReferences",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_StockTransactionInOuts_TransactionTypes_TransactionTypeId",
+                        name: "FK_StockInOuts_TransactionTypes_TransactionTypeId",
                         column: x => x.TransactionTypeId,
                         principalTable: "TransactionTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.InsertData(
-                table: "Branches",
-                columns: new[] { "Id", "BranchLocation", "BranchName", "CreatedAt", "CreatedBy", "DeletedAt", "IsActive", "UpdatedAt", "UpdatedBy" },
-                values: new object[,]
-                {
-                    { 1, "", "Roxas Center", new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(6117), null, null, true, null, null },
-                    { 2, "", "Kalibo Toting Reyes", new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(6620), null, null, true, null, null },
-                    { 3, "", "Iloilo Valeria", new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(6623), null, null, true, null, null },
-                    { 4, "", "Antique", new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(6624), null, null, true, null, null },
-                    { 5, "", "Iloilo Super Market", new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(6624), null, null, true, null, null }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Categories",
-                columns: new[] { "Id", "CategoryName", "CreatedAt", "CreatedBy", "DeletedAt", "Description", "IsActive", "UpdatedAt", "UpdatedBy" },
-                values: new object[,]
-                {
-                    { 1, "Fish Foods", new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(7232), null, null, null, true, null, null },
-                    { 2, "Aquarium Accessories", new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(7671), null, null, null, true, null, null },
-                    { 3, "Hog Feeds", new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(7674), null, null, null, true, null, null },
-                    { 4, "Chicken Feeds", new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(7675), null, null, null, true, null, null },
-                    { 5, "Bird Feeds", new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(7676), null, null, null, true, null, null }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Suppliers",
-                columns: new[] { "Id", "ContactNumber", "ContactPerson", "CreatedAt", "CreatedBy", "DeletedAt", "IsActive", "SupplierName", "UpdatedAt", "UpdatedBy" },
-                values: new object[,]
-                {
-                    { 1, null, null, new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(8184), null, null, true, "AKFF AKWARYUM PETS", null, null },
-                    { 2, null, null, new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(8688), null, null, true, "AQUA GOLD TRADING/AQUATINUM CORP", null, null },
-                    { 3, null, null, new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(8691), null, null, true, "ASVET INC.", null, null },
-                    { 4, null, null, new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(8692), null, null, true, "BELMAN LABORATORIES", null, null },
-                    { 5, null, null, new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(8692), null, null, true, "GENERAL ANIMAL FEED & NUTRITION", null, null }
-                });
-
-            migrationBuilder.InsertData(
-                table: "TransactionReferences",
-                columns: new[] { "Id", "CreatedAt", "CreatedBy", "DeletedAt", "Description", "IsActive", "TransactionReferenceName", "UpdatedAt", "UpdatedBy" },
-                values: new object[,]
-                {
-                    { 1, new DateTime(2024, 11, 14, 8, 3, 36, 289, DateTimeKind.Local).AddTicks(4691), null, null, "", true, "Supplier Delivery (BMEG)", null, null },
-                    { 2, new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(462), null, null, "", true, "Branch Sales Transaction", null, null },
-                    { 3, new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(472), null, null, "", true, "Branch Transfer-In", null, null },
-                    { 4, new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(473), null, null, "", true, "Branch Transfer-Out", null, null }
-                });
-
-            migrationBuilder.InsertData(
-                table: "TransactionTypes",
-                columns: new[] { "Id", "CreatedAt", "CreatedBy", "DeletedAt", "Description", "IsActive", "TransactionTypeName", "UpdatedAt", "UpdatedBy" },
-                values: new object[,]
-                {
-                    { 1, new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(9248), null, null, "", true, "Transaction Stock-In", null, null },
-                    { 2, new DateTime(2024, 11, 14, 8, 3, 36, 291, DateTimeKind.Local).AddTicks(9656), null, null, "", true, "Transaction Stock-Out", null, null }
                 });
 
             migrationBuilder.CreateIndex(
@@ -601,6 +571,11 @@ namespace Pacifica.API.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BranchProducts_StatusId",
+                table: "BranchProducts",
+                column: "StatusId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_EmployeeBranches_BranchId",
                 table: "EmployeeBranches",
                 column: "BranchId");
@@ -629,23 +604,23 @@ namespace Pacifica.API.Migrations
                 column: "SupplierId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StockTransactionInOuts_BranchId",
-                table: "StockTransactionInOuts",
+                name: "IX_StockInOuts_BranchId",
+                table: "StockInOuts",
                 column: "BranchId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StockTransactionInOuts_ProductId",
-                table: "StockTransactionInOuts",
+                name: "IX_StockInOuts_ProductId",
+                table: "StockInOuts",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StockTransactionInOuts_TransactionReferenceId",
-                table: "StockTransactionInOuts",
+                name: "IX_StockInOuts_TransactionReferenceId",
+                table: "StockInOuts",
                 column: "TransactionReferenceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StockTransactionInOuts_TransactionTypeId",
-                table: "StockTransactionInOuts",
+                name: "IX_StockInOuts_TransactionTypeId",
+                table: "StockInOuts",
                 column: "TransactionTypeId");
         }
 
@@ -677,10 +652,13 @@ namespace Pacifica.API.Migrations
                 name: "EmployeeProfiles");
 
             migrationBuilder.DropTable(
-                name: "StockTransactionInOuts");
+                name: "StockInOuts");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Statuses");
 
             migrationBuilder.DropTable(
                 name: "Addresses");

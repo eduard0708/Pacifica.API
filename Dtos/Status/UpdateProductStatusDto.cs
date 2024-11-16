@@ -1,8 +1,8 @@
 namespace Pacifica.API.Dtos.TransactionReference
 {
-    public class UpdateProductStatusDto
+    public class UpdateStatusDto
     {
-        public string? ProductStatusName { get; set; }
+        public string? StatusName { get; set; }
         public string? Description { get; set; }
     }
 }

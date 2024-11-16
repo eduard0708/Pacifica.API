@@ -22,6 +22,62 @@ namespace Pacifica.API.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("BranchProduct", b =>
+                {
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("CostPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<decimal>("RetailPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("StatusId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StockQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("BranchId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("StatusId");
+
+                    b.ToTable("BranchProducts");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -271,99 +327,6 @@ namespace Pacifica.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Branches");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            BranchLocation = "",
-                            BranchName = "Roxas Center",
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(238),
-                            IsActive = true
-                        },
-                        new
-                        {
-                            Id = 2,
-                            BranchLocation = "",
-                            BranchName = "Kalibo Toting Reyes",
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(762),
-                            IsActive = true
-                        },
-                        new
-                        {
-                            Id = 3,
-                            BranchLocation = "",
-                            BranchName = "Iloilo Valeria",
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(765),
-                            IsActive = true
-                        },
-                        new
-                        {
-                            Id = 4,
-                            BranchLocation = "",
-                            BranchName = "Antique",
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(766),
-                            IsActive = true
-                        },
-                        new
-                        {
-                            Id = 5,
-                            BranchLocation = "",
-                            BranchName = "Iloilo Super Market",
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(767),
-                            IsActive = true
-                        });
-                });
-
-            modelBuilder.Entity("Pacifica.API.Models.BranchProduct", b =>
-                {
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("CostPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<int>("ProductStatusId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("RetailPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("StockQuantity")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("BranchId", "ProductId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("BranchProducts");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Category", b =>
@@ -406,43 +369,6 @@ namespace Pacifica.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CategoryName = "Fish Foods",
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(1409),
-                            IsActive = true
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CategoryName = "Aquarium Accessories",
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(1853),
-                            IsActive = true
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CategoryName = "Hog Feeds",
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(1856),
-                            IsActive = true
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CategoryName = "Chicken Feeds",
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(1857),
-                            IsActive = true
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CategoryName = "Bird Feeds",
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(1857),
-                            IsActive = true
-                        });
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Employee", b =>
@@ -684,6 +610,7 @@ namespace Pacifica.API.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CategoryId")
+                        .HasMaxLength(50)
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -717,11 +644,6 @@ namespace Pacifica.API.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("ProductStatus")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<int>("ReorderLevel")
                         .HasColumnType("int");
 
@@ -747,86 +669,9 @@ namespace Pacifica.API.Migrations
                     b.HasIndex("SupplierId");
 
                     b.ToTable("Products");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(5353),
-                            DateAdded = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true,
-                            LastUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinStockLevel = 0,
-                            ProductName = "Fish Food A",
-                            ProductStatus = "Available",
-                            ReorderLevel = 0,
-                            SKU = "SKU001",
-                            SupplierId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CategoryId = 2,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(6666),
-                            DateAdded = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true,
-                            LastUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinStockLevel = 0,
-                            ProductName = "Aquarium Filter",
-                            ProductStatus = "OutOfStock",
-                            ReorderLevel = 0,
-                            SKU = "SKU002",
-                            SupplierId = 2
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CategoryId = 3,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(6670),
-                            DateAdded = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true,
-                            LastUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinStockLevel = 0,
-                            ProductName = "Hog Feed B",
-                            ProductStatus = "Available",
-                            ReorderLevel = 0,
-                            SKU = "SKU003",
-                            SupplierId = 3
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CategoryId = 4,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(6671),
-                            DateAdded = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = true,
-                            LastUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinStockLevel = 0,
-                            ProductName = "Chicken Feed C",
-                            ProductStatus = "Available",
-                            ReorderLevel = 0,
-                            SKU = "SKU004",
-                            SupplierId = 4
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CategoryId = 5,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(6673),
-                            DateAdded = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsActive = false,
-                            LastUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinStockLevel = 0,
-                            ProductName = "Bird Feed D",
-                            ProductStatus = "OutOfStock",
-                            ReorderLevel = 0,
-                            SKU = "SKU005",
-                            SupplierId = 5
-                        });
                 });
 
-            modelBuilder.Entity("Pacifica.API.Models.ProductStatus", b =>
+            modelBuilder.Entity("Pacifica.API.Models.Status", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -855,7 +700,7 @@ namespace Pacifica.API.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<string>("ProductStatusName")
+                    b.Property<string>("StatusName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -868,28 +713,10 @@ namespace Pacifica.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductStatuses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(3381),
-                            Description = "",
-                            IsActive = true,
-                            ProductStatusName = "Available"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(3810),
-                            Description = "",
-                            IsActive = true,
-                            ProductStatusName = "OutOfStock"
-                        });
+                    b.ToTable("Statuses");
                 });
 
-            modelBuilder.Entity("Pacifica.API.Models.StockTransactionInOut", b =>
+            modelBuilder.Entity("Pacifica.API.Models.StockInOut", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -930,7 +757,10 @@ namespace Pacifica.API.Migrations
                     b.Property<int>("StockQuantity")
                         .HasColumnType("int");
 
-                    b.Property<int>("StockTransactionType")
+                    b.Property<int?>("StockTransactionType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StockTransactionTypeId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("TransactionDate")
@@ -962,7 +792,7 @@ namespace Pacifica.API.Migrations
 
                     b.HasIndex("TransactionTypeId");
 
-                    b.ToTable("StockTransactionInOuts");
+                    b.ToTable("StockInOuts");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Supplier", b =>
@@ -1009,43 +839,6 @@ namespace Pacifica.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Suppliers");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(2380),
-                            IsActive = true,
-                            SupplierName = "AKFF AKWARYUM PETS"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(2810),
-                            IsActive = true,
-                            SupplierName = "AQUA GOLD TRADING/AQUATINUM CORP"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(2813),
-                            IsActive = true,
-                            SupplierName = "ASVET INC."
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(2814),
-                            IsActive = true,
-                            SupplierName = "BELMAN LABORATORIES"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(2814),
-                            IsActive = true,
-                            SupplierName = "GENERAL ANIMAL FEED & NUTRITION"
-                        });
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.TransactionReference", b =>
@@ -1091,40 +884,6 @@ namespace Pacifica.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TransactionReferences");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 91, DateTimeKind.Local).AddTicks(8794),
-                            Description = "",
-                            IsActive = true,
-                            TransactionReferenceName = "Supplier Delivery (BMEG)"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 93, DateTimeKind.Local).AddTicks(4581),
-                            Description = "",
-                            IsActive = true,
-                            TransactionReferenceName = "Branch Sales Transaction"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 93, DateTimeKind.Local).AddTicks(4592),
-                            Description = "",
-                            IsActive = true,
-                            TransactionReferenceName = "Branch Transfer-In"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 93, DateTimeKind.Local).AddTicks(4593),
-                            Description = "",
-                            IsActive = true,
-                            TransactionReferenceName = "Branch Transfer-Out"
-                        });
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.TransactionType", b =>
@@ -1170,24 +929,33 @@ namespace Pacifica.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TransactionTypes");
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(4373),
-                            Description = "",
-                            IsActive = true,
-                            TransactionTypeName = "Transaction Stock-In"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(2024, 11, 14, 8, 55, 24, 94, DateTimeKind.Local).AddTicks(4794),
-                            Description = "",
-                            IsActive = true,
-                            TransactionTypeName = "Transaction Stock-Out"
-                        });
+            modelBuilder.Entity("BranchProduct", b =>
+                {
+                    b.HasOne("Pacifica.API.Models.Branch", "Branch")
+                        .WithMany("BranchProducts")
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pacifica.API.Models.Product", "Product")
+                        .WithMany("BranchProducts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pacifica.API.Models.Status", "Status")
+                        .WithMany("BranchProducts")
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -1248,33 +1016,6 @@ namespace Pacifica.API.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Pacifica.API.Models.BranchProduct", b =>
-                {
-                    b.HasOne("Pacifica.API.Models.Branch", "Branch")
-                        .WithMany("BranchProducts")
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Pacifica.API.Models.Product", "Product")
-                        .WithMany("BranchProducts")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Pacifica.API.Models.ProductStatus", "ProductStatus")
-                        .WithMany("BranchProducts")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Branch");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("ProductStatus");
-                });
-
             modelBuilder.Entity("Pacifica.API.Models.EmployeeBranch", b =>
                 {
                     b.HasOne("Pacifica.API.Models.Branch", "Branch")
@@ -1316,13 +1057,13 @@ namespace Pacifica.API.Migrations
                     b.HasOne("Pacifica.API.Models.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Pacifica.API.Models.Supplier", "Supplier")
                         .WithMany("Products")
                         .HasForeignKey("SupplierId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Category");
@@ -1330,28 +1071,28 @@ namespace Pacifica.API.Migrations
                     b.Navigation("Supplier");
                 });
 
-            modelBuilder.Entity("Pacifica.API.Models.StockTransactionInOut", b =>
+            modelBuilder.Entity("Pacifica.API.Models.StockInOut", b =>
                 {
                     b.HasOne("Pacifica.API.Models.Branch", "Branch")
-                        .WithMany("StockTransactionInOuts")
+                        .WithMany("StockInOuts")
                         .HasForeignKey("BranchId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Pacifica.API.Models.Product", "Product")
-                        .WithMany("StockTransactionInOuts")
+                        .WithMany("StockInOuts")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Pacifica.API.Models.TransactionReference", "TransactionReference")
-                        .WithMany("StockTransactionInOuts")
+                        .WithMany("StockInOuts")
                         .HasForeignKey("TransactionReferenceId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Pacifica.API.Models.TransactionType", "TransactionType")
-                        .WithMany("StockTransactionInOuts")
+                        .WithMany("StockInOuts")
                         .HasForeignKey("TransactionTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1376,7 +1117,7 @@ namespace Pacifica.API.Migrations
 
                     b.Navigation("EmployeeBranches");
 
-                    b.Navigation("StockTransactionInOuts");
+                    b.Navigation("StockInOuts");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Category", b =>
@@ -1397,10 +1138,10 @@ namespace Pacifica.API.Migrations
                 {
                     b.Navigation("BranchProducts");
 
-                    b.Navigation("StockTransactionInOuts");
+                    b.Navigation("StockInOuts");
                 });
 
-            modelBuilder.Entity("Pacifica.API.Models.ProductStatus", b =>
+            modelBuilder.Entity("Pacifica.API.Models.Status", b =>
                 {
                     b.Navigation("BranchProducts");
                 });
@@ -1412,12 +1153,12 @@ namespace Pacifica.API.Migrations
 
             modelBuilder.Entity("Pacifica.API.Models.TransactionReference", b =>
                 {
-                    b.Navigation("StockTransactionInOuts");
+                    b.Navigation("StockInOuts");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.TransactionType", b =>
                 {
-                    b.Navigation("StockTransactionInOuts");
+                    b.Navigation("StockInOuts");
                 });
 #pragma warning restore 612, 618
         }
