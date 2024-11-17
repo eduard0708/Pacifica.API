@@ -3,10 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 public class BranchProduct
 {
-    [Key]
-    public int Id { get; set; }  // Unique identifier for the Category
+
     [Required(ErrorMessage = "Branch ID is required.")]
-    
     public int BranchId { get; set; }
     public Branch? Branch { get; set; }
 

@@ -4,6 +4,7 @@ namespace Pacifica.API.Models
 {
     public class Branch
     {
+        [Key]
         public int Id { get; set; }  // Primary key for the Branch entity
 
         [Required(ErrorMessage = "Branch name is required.")]

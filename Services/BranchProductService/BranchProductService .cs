@@ -292,13 +292,13 @@ namespace Pacifica.API.Services.BranchProductService
         }
 
         // UPDATE Method using UpdateBranchProductDto
-        public async Task<ApiResponse<BranchProductResponseDto>> UpdateBranchProductAsync(int branchProductId, UpdateBranchProductDto updateDto)
+        public async Task<ApiResponse<BranchProductResponseDto>> UpdateBranchProductAsync(int branchId, int productId, UpdateBranchProductDto updateDto)
         {
             try
             {
-                // Find the existing BranchProduct
+                // Find the existing BranchProduct using the composite key (BranchId, ProductId)
                 var existingBranchProduct = await _context.BranchProducts
-                    .FirstOrDefaultAsync(bp => bp.Id == branchProductId && bp.DeletedAt == null);
+                    .FirstOrDefaultAsync(bp => bp.BranchId == branchId && bp.ProductId == productId && bp.DeletedAt == null);
 
                 if (existingBranchProduct == null)
                 {
@@ -357,13 +357,13 @@ namespace Pacifica.API.Services.BranchProductService
         }
 
         // Soft DELETE Method
-        public async Task<ApiResponse<bool>> SoftDeleteBranchProductAsync(int branchProductId)
+        public async Task<ApiResponse<bool>> SoftDeleteBranchProductAsync(int branchId, int productId)
         {
             try
             {
-                // Find the existing BranchProduct
+                // Find the BranchProduct using both BranchId and ProductId
                 var branchProduct = await _context.BranchProducts
-                    .FirstOrDefaultAsync(bp => bp.Id == branchProductId && bp.DeletedAt == null);
+                    .FirstOrDefaultAsync(bp => bp.BranchId == branchId && bp.ProductId == productId && bp.DeletedAt == null);
 
                 if (branchProduct == null)
                 {
@@ -375,7 +375,7 @@ namespace Pacifica.API.Services.BranchProductService
                     };
                 }
 
-                // Set the DeletedAt field to "soft delete" the record
+                // Perform soft delete by setting DeletedAt to the current time
                 branchProduct.DeletedAt = DateTime.UtcNow;
 
                 // Save changes
@@ -398,6 +398,8 @@ namespace Pacifica.API.Services.BranchProductService
                 };
             }
         }
+
+
     }
 }
 

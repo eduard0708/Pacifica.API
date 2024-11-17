@@ -10,9 +10,7 @@ namespace Pacifica.API.Services.BranchProductService
         Task<ApiResponse<IEnumerable<GetAllBranchProductResponseDto>>> GetAllProductsByBranchAsync(int branchId);
         Task<ApiResponse<IEnumerable<BranchProductResponseDto>>> AddProductsToBranchAsync(IEnumerable<BranchProduct> branchProducts); 
         Task<ApiResponse<IEnumerable<GetBranchProductFilterDto>>> GetProductsFilteredByBranchAsync(int branchId, string? productCategory = null, string? sku = null, string? productName = null);
-        
-        // New methods
-        Task<ApiResponse<BranchProductResponseDto>> UpdateBranchProductAsync(int branchProductId, UpdateBranchProductDto updateDto);
-        Task<ApiResponse<bool>> SoftDeleteBranchProductAsync(int branchProductId);
+        Task<ApiResponse<BranchProductResponseDto>> UpdateBranchProductAsync(int branchId, int productId, UpdateBranchProductDto updateDto);
+        Task<ApiResponse<bool>> SoftDeleteBranchProductAsync(int branchId, int productId);
     }
 }

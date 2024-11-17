@@ -82,10 +82,10 @@ namespace Pacifica.API.Controllers
         }
 
         // PUT: api/BranchProduct/UpdateProduct/5
-        [HttpPut("Update/{Id}")]
-        public async Task<ActionResult<ApiResponse<BranchProductResponseDto>>> UpdateBranchProduct(int branchProductId, [FromBody] UpdateBranchProductDto updateDto)
+        [HttpPut("Update/{branchId}/{productId}")]
+        public async Task<ActionResult<ApiResponse<BranchProductResponseDto>>> UpdateBranchProduct(int branchId, int productId, [FromBody] UpdateBranchProductDto updateDto)
         {
-            var response = await _branchProductService.UpdateBranchProductAsync(branchProductId, updateDto);
+            var response = await _branchProductService.UpdateBranchProductAsync(branchId, productId, updateDto);
 
             if (!response.Success)
             {
@@ -96,10 +96,11 @@ namespace Pacifica.API.Controllers
         }
 
         // DELETE: api/BranchProduct/DeleteProduct/5
-        [HttpDelete("Delete/{Id}")]
-        public async Task<ActionResult<ApiResponse<bool>>> SoftDeleteBranchProduct(int branchProductId)
+        [HttpDelete("Delete/{branchId}/{productId}")]
+        public async Task<ActionResult<ApiResponse<bool>>> SoftDeleteBranchProduct(int branchId, int productId)
         {
-            var response = await _branchProductService.SoftDeleteBranchProductAsync(branchProductId);
+            // Call the service method with both branchId and productId
+            var response = await _branchProductService.SoftDeleteBranchProductAsync(branchId, productId);
 
             if (!response.Success)
             {
@@ -108,6 +109,7 @@ namespace Pacifica.API.Controllers
 
             return Ok(response);
         }
+
     }
 
 }

@@ -32,8 +32,6 @@ namespace Pacifica.API.Data
             public DbSet<TransactionType> TransactionTypes { get; set; }
             public DbSet<Status> Statuses { get; set; }
 
-            //   public object StockTransactions { get; internal set; }
-
             // Configurations for model building
             protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
