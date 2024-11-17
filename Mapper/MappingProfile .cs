@@ -54,6 +54,17 @@ namespace Pacifica.API.Mapper
             CreateMap<BranchProduct, AddBranchProductDto>().ReverseMap();
             CreateMap<BranchProduct, UpdateBranchProductDto>().ReverseMap();
             CreateMap<BranchProduct, UpdateBranchProductDto>().ReverseMap();
+            // Add the missing mapping
+            CreateMap<BranchProduct, BranchProductResponseDto>()
+                .ForMember(dest => dest.BranchName, opt => opt.MapFrom(src => src.Branch!.BranchName))
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product!.ProductName))
+                .ForMember(dest => dest.ProductCategoryId, opt => opt.MapFrom(src => src.Product!.CategoryId))
+                .ForMember(dest => dest.ProductCategory, opt => opt.MapFrom(src => src.Product!.Category!.CategoryName))
+                .ForMember(dest => dest.ProductSupplierId, opt => opt.MapFrom(src => src.Product!.SupplierId))
+                .ForMember(dest => dest.ProductSupplier, opt => opt.MapFrom(src => src.Product!.Supplier!.SupplierName))
+                .ForMember(dest => dest.ProductSKU, opt => opt.MapFrom(src => src.Product!.SKU))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status!.StatusName))
+                .ReverseMap();
 
             CreateMap<StockInOut, CreateStockInOutDto>().ReverseMap();
 

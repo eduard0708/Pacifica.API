@@ -30,6 +30,9 @@ public class BranchProduct
     [Range(0, int.MaxValue, ErrorMessage = "Stock quantity cannot be negative.")]
     public int StockQuantity { get; set; }
 
+    [StringLength(1000, ErrorMessage = "Creator's name cannot exceed 100 characters.")]
+    public string? Remarks { get; set; }
+
     [Required(ErrorMessage = "Creation date is required.")]
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 

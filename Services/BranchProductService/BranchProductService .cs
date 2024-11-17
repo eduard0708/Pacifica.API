@@ -48,6 +48,7 @@ namespace Pacifica.API.Services.BranchProductService
                     CostPrice = bp.CostPrice,
                     RetailPrice = bp.RetailPrice,
                     StockQuantity = bp.StockQuantity,
+                    Remarks = bp.Remarks,
                     SKU = bp.Product.SKU,
                     IsActive = bp.IsActive
                 }).ToList();
@@ -131,6 +132,7 @@ namespace Pacifica.API.Services.BranchProductService
                         CategoryName = bp.Product?.Category?.CategoryName ?? "Unknown",
                         SupplierId = bp.Product?.Supplier?.Id ?? 0,
                         SupplierName = bp.Product?.Supplier?.SupplierName ?? "Unknown",
+                        Remarks = bp.Remarks ?? string.Empty,
                         SKU = bp.Product?.SKU ?? "Unknown"
                     },
 
@@ -298,6 +300,12 @@ namespace Pacifica.API.Services.BranchProductService
             {
                 // Find the existing BranchProduct using the composite key (BranchId, ProductId)
                 var existingBranchProduct = await _context.BranchProducts
+                                    .Include(b => b.Branch)
+                                    .Include(s => s.Status)
+                                    .Include(st => st.Status)
+                                    .Include(p => p.Product)
+                                    .Include(c => c.Product!.Category)
+                                    .Include(sp => sp.Product!.Supplier)
                     .FirstOrDefaultAsync(bp => bp.BranchId == branchId && bp.ProductId == productId && bp.DeletedAt == null);
 
                 if (existingBranchProduct == null)
@@ -311,7 +319,7 @@ namespace Pacifica.API.Services.BranchProductService
                 }
 
                 // Ensure that the BranchId and ProductId match the existing record to avoid unauthorized updates
-                if (existingBranchProduct.BranchId != updateDto.BranchId || existingBranchProduct.ProductId != updateDto.ProductId)
+                if (existingBranchProduct.BranchId != branchId || existingBranchProduct.ProductId != productId)
                 {
                     return new ApiResponse<BranchProductResponseDto>
                     {
@@ -326,6 +334,7 @@ namespace Pacifica.API.Services.BranchProductService
                 existingBranchProduct.CostPrice = updateDto.CostPrice;
                 existingBranchProduct.RetailPrice = updateDto.RetailPrice;
                 existingBranchProduct.StockQuantity = updateDto.StockQuantity;
+                existingBranchProduct.Remarks = updateDto.Remarks;
                 existingBranchProduct.IsActive = updateDto.IsActive;
 
                 // Optionally update the UpdatedBy field to track who made the change
