@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Pacifica.API.Dtos.BranchProduct;
 using Pacifica.API.Dtos.Product;
 using Pacifica.API.Services.ProductService;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Pacifica.API.Controllers
 {
@@ -163,7 +161,21 @@ namespace Pacifica.API.Controllers
 
             return Ok(response);
         }
-    }
+
+    //     // GET: api/Product/AuditDetails/5
+    //     [HttpGet("AuditDetails/{id}")]
+    //     public async Task<ActionResult<ApiResponse<AuditDetails>>> GetAuditDetails(int id)
+    //     {
+    //         var response = await _productService.GetProductAuditDetailsAsync(id);
+    //         if (!response.Success)
+    //         {
+    //             return NotFound(response);
+    //         }
+
+    //         return Ok(response);
+    //     }
+
+     }
 }
 
 

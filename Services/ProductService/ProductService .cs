@@ -180,7 +180,7 @@ namespace Pacifica.API.Services.ProductService
                     productQuery = productQuery.Where(p => p.SKU.Contains(sku));
                 }
 
-            
+
                 if (!string.IsNullOrEmpty(productName))
                 {
                     productQuery = productQuery.Where(p => p.ProductName.Contains(productName));
@@ -215,7 +215,7 @@ namespace Pacifica.API.Services.ProductService
                         Category = p.Category?.CategoryName ?? "No Category",
                         Description = p.Category?.Description ?? "No Description"
                     },
-     
+
                 }).ToList();
 
                 return new ApiResponse<IEnumerable<GetFilter_Products>>
@@ -239,6 +239,52 @@ namespace Pacifica.API.Services.ProductService
         public Task<ApiResponse<bool>> DeleteProductAsync(int id)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<ApiResponse<AuditDetails>> GetProductAuditDetailsAsync(int productId)
+        {
+            try
+            {
+                var product = await _context.Products
+                    .Where(p => p.Id == productId && p.DeletedAt == null)
+                    .Select(p => new AuditDetails
+                    {
+                        CreatedAt = p.CreatedAt,
+                        CreatedBy = p.CreatedBy,
+                        UpdatedAt = p.UpdatedAt,
+                        UpdatedBy = p.UpdatedBy,
+                        DeletedAt = p.DeletedAt,
+                        IsActive = p.IsActive
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (product == null)
+                {
+                    return new ApiResponse<AuditDetails>
+                    {
+                        Success = false,
+                        Message = "Product not found.",
+                        Data = null
+                    };
+                }
+
+                return new ApiResponse<AuditDetails>
+                {
+                    Success = true,
+                    Message = "Audit details retrieved successfully.",
+                    Data = product
+                };
+            }
+            catch (Exception ex)
+            {
+                // Log exception
+                return new ApiResponse<AuditDetails>
+                {
+                    Success = false,
+                    Message = $"Error retrieving audit details: {ex.Message}",
+                    Data = null
+                };
+            }
         }
 
 
