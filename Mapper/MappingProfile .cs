@@ -44,6 +44,8 @@ namespace Pacifica.API.Mapper
             CreateMap<Product, ProductDto>().ReverseMap();
             CreateMap<Product, CreateProductDto>().ReverseMap();
             CreateMap<Product, UpdateProductDto>().ReverseMap();
+            CreateMap<Product, DeletetedProductsDto>().ReverseMap();
+
 
 
             CreateMap<Supplier, SupplierDto>().ReverseMap();

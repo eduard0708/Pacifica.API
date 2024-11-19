@@ -22,7 +22,6 @@ using Pacifica.API.Services.TokenService;
 using Pacifica.API.Services.TransactionTypeService;
 using Pacifica.API.Services.StatusService;
 using Pacifica.API.Services.StockInOutService;
-using Pacifica.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -84,6 +83,7 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 // Seed data on application startup
+
 // using (var scope = app.Services.CreateScope())
 // {
 //     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();

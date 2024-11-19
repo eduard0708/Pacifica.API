@@ -32,6 +32,20 @@ namespace Pacifica.API.Controllers
             });
         }
 
+        // GET: api/Product
+        [HttpGet("DeletedProducts")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<DeletetedProductsDto>>>> GetDeteltedProducts()
+        {
+            var response = await _productService.GetAllDeletedProductsAsync();
+            var productDtos = _mapper.Map<IEnumerable<DeletetedProductsDto>>(response.Data);
+            return Ok(new ApiResponse<IEnumerable<DeletetedProductsDto>>
+            {
+                Success = response.Success,
+                Message = response.Message,
+                Data = productDtos
+            });
+        }
+
         // GET: api/Product/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ApiResponse<ProductDto>>> GetProduct(int id)
@@ -51,26 +65,6 @@ namespace Pacifica.API.Controllers
             });
         }
 
-        // // POST: api/Product
-        // [HttpPost]
-        // public async Task<ActionResult<ApiResponse<ProductDto>>> CreateProduct(CreateProductDto productDto)
-        // {
-        //     var product = _mapper.Map<Product>(productDto);
-        //     var response = await _productService.CreateProductAsync(product);
-
-        //     if (!response.Success)
-        //     {
-        //         return BadRequest(response);
-        //     }
-
-        //     var createdProductDto = _mapper.Map<ProductDto>(response.Data);
-        //     return CreatedAtAction("GetProduct", new { id = response.Data!.Id }, new ApiResponse<ProductDto>
-        //     {
-        //         Success = response.Success,
-        //         Message = response.Message,
-        //         Data = createdProductDto
-        //     });
-        // }
 
         // POST: api/Product/CreateMultiple
         [HttpPost("CreateMultiple")]
@@ -134,17 +128,29 @@ namespace Pacifica.API.Controllers
         }
 
         // DELETE: api/Product/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(int id)
+        [HttpDelete("{productId}/{employeeId}")]
+        public async Task<ActionResult<ApiResponse<object>>> DeleteProduct(int productId, string employeeId)
         {
-            var response = await _productService.DeleteProductAsync(id);
+            var response = await _productService.DeleteProductAsync(productId, employeeId);
+
             if (!response.Success)
             {
-                return NotFound(response);
+                return NotFound(new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = response.Message,
+                    Data = null
+                });
             }
 
-            return NoContent();
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = $"Product {productId} is successfully deleted!",
+                Data = null
+            });
         }
+
 
         [HttpGet("GetFilteredProducts")]
         public async Task<ActionResult<ApiResponse<IEnumerable<GetFilter_Products>>>> GetFilteredProducts(
@@ -162,150 +168,42 @@ namespace Pacifica.API.Controllers
             return Ok(response);
         }
 
-    //     // GET: api/Product/AuditDetails/5
-    //     [HttpGet("AuditDetails/{id}")]
-    //     public async Task<ActionResult<ApiResponse<AuditDetails>>> GetAuditDetails(int id)
-    //     {
-    //         var response = await _productService.GetProductAuditDetailsAsync(id);
-    //         if (!response.Success)
-    //         {
-    //             return NotFound(response);
-    //         }
+        // GET: api/Product/AuditDetails/5
+        [HttpGet("AuditDetails/{id}")]
+        public async Task<ActionResult<ApiResponse<List<AuditDetails>>>> GetAuditDetails(int id)
+        {
+            var response = await _productService.GetProductAuditDetailsAsync(id);
+            if (!response.Success)
+            {
+                return NotFound(response);
+            }
 
-    //         return Ok(response);
-    //     }
+            return Ok(response);
+        }
 
-     }
+
+        [HttpPost("restore-deleted")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<Product>>>> RestoreDeletedProducts([FromBody] DeletedProductIdsDto deletedProducts)
+        {
+            if (deletedProducts == null || deletedProducts.ProductIds == null || !deletedProducts.ProductIds.Any())
+            {
+                return BadRequest(new ApiResponse<IEnumerable<Product>>
+                {
+                    Success = false,
+                    Message = "Product IDs are required to restore deleted products.",
+                    Data = null
+                });
+            }
+
+            var response = await _productService.RestoreDeletedProductsAsync(deletedProducts);
+
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+    }
 }
-
-
-// using Microsoft.AspNetCore.Mvc;
-// using Pacifica.API.Dtos.BranchProduct;
-// using Pacifica.API.Dtos.Product;
-// using Pacifica.API.Services.ProductService;
-
-// namespace Pacifica.API.Controllers
-// {
-//     //[ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
-//     [Route("api/[controller]")]
-//     [ApiController]
-//     public class ProductController : ControllerBase
-//     {
-//         private readonly IProductService _productService;
-//         private readonly IMapper _mapper;
-
-//         public ProductController(IProductService productService, IMapper mapper)
-//         {
-//             _productService = productService;
-//             _mapper = mapper;
-//         }
-
-//         // GET: api/Product
-//         [HttpGet]
-//         public async Task<ActionResult<ApiResponse<IEnumerable<ProductDto>>>> GetProducts()
-//         {
-//             var response = await _productService.GetAllProductsAsync();
-//             var productDtos = _mapper.Map<IEnumerable<ProductDto>>(response.Data);
-//             return Ok(new ApiResponse<IEnumerable<ProductDto>>
-//             {
-//                 Success = response.Success,
-//                 Message = response.Message,
-//                 Data = productDtos
-//             });
-//         }
-
-//         // GET: api/Product/5
-//         [HttpGet("{id}")]
-//         public async Task<ActionResult<ApiResponse<ProductDto>>> GetProduct(int id)
-//         {
-//             var response = await _productService.GetProductByIdAsync(id);
-//             if (!response.Success)
-//             {
-//                 return NotFound(response);
-//             }
-
-//             var productDto = _mapper.Map<ProductDto>(response.Data);
-//             return Ok(new ApiResponse<ProductDto>
-//             {
-//                 Success = response.Success,
-//                 Message = response.Message,
-//                 Data = productDto
-//             });
-//         }
-
-//         // POST: api/Product
-//         [HttpPost]
-//         public async Task<ActionResult<ApiResponse<ProductDto>>> CreateProduct(CreateProductDto productDto)
-//         {
-//             var product = _mapper.Map<Product>(productDto);
-//             var response = await _productService.CreateProductAsync(product);
-
-//             if (!response.Success)
-//             {
-//                 return BadRequest(response);
-//             }
-
-//             var createdProductDto = _mapper.Map<ProductDto>(response.Data);
-//             return CreatedAtAction("GetProduct", new { id = response.Data!.Id }, new ApiResponse<ProductDto>
-//             {
-//                 Success = response.Success,
-//                 Message = response.Message,
-//                 Data = createdProductDto
-//             });
-//         }
-
-//         // PUT: api/Product/5
-//         [HttpPut("{id}")]
-//         public async Task<IActionResult> UpdateProduct(int id, UpdateProductDto productDto)
-//         {
-//             var product = _mapper.Map<Product>(productDto);
-//             var response = await _productService.UpdateProductAsync(id, product);
-
-//             if (!response.Success)
-//             {
-//                 return NotFound(response);
-//             }
-
-//             var updatedProductDto = _mapper.Map<ProductDto>(response.Data);
-//             return Ok(new ApiResponse<ProductDto>
-//             {
-//                 Success = response.Success,
-//                 Message = response.Message,
-//                 Data = updatedProductDto
-//             });
-//         }
-
-//         // DELETE: api/Product/5
-//         [HttpDelete("{id}")]
-//         public async Task<IActionResult> DeleteProduct(int id)
-//         {
-//             var response = await _productService.DeleteProductAsync(id);
-//             if (!response.Success)
-//             {
-//                 return NotFound(response);
-//             }
-
-//             return NoContent();
-//         }
-
-//         [HttpGet("GetFilteredProducts")]
-//         public async Task<ActionResult<ApiResponse<IEnumerable<GetFilter_Products>>>> GetFilteredProducts(
-//               [FromQuery] string? category = null,
-//               [FromQuery] string? sku = null,
-//               [FromQuery] string? productStatus = null,
-//               [FromQuery] string? productName = null)
-
-//         {
-//             var response = await _productService.GetFilterProductsAsync(category, sku, productStatus, productName);
-
-//             if (!response.Success)
-//             {
-//                 return BadRequest(response);
-//             }
-
-//             return Ok(response);
-//         }
-
-
-//     }
-// }

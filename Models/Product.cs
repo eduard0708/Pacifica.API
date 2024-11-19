@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Pacifica.API.Models
 {
@@ -47,27 +46,5 @@ namespace Pacifica.API.Models
         // Navigation property for related branch products (branch-specific prices and stock)
         public ICollection<BranchProduct>? BranchProducts { get; set; }
         
-
-        // // Audit fields to track creation, update, and soft delete
-        // [Required]  // Ensures CreatedAt is provided
-        // public DateTime CreatedAt { get; set; } = DateTime.Now;
-
-        // // Date when the product record was last updated
-        // public DateTime? UpdatedAt { get; set; }
-
-        // // Soft delete: Marks the product as deleted (if null, the product is active)
-        // public DateTime? DeletedAt { get; set; }
-
-        // // Tracks who created the product record
-        // [StringLength(100)]  // Limits CreatedBy field length
-        // public string? CreatedBy { get; set; }
-
-        // // Indicates if the product is active in the system
-        // [Required]  // Ensures IsActive is provided
-        // public bool IsActive { get; set; } = true;
-
-        // // Tracks who last updated the product record
-        // [StringLength(100)]  // Limits UpdatedBy field length
-        // public string? UpdatedBy { get; set; }
     }
 }

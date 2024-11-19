@@ -141,8 +141,7 @@ namespace Pacifica.API.Data
                   modelBuilder.Entity<Product>(entity =>
                   {
                         entity.Property(p => p.CreatedAt).HasDefaultValueSql("GETDATE()");
-                        entity.Property(p => p.IsActive).HasDefaultValue(true);
-
+                        
                         // Product's other relationships
                         entity.HasOne(p => p.Category)
                               .WithMany(c => c.Products)
@@ -181,7 +180,6 @@ namespace Pacifica.API.Data
                   modelBuilder.Entity<TransactionType>(entity =>
                   {
                         entity.Property(tt => tt.CreatedAt).HasDefaultValueSql("GETDATE()");
-                        entity.Property(tt => tt.IsActive).HasDefaultValue(true);
                   });
 
                   // Configure StockInOut entity

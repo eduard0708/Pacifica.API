@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Pacifica.API.Dtos.BranchProduct;
+using Pacifica.API.Dtos.Product;
 
 namespace Pacifica.API.Services.ProductService
 {
@@ -21,6 +22,46 @@ namespace Pacifica.API.Services.ProductService
                 var products = await _context.Products
                     .Where(p => p.DeletedAt == null) // Soft delete filter
                     .Include(p => p.Category) // Include related Category
+                    .Include(p => p.Supplier) // Include related Supplier
+                    .ToListAsync();
+
+                if (!products.Any())
+                {
+                    return new ApiResponse<IEnumerable<Product>>
+                    {
+                        Success = false,
+                        Message = "No products found.",
+                        Data = null
+                    };
+                }
+
+                return new ApiResponse<IEnumerable<Product>>
+                {
+                    Success = true,
+                    Message = "Products retrieved successfully.",
+                    Data = products
+                };
+            }
+            catch (Exception ex)
+            {
+                // Log exception (log framework such as Serilog, NLog, etc. can be used here)
+                return new ApiResponse<IEnumerable<Product>>
+                {
+                    Success = false,
+                    Message = $"Error retrieving products: {ex.Message}",
+                    Data = null
+                };
+            }
+        }
+
+        public async Task<ApiResponse<IEnumerable<Product>>> GetAllDeletedProductsAsync()
+        {
+            try
+            {
+                var products = await _context.Products
+                    .IgnoreQueryFilters() // This disables all global query filters, including the DeletedAt check
+                    .Where(p => p.DeletedAt != null) // Soft delete filter
+                    .Include(p => p.Category) // Include related Categoryyy
                     .Include(p => p.Supplier) // Include related Supplier
                     .ToListAsync();
 
@@ -161,6 +202,7 @@ namespace Pacifica.API.Services.ProductService
                 };
             }
         }
+
         public async Task<ApiResponse<IEnumerable<GetFilter_Products>>> GetFilterProductsAsync(string? category = null, string? sku = null, string? productName = null)
         {
             try
@@ -236,17 +278,56 @@ namespace Pacifica.API.Services.ProductService
             }
         }
 
-        public Task<ApiResponse<bool>> DeleteProductAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<ApiResponse<AuditDetails>> GetProductAuditDetailsAsync(int productId)
+        public async Task<ApiResponse<bool>> DeleteProductAsync(int productId, string employeeId)
         {
             try
             {
                 var product = await _context.Products
-                    .Where(p => p.Id == productId && p.DeletedAt == null)
+                    .Where(p => p.Id == productId && p.DeletedAt == null)  // Ensure product isn't already deleted
+                    .FirstOrDefaultAsync();
+
+                if (product == null)
+                {
+                    return new ApiResponse<bool>
+                    {
+                        Success = false,
+                        Message = "Product not found or already deleted.",
+                        Data = false
+                    };
+                }
+
+                // Soft delete the product
+                product.DeletedAt = DateTime.Now;
+                product.DeletedBy = employeeId;
+
+                // Save changes to the database
+                await _context.SaveChangesAsync();
+
+                return new ApiResponse<bool>
+                {
+                    Success = true,
+                    Message = "Product marked as deleted successfully.",
+                    Data = true
+                };
+            }
+            catch (Exception ex)
+            {
+                // Log exception
+                return new ApiResponse<bool>
+                {
+                    Success = false,
+                    Message = $"Error deleting product: {ex.Message}",
+                    Data = false
+                };
+            }
+        }
+
+        public async Task<ApiResponse<List<AuditDetails>>> GetProductAuditDetailsAsync(int productId)
+        {
+            try
+            {
+                var product = await _context.Products
+                    .Where(p => p.Id == productId)
                     .Select(p => new AuditDetails
                     {
                         CreatedAt = p.CreatedAt,
@@ -254,13 +335,14 @@ namespace Pacifica.API.Services.ProductService
                         UpdatedAt = p.UpdatedAt,
                         UpdatedBy = p.UpdatedBy,
                         DeletedAt = p.DeletedAt,
-                        IsActive = p.IsActive
+                        DeletedBy = p.DeletedBy,
+
                     })
-                    .FirstOrDefaultAsync();
+                    .ToListAsync();
 
                 if (product == null)
                 {
-                    return new ApiResponse<AuditDetails>
+                    return new ApiResponse<List<AuditDetails>>
                     {
                         Success = false,
                         Message = "Product not found.",
@@ -268,7 +350,7 @@ namespace Pacifica.API.Services.ProductService
                     };
                 }
 
-                return new ApiResponse<AuditDetails>
+                return new ApiResponse<List<AuditDetails>>
                 {
                     Success = true,
                     Message = "Audit details retrieved successfully.",
@@ -278,7 +360,7 @@ namespace Pacifica.API.Services.ProductService
             catch (Exception ex)
             {
                 // Log exception
-                return new ApiResponse<AuditDetails>
+                return new ApiResponse<List<AuditDetails>>
                 {
                     Success = false,
                     Message = $"Error retrieving audit details: {ex.Message}",
@@ -287,6 +369,58 @@ namespace Pacifica.API.Services.ProductService
             }
         }
 
+        public async Task<ApiResponse<IEnumerable<Product>>> RestoreDeletedProductsAsync(DeletedProductIdsDto deletedProducts)
+        {
+            var response = new ApiResponse<IEnumerable<Product>>();
+
+            try
+            {
+                // Make sure ProductIds is not null or empty
+                if (deletedProducts?.ProductIds == null || !deletedProducts.ProductIds.Any())
+                {
+                    response.Success = false;
+                    response.Message = "No product IDs provided.";
+                    response.Data = null;
+                    return response;
+                }
+
+                // Fetch the deleted products (ignore global query filters)
+                var productsToRestore = await _context.Products
+                    .IgnoreQueryFilters() // Disable global query filters
+                    .Where(p => deletedProducts.ProductIds.Contains(p.Id) && p.DeletedAt != null)
+                    .ToListAsync();
+
+                if (productsToRestore.Count == 0)
+                {
+                    response.Success = false;
+                    response.Message = "No deleted products found for restoration.";
+                    response.Data = null;
+                    return response;
+                }
+
+                // Restore the products (set DeletedAt to null)
+                foreach (var product in productsToRestore)
+                {
+                    product.DeletedAt = null; // Restore by setting DeletedAt to null
+                    product.DeletedBy = null; // Optionally clear DeletedBy if necessary
+                }
+
+                await _context.SaveChangesAsync();
+
+                response.Success = true;
+                response.Message = $"{productsToRestore.Count} products restored successfully.";
+                response.Data = productsToRestore;
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = $"Error restoring products: {ex.Message}";
+                response.Data = null;
+                return response;
+            }
+        }
 
     }
 }
