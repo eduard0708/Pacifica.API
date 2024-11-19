@@ -6,15 +6,15 @@ namespace Pacifica.API.Models
     {
         public int Id { get; set; }
 
-        [Required] 
-        [StringLength(255)]  
+        [Required]
+        [StringLength(255)]
         public string ProductName { get; set; } = string.Empty;
 
-        [Required] 
+        [Required]
         [StringLength(50)]  // Limits the length of the SKU
         public string SKU { get; set; } = string.Empty;
 
-        [Required] 
+        [Required]
         public DateTime DateAdded { get; set; }
 
         // Date when the product was last updated
@@ -28,7 +28,7 @@ namespace Pacifica.API.Models
         [Required]  // Ensures MinStockLevel is provided
         public int MinStockLevel { get; set; }
 
-        
+
         [Required]  // Ensures ProductStatus is provided
         [StringLength(50)]  // Limits the length of ProductStatus
 
@@ -45,6 +45,8 @@ namespace Pacifica.API.Models
 
         // Navigation property for related branch products (branch-specific prices and stock)
         public ICollection<BranchProduct>? BranchProducts { get; set; }
-        
+
+        // Navigation property for 
+        public ICollection<ProductAuditTrail>? ProductAuditTrails { get; set; }
     }
 }

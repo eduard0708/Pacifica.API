@@ -12,8 +12,8 @@ using Pacifica.API.Data;
 namespace Pacifica.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241119072250_InitCreate1")]
-    partial class InitCreate1
+    [Migration("20241119114232_InitCreate2")]
+    partial class InitCreate2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -628,7 +628,7 @@ namespace Pacifica.API.Migrations
                     b.Property<DateTime>("DateAdded")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DeletedAt")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DeletedBy")
@@ -673,6 +673,45 @@ namespace Pacifica.API.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("Pacifica.API.Models.ProductAuditTrail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ActionBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("ActionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NewValue")
+                        .HasMaxLength(255)
+                        .HasColumnType("text");
+
+                    b.Property<string>("OldValue")
+                        .HasMaxLength(255)
+                        .HasColumnType("text");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductAuditTrails", (string)null);
+                });
+
             modelBuilder.Entity("Pacifica.API.Models.Status", b =>
                 {
                     b.Property<int>("Id")
@@ -682,9 +721,7 @@ namespace Pacifica.API.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(100)
@@ -698,9 +735,7 @@ namespace Pacifica.API.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
+                        .HasColumnType("bit");
 
                     b.Property<string>("StatusName")
                         .IsRequired()
@@ -852,9 +887,7 @@ namespace Pacifica.API.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(100)
@@ -868,9 +901,7 @@ namespace Pacifica.API.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
+                        .HasColumnType("bit");
 
                     b.Property<string>("TransactionReferenceName")
                         .IsRequired()
@@ -897,14 +928,12 @@ namespace Pacifica.API.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DeletedAt")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DeletedBy")
@@ -1071,6 +1100,17 @@ namespace Pacifica.API.Migrations
                     b.Navigation("Supplier");
                 });
 
+            modelBuilder.Entity("Pacifica.API.Models.ProductAuditTrail", b =>
+                {
+                    b.HasOne("Pacifica.API.Models.Product", "Product")
+                        .WithMany("ProductAuditTrails")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("Pacifica.API.Models.StockInOut", b =>
                 {
                     b.HasOne("Pacifica.API.Models.Branch", "Branch")
@@ -1137,6 +1177,8 @@ namespace Pacifica.API.Migrations
             modelBuilder.Entity("Pacifica.API.Models.Product", b =>
                 {
                     b.Navigation("BranchProducts");
+
+                    b.Navigation("ProductAuditTrails");
 
                     b.Navigation("StockInOuts");
                 });

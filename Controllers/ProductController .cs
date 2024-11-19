@@ -128,14 +128,17 @@ namespace Pacifica.API.Controllers
         }
 
         // DELETE: api/Product/5
-        [HttpDelete("{productId}/{employeeId}")]
-        public async Task<ActionResult<ApiResponse<object>>> DeleteProduct(int productId, string employeeId)
+        // DELETE: api/Product
+        [HttpDelete]
+        public async Task<ActionResult<ApiResponse<object>>> DeleteProducts([FromBody] ToDeletedProductsParam productsDelete)
         {
-            var response = await _productService.DeleteProductAsync(productId, employeeId);
+            // Call the service to delete products
+            var response = await _productService.DeleteProductsAsync(productsDelete);
 
+            // If the operation failed, return a NotFound response with the error message
             if (!response.Success)
             {
-                return NotFound(new ApiResponse<object>
+                return BadRequest(new ApiResponse<object>
                 {
                     Success = false,
                     Message = response.Message,
@@ -143,13 +146,15 @@ namespace Pacifica.API.Controllers
                 });
             }
 
+            // Return a success response with a success message
             return Ok(new ApiResponse<object>
             {
                 Success = true,
-                Message = $"Product {productId} is successfully deleted!",
+                Message = "Products successfully deleted!",
                 Data = null
             });
         }
+
 
 
         [HttpGet("GetFilteredProducts")]
@@ -183,7 +188,7 @@ namespace Pacifica.API.Controllers
 
 
         [HttpPost("restore-deleted")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<Product>>>> RestoreDeletedProducts([FromBody] DeletedProductIdsDto deletedProducts)
+        public async Task<ActionResult<ApiResponse<IEnumerable<Product>>>> RestoreDeletedProducts([FromBody] RestoreDeletedProductsParam deletedProducts)
         {
             if (deletedProducts == null || deletedProducts.ProductIds == null || !deletedProducts.ProductIds.Any())
             {

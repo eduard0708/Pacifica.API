@@ -22,6 +22,7 @@ using Pacifica.API.Services.TokenService;
 using Pacifica.API.Services.TransactionTypeService;
 using Pacifica.API.Services.StatusService;
 using Pacifica.API.Services.StockInOutService;
+using Pacifica.API;
 
 var builder = WebApplication.CreateBuilder(args);
 

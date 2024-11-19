@@ -132,24 +132,44 @@ namespace Pacifica.API.Services.ProductService
             }
         }
 
-        public async Task<ApiResponse<Product>> CreateProductAsync(Product product)
+        public async Task<ApiResponse<ProductDto>> CreateProductAsync(CreateProductDto product)
         {
             try
             {
-                _context.Products.Add(product);
+
+                var createProduct = _mapper.Map<Product>(product);
+                // Add the product to the database
+                _context.Products.Add(createProduct);
                 await _context.SaveChangesAsync();
 
-                return new ApiResponse<Product>
+                // Log the creation in ProductAuditTrail
+                var auditTrail = new ProductAuditTrail
+                {
+                    ProductId = createProduct.Id,
+                    Action = "Created",
+                    NewValue = $"ProductName: {createProduct.ProductName}, SKU: {createProduct.SKU}",
+                    ActionBy = createProduct.CreatedBy,
+                    ActionDate = DateTime.Now
+                };
+
+                // Add the audit trail to the context and save
+                _context.ProductAuditTrails.Add(auditTrail);
+                await _context.SaveChangesAsync();  // Save to get the audit trail ID
+
+
+                var createdProduct = _mapper.Map<ProductDto>(createProduct);
+                // Return success response
+                return new ApiResponse<ProductDto>
                 {
                     Success = true,
                     Message = "Product created successfully.",
-                    Data = product
+                    Data = createdProduct
                 };
             }
             catch (Exception ex)
             {
                 // Log exception
-                return new ApiResponse<Product>
+                return new ApiResponse<ProductDto>
                 {
                     Success = false,
                     Message = $"Error creating product: {ex.Message}",
@@ -278,50 +298,6 @@ namespace Pacifica.API.Services.ProductService
             }
         }
 
-        public async Task<ApiResponse<bool>> DeleteProductAsync(int productId, string employeeId)
-        {
-            try
-            {
-                var product = await _context.Products
-                    .Where(p => p.Id == productId && p.DeletedAt == null)  // Ensure product isn't already deleted
-                    .FirstOrDefaultAsync();
-
-                if (product == null)
-                {
-                    return new ApiResponse<bool>
-                    {
-                        Success = false,
-                        Message = "Product not found or already deleted.",
-                        Data = false
-                    };
-                }
-
-                // Soft delete the product
-                product.DeletedAt = DateTime.Now;
-                product.DeletedBy = employeeId;
-
-                // Save changes to the database
-                await _context.SaveChangesAsync();
-
-                return new ApiResponse<bool>
-                {
-                    Success = true,
-                    Message = "Product marked as deleted successfully.",
-                    Data = true
-                };
-            }
-            catch (Exception ex)
-            {
-                // Log exception
-                return new ApiResponse<bool>
-                {
-                    Success = false,
-                    Message = $"Error deleting product: {ex.Message}",
-                    Data = false
-                };
-            }
-        }
-
         public async Task<ApiResponse<List<AuditDetails>>> GetProductAuditDetailsAsync(int productId)
         {
             try
@@ -369,7 +345,7 @@ namespace Pacifica.API.Services.ProductService
             }
         }
 
-        public async Task<ApiResponse<IEnumerable<Product>>> RestoreDeletedProductsAsync(DeletedProductIdsDto deletedProducts)
+        public async Task<ApiResponse<IEnumerable<Product>>> RestoreDeletedProductsAsync(RestoreDeletedProductsParam deletedProducts)
         {
             var response = new ApiResponse<IEnumerable<Product>>();
 
@@ -422,5 +398,79 @@ namespace Pacifica.API.Services.ProductService
             }
         }
 
+        public async Task<ApiResponse<bool>> DeleteProductsAsync(ToDeletedProductsParam productsDelete)
+        {
+            try
+            {
+                // Ensure the ProductIds list is not null or empty
+                if (productsDelete.ProductIds == null || !productsDelete.ProductIds.Any())
+                {
+                    return new ApiResponse<bool>
+                    {
+                        Success = false,
+                        Message = "No products found to delete.",
+                        Data = false
+                    };
+                }
+
+                // The employee ID who is performing the deletion
+                var deletedBy = productsDelete.DeletedBy;
+
+                // Loop through each productId and perform the soft delete
+                foreach (var productId in productsDelete.ProductIds)
+                {
+                    var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
+                    if (product != null)
+                    {
+                        // Perform the soft delete
+                        product.DeletedAt = DateTime.Now;
+                        product.DeletedBy = deletedBy; // Associate the deletion with the employee
+
+                        // Update the product in the database
+                        _context.Products.Update(product);
+
+                        // Create the audit trail for the deleted product
+                        var auditTrail = new ProductAuditTrail
+                        {
+                            ProductId = product.Id,
+                            Action = "Deleted",
+                            NewValue = $"ProductName: {product.ProductName}, SKU: {product.SKU}",
+                            ActionBy = deletedBy,
+                            ActionDate = DateTime.Now
+                        };
+
+                        // Add the audit trail to the context
+                        _context.ProductAuditTrails.Add(auditTrail);
+                    }
+                }
+
+                // Save changes to the database (this will save both product updates and audit trails)
+                await _context.SaveChangesAsync();
+
+                return new ApiResponse<bool>
+                {
+                    Success = true,
+                    Message = "Products successfully deleted.",
+                    Data = true
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<bool>
+                {
+                    Success = false,
+                    Message = $"An error occurred while deleting products: {ex.Message}",
+                    Data = false
+                };
+            }
+        }
+
+        public Task<ApiResponse<Product>> CreateProductAsync(Product product)
+        {
+            throw new NotImplementedException();
+        }
     }
+
+
+
 }

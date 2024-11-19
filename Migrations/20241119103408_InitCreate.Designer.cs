@@ -12,7 +12,7 @@ using Pacifica.API.Data;
 namespace Pacifica.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241119072809_InitCreate")]
+    [Migration("20241119103408_InitCreate")]
     partial class InitCreate
     {
         /// <inheritdoc />

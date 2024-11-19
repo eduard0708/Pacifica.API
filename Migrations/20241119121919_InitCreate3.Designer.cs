@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pacifica.API.Data;
 
@@ -11,9 +12,11 @@ using Pacifica.API.Data;
 namespace Pacifica.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241119121919_InitCreate3")]
+    partial class InitCreate3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -699,14 +702,24 @@ namespace Pacifica.API.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("text");
 
+                    b.HasKey("Id");
+
+                    b.ToTable("ProductAuditTrails", (string)null);
+                });
+
+            modelBuilder.Entity("Pacifica.API.Models.ProductAuditTrailProduct", b =>
+                {
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.Property<int>("ProductAuditTrailId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("ProductId");
+                    b.HasKey("ProductId", "ProductAuditTrailId");
 
-                    b.ToTable("ProductAuditTrails", (string)null);
+                    b.HasIndex("ProductAuditTrailId");
+
+                    b.ToTable("ProductAuditTrailProducts");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Status", b =>
@@ -1097,15 +1110,23 @@ namespace Pacifica.API.Migrations
                     b.Navigation("Supplier");
                 });
 
-            modelBuilder.Entity("Pacifica.API.Models.ProductAuditTrail", b =>
+            modelBuilder.Entity("Pacifica.API.Models.ProductAuditTrailProduct", b =>
                 {
+                    b.HasOne("Pacifica.API.Models.ProductAuditTrail", "ProductAuditTrail")
+                        .WithMany("ProductAuditTrailProducts")
+                        .HasForeignKey("ProductAuditTrailId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Pacifica.API.Models.Product", "Product")
-                        .WithMany("ProductAuditTrails")
+                        .WithMany("ProductAuditTrailProducts")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Product");
+
+                    b.Navigation("ProductAuditTrail");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.StockInOut", b =>
@@ -1175,9 +1196,14 @@ namespace Pacifica.API.Migrations
                 {
                     b.Navigation("BranchProducts");
 
-                    b.Navigation("ProductAuditTrails");
+                    b.Navigation("ProductAuditTrailProducts");
 
                     b.Navigation("StockInOuts");
+                });
+
+            modelBuilder.Entity("Pacifica.API.Models.ProductAuditTrail", b =>
+                {
+                    b.Navigation("ProductAuditTrailProducts");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Status", b =>
