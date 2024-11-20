@@ -9,11 +9,14 @@ namespace Pacifica.API.Services.ProductService
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly ProductAuditTrailHelper _auditTrailHelper;
 
-        public ProductService(ApplicationDbContext context, IMapper mapper)
+        public ProductService(ApplicationDbContext context, IMapper mapper, ProductAuditTrailHelper auditTrailHelper)
         {
             _context = context;
             _mapper = mapper;
+            _auditTrailHelper = auditTrailHelper;
+
         }
 
         public async Task<ApiResponse<List<Product>>> GetAllProductsAsync()
@@ -442,6 +445,73 @@ namespace Pacifica.API.Services.ProductService
             }
         }
 
+        // public async Task<ApiResponse<bool>> DeleteProductsAsync(DeletedProductsParam productsDelete)
+        // {
+        //     try
+        //     {
+        //         // Ensure the ProductIds list is not null or empty
+        //         if (productsDelete.ProductIds == null || !productsDelete.ProductIds.Any())
+        //         {
+        //             return new ApiResponse<bool>
+        //             {
+        //                 Success = false,
+        //                 Message = "No products found to delete.",
+        //                 Data = false
+        //             };
+        //         }
+
+        //         // The employee ID who is performing the deletion
+        //         var deletedBy = productsDelete.DeletedBy;
+
+        //         // Loop through each productId and perform the soft delete
+        //         foreach (var productId in productsDelete.ProductIds)
+        //         {
+        //             var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
+        //             if (product != null)
+        //             {
+        //                 // Perform the soft delete
+        //                 product.DeletedAt = DateTime.Now;
+        //                 product.DeletedBy = deletedBy; // Associate the deletion with the employee
+
+        //                 // Update the product in the database
+        //                 _context.Products.Update(product);
+
+        //                 // Create the audit trail for the deleted product
+        //                 var auditTrail = new ProductAuditTrail
+        //                 {
+        //                     ProductId = product.Id,
+        //                     Action = "Deleted",
+        //                     NewValue = $"ProductName: {product.ProductName}, SKU: {product.SKU}",
+        //                     ActionBy = deletedBy,
+        //                     ActionDate = DateTime.Now
+        //                 };
+
+        //                 // Add the audit trail to the context
+        //                 _context.ProductAuditTrails.Add(auditTrail);
+        //             }
+        //         }
+
+        //         // Save changes to the database (this will save both product updates and audit trails)
+        //         await _context.SaveChangesAsync();
+
+        //         return new ApiResponse<bool>
+        //         {
+        //             Success = true,
+        //             Message = "Products successfully deleted.",
+        //             Data = true
+        //         };
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return new ApiResponse<bool>
+        //         {
+        //             Success = false,
+        //             Message = $"An error occurred while deleting products: {ex.Message}",
+        //             Data = false
+        //         };
+        //     }
+        // }
+
         public async Task<ApiResponse<bool>> DeleteProductsAsync(DeletedProductsParam productsDelete)
         {
             try
@@ -473,18 +543,8 @@ namespace Pacifica.API.Services.ProductService
                         // Update the product in the database
                         _context.Products.Update(product);
 
-                        // Create the audit trail for the deleted product
-                        var auditTrail = new ProductAuditTrail
-                        {
-                            ProductId = product.Id,
-                            Action = "Deleted",
-                            NewValue = $"ProductName: {product.ProductName}, SKU: {product.SKU}",
-                            ActionBy = deletedBy,
-                            ActionDate = DateTime.Now
-                        };
-
-                        // Add the audit trail to the context
-                        _context.ProductAuditTrails.Add(auditTrail);
+                        // Use AuditTrailHelper to create the audit trail
+                        await _auditTrailHelper.LogDeleteAuditAsync(product, deletedBy!);
                     }
                 }
 
