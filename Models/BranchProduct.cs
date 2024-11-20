@@ -30,6 +30,16 @@ public class BranchProduct
     [Range(0, int.MaxValue, ErrorMessage = "Stock quantity cannot be negative.")]
     public int StockQuantity { get; set; }
 
+
+    // Reorder level for the product (stock threshold for reordering)
+    [Required]  // Ensures ReorderLevel is provided
+    public int ReorderLevel { get; set; }
+
+    // Minimum stock level for the product
+    [Required]  // Ensures MinStockLevel is provided
+    public int MinStockLevel { get; set; }
+
+
     [StringLength(1000, ErrorMessage = "Creator's name cannot exceed 100 characters.")]
     public string? Remarks { get; set; }
 

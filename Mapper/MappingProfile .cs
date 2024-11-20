@@ -7,6 +7,7 @@ using Pacifica.API.Dtos.Supplier;
 using Pacifica.API.Dtos.TransactionReference;
 using Pacifica.API.Dtos.Admin;
 using Pacifica.API.Dtos.StockInOut;
+using Pacifica.API.Dtos.AuditTrails;
 
 namespace Pacifica.API.Mapper
 {
@@ -41,12 +42,13 @@ namespace Pacifica.API.Mapper
             CreateMap<Branch, BranchProduct_BranchDto>().ReverseMap();
 
 
-            CreateMap<Product, ProductDto>().ReverseMap();
+            CreateMap<Product, ProductDto>()
+                    .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category!.CategoryName))
+                    .ForMember(dest => dest.Supplier, opt => opt.MapFrom(src => src.Supplier!.SupplierName));
+
             CreateMap<Product, CreateProductDto>().ReverseMap();
             CreateMap<Product, UpdateProductDto>().ReverseMap();
             CreateMap<Product, DeletetedProductsDto>().ReverseMap();
-
-
 
             CreateMap<Supplier, SupplierDto>().ReverseMap();
             CreateMap<Supplier, CreateSupplierDto>().ReverseMap();
@@ -74,7 +76,14 @@ namespace Pacifica.API.Mapper
             CreateMap<CreateStockInOutDto, StockInOut>();
             CreateMap<GetByReferenceNumberStockInOutDto, StockInOut>().ReverseMap();
 
-
+            // Map ProductAuditTrail to ProductAuditTrailsDto
+            CreateMap<ProductAuditTrail, ProductAuditTrailsDto>()
+                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
+                .ForMember(dest => dest.Action, opt => opt.MapFrom(src => src.Action))
+                .ForMember(dest => dest.NewValue, opt => opt.MapFrom(src => src.NewValue))
+                .ForMember(dest => dest.Remarks, opt => opt.MapFrom(src => src.Remarks))
+                .ForMember(dest => dest.ActionBy, opt => opt.MapFrom(src => src.ActionBy))
+                .ForMember(dest => dest.ActionDate, opt => opt.MapFrom(src => src.ActionDate)).ReverseMap();
         }
     }
 }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Pacifica.API.Dtos.AuditTrails;
 using Pacifica.API.Dtos.BranchProduct;
 using Pacifica.API.Dtos.Product;
 using Pacifica.API.Services.ProductService;
@@ -23,6 +24,7 @@ namespace Pacifica.API.Controllers
         public async Task<ActionResult<ApiResponse<IEnumerable<ProductDto>>>> GetProducts()
         {
             var response = await _productService.GetAllProductsAsync();
+            
             var productDtos = _mapper.Map<IEnumerable<ProductDto>>(response.Data);
             return Ok(new ApiResponse<IEnumerable<ProductDto>>
             {
@@ -65,21 +67,13 @@ namespace Pacifica.API.Controllers
             });
         }
 
-
         // POST: api/Product/CreateMultiple
-        [HttpPost("CreateMultiple")]
+        [HttpPost]
         public async Task<ActionResult<ApiResponse<IEnumerable<ProductDto>>>> CreateMultipleProducts([FromBody] List<CreateProductDto> productDtos)
         {
-            // List to hold the created product DTOs
-            var createdProducts = new List<ProductDto>();
-
-            foreach (var productDto in productDtos)
-            {
-                // Map the DTO to the Product model
-                var product = _mapper.Map<Product>(productDto);
 
                 // Create the product via the service
-                var response = await _productService.CreateProductAsync(product);
+                var response = await _productService.CreateProductsAsync(productDtos);
 
                 if (!response.Success)
                 {
@@ -88,21 +82,17 @@ namespace Pacifica.API.Controllers
                     {
                         Success = false,
                         Message = $"Failed to create product: {response.Message}",
-                        Data = createdProducts
+                        Data = null
                     });
                 }
 
-                // Map the created product to a DTO and add it to the list
-                var createdProductDto = _mapper.Map<ProductDto>(response.Data);
-                createdProducts.Add(createdProductDto);
-            }
 
             // Return the list of created products
             return Ok(new ApiResponse<IEnumerable<ProductDto>>
             {
                 Success = true,
                 Message = "Products created successfully.",
-                Data = createdProducts
+                Data = response.Data
             });
         }
 
@@ -127,10 +117,9 @@ namespace Pacifica.API.Controllers
             });
         }
 
-        // DELETE: api/Product/5
         // DELETE: api/Product
         [HttpDelete]
-        public async Task<ActionResult<ApiResponse<object>>> DeleteProducts([FromBody] ToDeletedProductsParam productsDelete)
+        public async Task<ActionResult<ApiResponse<object>>> DeleteProducts([FromBody] DeletedProductsParam productsDelete)
         {
             // Call the service to delete products
             var response = await _productService.DeleteProductsAsync(productsDelete);
@@ -155,15 +144,10 @@ namespace Pacifica.API.Controllers
             });
         }
 
-
-
         [HttpGet("GetFilteredProducts")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<GetFilter_Products>>>> GetFilteredProducts(
-              [FromQuery] string? category = null,
-              [FromQuery] string? sku = null,
-              [FromQuery] string? productName = null)
+        public async Task<ActionResult<ApiResponse<IEnumerable<GetFilter_Products>>>> GetFilteredProducts([FromQuery] ProductFilterParams productFilter)
         {
-            var response = await _productService.GetFilterProductsAsync(category, sku, productName);
+            var response = await _productService.GetFilterProductsAsync(productFilter);
 
             if (!response.Success)
             {
@@ -186,7 +170,6 @@ namespace Pacifica.API.Controllers
             return Ok(response);
         }
 
-
         [HttpPost("restore-deleted")]
         public async Task<ActionResult<ApiResponse<IEnumerable<Product>>>> RestoreDeletedProducts([FromBody] RestoreDeletedProductsParam deletedProducts)
         {
@@ -205,6 +188,19 @@ namespace Pacifica.API.Controllers
             if (!response.Success)
             {
                 return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+        // GET: api/Product/AuditDetails/5
+        [HttpGet("ProductAuditTrails/{productId}")]
+        public async Task<ActionResult<ApiResponse<List<ProductAuditTrailsDto>>>> GetProductAuditTraisl(int productId)
+        {
+            var response = await _productService.GetProductAuditTrailsAsync(productId);
+            if (!response.Success)
+            {
+                return NotFound(response);
             }
 
             return Ok(response);

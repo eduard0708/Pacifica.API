@@ -32,6 +32,15 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers(); // **This is the fix**
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+        options.JsonSerializerOptions.ReferenceHandler = null;
+        options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+    });
+
+
 // Adding the DbContext to the service container
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")

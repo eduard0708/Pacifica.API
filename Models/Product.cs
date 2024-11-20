@@ -14,23 +14,8 @@ namespace Pacifica.API.Models
         [StringLength(50)]  // Limits the length of the SKU
         public string SKU { get; set; } = string.Empty;
 
-        [Required]
-        public DateTime DateAdded { get; set; }
-
-        // Date when the product was last updated
-        public DateTime LastUpdated { get; set; }
-
-        // Reorder level for the product (stock threshold for reordering)
-        [Required]  // Ensures ReorderLevel is provided
-        public int ReorderLevel { get; set; }
-
-        // Minimum stock level for the product
-        [Required]  // Ensures MinStockLevel is provided
-        public int MinStockLevel { get; set; }
-
-
-        [Required]  // Ensures ProductStatus is provided
-        [StringLength(50)]  // Limits the length of ProductStatus
+        [StringLength(1500)]  // Limits the length of the SKU
+        public string Remarks { get; set; } = string.Empty;
 
         // Foreign Key: Relates the product to its category
         public int CategoryId { get; set; }

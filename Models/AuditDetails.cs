@@ -9,7 +9,6 @@ namespace Pacifica.API.Models
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public string? CreatedBy { get; set; }
         
-
         public DateTime? UpdatedAt { get; set; }
 
         [StringLength(100)]

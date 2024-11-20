@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Pacifica.API.Dtos.AuditTrails;
 using Pacifica.API.Dtos.BranchProduct;
 using Pacifica.API.Dtos.Product;
 
@@ -15,7 +16,7 @@ namespace Pacifica.API.Services.ProductService
             _mapper = mapper;
         }
 
-        public async Task<ApiResponse<IEnumerable<Product>>> GetAllProductsAsync()
+        public async Task<ApiResponse<List<Product>>> GetAllProductsAsync()
         {
             try
             {
@@ -27,7 +28,7 @@ namespace Pacifica.API.Services.ProductService
 
                 if (!products.Any())
                 {
-                    return new ApiResponse<IEnumerable<Product>>
+                    return new ApiResponse<List<Product>>
                     {
                         Success = false,
                         Message = "No products found.",
@@ -35,7 +36,7 @@ namespace Pacifica.API.Services.ProductService
                     };
                 }
 
-                return new ApiResponse<IEnumerable<Product>>
+                return new ApiResponse<List<Product>>
                 {
                     Success = true,
                     Message = "Products retrieved successfully.",
@@ -45,7 +46,7 @@ namespace Pacifica.API.Services.ProductService
             catch (Exception ex)
             {
                 // Log exception (log framework such as Serilog, NLog, etc. can be used here)
-                return new ApiResponse<IEnumerable<Product>>
+                return new ApiResponse<List<Product>>
                 {
                     Success = false,
                     Message = $"Error retrieving products: {ex.Message}",
@@ -132,47 +133,58 @@ namespace Pacifica.API.Services.ProductService
             }
         }
 
-        public async Task<ApiResponse<ProductDto>> CreateProductAsync(CreateProductDto product)
+        public async Task<ApiResponse<List<ProductDto>>> CreateProductsAsync(List<CreateProductDto> productDtos)
         {
             try
             {
+                var products = _mapper.Map<List<Product>>(productDtos);  // Map list of DTOs to a list of Product entities
 
-                var createProduct = _mapper.Map<Product>(product);
-                // Add the product to the database
-                _context.Products.Add(createProduct);
-                await _context.SaveChangesAsync();
-
-                // Log the creation in ProductAuditTrail
-                var auditTrail = new ProductAuditTrail
+                foreach (var product in products)
                 {
-                    ProductId = createProduct.Id,
-                    Action = "Created",
-                    NewValue = $"ProductName: {createProduct.ProductName}, SKU: {createProduct.SKU}",
-                    ActionBy = createProduct.CreatedBy,
-                    ActionDate = DateTime.Now
-                };
+                    // Add the product to the database
+                    _context.Products.Add(product);
+                }
 
-                // Add the audit trail to the context and save
-                _context.ProductAuditTrails.Add(auditTrail);
-                await _context.SaveChangesAsync();  // Save to get the audit trail ID
+                await _context.SaveChangesAsync();  // Save all products in one go
 
+                // Log the creation in ProductAuditTrail for each product
+                var auditTrails = new List<ProductAuditTrail>();
 
-                var createdProduct = _mapper.Map<ProductDto>(createProduct);
-                // Return success response
-                return new ApiResponse<ProductDto>
+                foreach (var product in products)
+                {
+                    var auditTrail = new ProductAuditTrail
+                    {
+                        ProductId = product.Id,
+                        Action = "Created",
+                        NewValue = $"ProductName: {product.ProductName}, SKU: {product.SKU}",
+                        ActionBy = product.CreatedBy,
+                        ActionDate = DateTime.Now
+                    };
+
+                    auditTrails.Add(auditTrail);  // Add the audit trail for each product
+                }
+
+                _context.ProductAuditTrails.AddRange(auditTrails);  // Bulk insert audit trails
+                await _context.SaveChangesAsync();  // Save the audit trails
+
+                // Map the created products to DTOs
+                var createdProducts = _mapper.Map<List<ProductDto>>(products);
+
+                // Return success response with the list of created product DTOs
+                return new ApiResponse<List<ProductDto>>
                 {
                     Success = true,
-                    Message = "Product created successfully.",
-                    Data = createdProduct
+                    Message = "Products created successfully.",
+                    Data = createdProducts
                 };
             }
             catch (Exception ex)
             {
                 // Log exception
-                return new ApiResponse<ProductDto>
+                return new ApiResponse<List<ProductDto>>
                 {
                     Success = false,
-                    Message = $"Error creating product: {ex.Message}",
+                    Message = $"Error creating products: {ex.Message}",
                     Data = null
                 };
             }
@@ -193,15 +205,34 @@ namespace Pacifica.API.Services.ProductService
                     };
                 }
 
+                // Save original values for audit trail
+                var originalProductName = existingProduct.ProductName;
+                var originalSKU = existingProduct.SKU;
+                var originalCategoryId = existingProduct.CategoryId;
+                var originalSupplierId = existingProduct.SupplierId;
+
                 // Update fields
                 existingProduct.ProductName = product.ProductName;
                 existingProduct.SKU = product.SKU;
-                existingProduct.ReorderLevel = product.ReorderLevel;
-                existingProduct.MinStockLevel = product.MinStockLevel;
                 existingProduct.UpdatedAt = DateTime.Now;
                 existingProduct.UpdatedBy = product.UpdatedBy;
 
                 _context.Products.Update(existingProduct);
+
+                // Create audit trail with old and new values
+                var auditTrail = new ProductAuditTrail
+                {
+                    ProductId = existingProduct.Id, // Use the actual ID from the database
+                    Action = "Updated",
+                    OldValue = $"ProductName: {originalProductName}, SKU: {originalSKU}, CategoryId: {originalCategoryId}, SupplierId: {originalSupplierId}",
+                    NewValue = $"ProductName: {product.ProductName}, SKU: {product.SKU}, CategoryId: {product.CategoryId}, SupplierId: {product.SupplierId}",
+                    ActionBy = product.UpdatedBy,
+                    Remarks = product.Remarks,
+                    ActionDate = DateTime.Now
+                };
+
+                _context.ProductAuditTrails.Add(auditTrail);
+
                 await _context.SaveChangesAsync();
 
                 return new ApiResponse<Product>
@@ -223,7 +254,7 @@ namespace Pacifica.API.Services.ProductService
             }
         }
 
-        public async Task<ApiResponse<IEnumerable<GetFilter_Products>>> GetFilterProductsAsync(string? category = null, string? sku = null, string? productName = null)
+        public async Task<ApiResponse<IEnumerable<GetFilter_Products>>> GetFilterProductsAsync(ProductFilterParams productFilter)
         {
             try
             {
@@ -232,20 +263,20 @@ namespace Pacifica.API.Services.ProductService
                     .Where(p => p.DeletedAt == null);
 
                 // Apply filters for Category, SKU, ProductStatus, and ProductName if provided
-                if (!string.IsNullOrEmpty(category))
+                if (!string.IsNullOrEmpty(productFilter.Category))
                 {
-                    productQuery = productQuery.Where(p => p.Category!.CategoryName!.Contains(category));
+                    productQuery = productQuery.Where(p => p.Category!.CategoryName!.Contains(productFilter.Category));
                 }
 
-                if (!string.IsNullOrEmpty(sku))
+                if (!string.IsNullOrEmpty(productFilter.SKU))
                 {
-                    productQuery = productQuery.Where(p => p.SKU.Contains(sku));
+                    productQuery = productQuery.Where(p => p.SKU.Contains(productFilter.SKU));
                 }
 
 
-                if (!string.IsNullOrEmpty(productName))
+                if (!string.IsNullOrEmpty(productFilter.ProductName))
                 {
-                    productQuery = productQuery.Where(p => p.ProductName.Contains(productName));
+                    productQuery = productQuery.Where(p => p.ProductName.Contains(productFilter.ProductName));
                 }
 
                 productQuery = productQuery
@@ -379,6 +410,19 @@ namespace Pacifica.API.Services.ProductService
                 {
                     product.DeletedAt = null; // Restore by setting DeletedAt to null
                     product.DeletedBy = null; // Optionally clear DeletedBy if necessary
+
+                    // Create the audit trail for the deleted product
+                    var auditTrail = new ProductAuditTrail
+                    {
+                        ProductId = product.Id,
+                        Action = "Restore",
+                        NewValue = $"ProductName: {product.ProductName}, SKU: {product.SKU}",
+                        ActionBy = deletedProducts.RestoredBy,
+                        ActionDate = DateTime.Now
+                    };
+
+                    // Add the audit trail to the context
+                    _context.ProductAuditTrails.Add(auditTrail);
                 }
 
                 await _context.SaveChangesAsync();
@@ -398,7 +442,7 @@ namespace Pacifica.API.Services.ProductService
             }
         }
 
-        public async Task<ApiResponse<bool>> DeleteProductsAsync(ToDeletedProductsParam productsDelete)
+        public async Task<ApiResponse<bool>> DeleteProductsAsync(DeletedProductsParam productsDelete)
         {
             try
             {
@@ -465,12 +509,47 @@ namespace Pacifica.API.Services.ProductService
             }
         }
 
-        public Task<ApiResponse<Product>> CreateProductAsync(Product product)
+        public async Task<ApiResponse<List<ProductAuditTrailsDto>>> GetProductAuditTrailsAsync(int productId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                // Fetch product audit trails for the given productId
+                var productTrails = await _context.ProductAuditTrails
+                    .Where(p => p.ProductId == productId)
+                    .ToListAsync();
+
+                // Check if any audit trails were found
+                if (productTrails == null || productTrails.Count == 0)
+                {
+                    return new ApiResponse<List<ProductAuditTrailsDto>>
+                    {
+                        Success = false,
+                        Message = "No audit trails found for the specified product.",
+                        Data = null
+                    };
+                }
+
+                // Map the list of ProductAuditTrail entities to the list of ProductAuditTrailsDto
+                var auditTrails = _mapper.Map<List<ProductAuditTrailsDto>>(productTrails);
+
+                return new ApiResponse<List<ProductAuditTrailsDto>>
+                {
+                    Success = true,
+                    Message = "Audit details retrieved successfully.",
+                    Data = auditTrails
+                };
+            }
+            catch (Exception ex)
+            {
+                // Log exception
+                return new ApiResponse<List<ProductAuditTrailsDto>>
+                {
+                    Success = false,
+                    Message = $"Error retrieving audit details: {ex.Message}",
+                    Data = null
+                };
+            }
         }
+
     }
-
-
-
 }
