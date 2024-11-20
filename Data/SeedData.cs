@@ -87,16 +87,16 @@ namespace Pacifica.API
             if (!context.Products.Any())
             {
                 context.Products.AddRange(
-                new Product { ProductName = "Fish Food A", SKU = "SKU001", CategoryId = 1, SupplierId = 1 },
-                new Product { ProductName = "Aquarium Filter", SKU = "SKU002", CategoryId = 2, SupplierId = 2 },
-                new Product { ProductName = "Hog Feed B", SKU = "SKU003", CategoryId = 3, SupplierId = 3 },
-                new Product { ProductName = "Chicken Feed C", SKU = "SKU004", CategoryId = 4, SupplierId = 4 },
-                new Product { ProductName = "Bird Feed D", SKU = "SKU005", CategoryId = 5, SupplierId = 5 },
-                new Product { ProductName = "Dog Food E", SKU = "SKU006", CategoryId = 6, SupplierId = 6 },
-                new Product { ProductName = "Cat Food F", SKU = "SKU007", CategoryId = 7, SupplierId = 7 },
-                new Product { ProductName = "Pet Toy G", SKU = "SKU008", CategoryId = 8, SupplierId = 8 },
-                new Product { ProductName = "Aquarium Heater H", SKU = "SKU009", CategoryId = 9, SupplierId = 9 },
-                new Product { ProductName = "Small Animal Feed I", SKU = "SKU010", CategoryId = 10, SupplierId = 10 }
+                new Product { ProductName = "Fish Food A", SKU = "SKU001", CategoryId = 1, SupplierId = 1, Remarks = "High-quality fish food", CreatedBy = "Admin" },
+                new Product { ProductName = "Aquarium Filter", SKU = "SKU002", CategoryId = 2, SupplierId = 2, Remarks = "Efficient filtration", CreatedBy = "Admin" },
+                new Product { ProductName = "Hog Feed B", SKU = "SKU003", CategoryId = 3, SupplierId = 3, Remarks = "Specialized feed for hogs", CreatedBy = "Admin" },
+                new Product { ProductName = "Chicken Feed C", SKU = "SKU004", CategoryId = 4, SupplierId = 4, Remarks = "Nutritious feed for chickens", CreatedBy = "Admin" },
+                new Product { ProductName = "Bird Feed D", SKU = "SKU005", CategoryId = 5, SupplierId = 5, Remarks = "Suitable for various bird species", CreatedBy = "Admin" },
+                new Product { ProductName = "Dog Food E", SKU = "SKU006", CategoryId = 6, SupplierId = 6, Remarks = "Healthy food for dogs", CreatedBy = "Admin" },
+                new Product { ProductName = "Cat Food F", SKU = "SKU007", CategoryId = 7, SupplierId = 7, Remarks = "Premium food for cats", CreatedBy = "Admin" },
+                new Product { ProductName = "Pet Toy G", SKU = "SKU008", CategoryId = 8, SupplierId = 8, Remarks = "Durable toy for pets", CreatedBy = "Admin" },
+                new Product { ProductName = "Aquarium Heater H", SKU = "SKU009", CategoryId = 9, SupplierId = 9, Remarks = "Heater for maintaining water temperature", CreatedBy = "Admin" },
+                new Product { ProductName = "Small Animal Feed I", SKU = "SKU010", CategoryId = 10, SupplierId = 10, Remarks = "Food for small animals", CreatedBy = "Admin" }
 
                 );
                 context.SaveChanges(); // Save products
@@ -116,20 +116,22 @@ namespace Pacifica.API
                     context.BranchProducts.Add(new BranchProduct
                     {
                         BranchId = branch.Id,
-                        ProductId = products[i % products.Count].Id,  // Using modulus to loop through products
+                        ProductId = products[i % products.Count].Id,  // Loop through products using modulus
                         StatusId = statusId,
                         CostPrice = 10.00m,  // Sample price
                         RetailPrice = 15.00m,  // Sample retail price
                         StockQuantity = 100,  // Sample stock quantity
-                        IsActive = true,
+                        ReorderLevel = 10,  // Sample reorder level
+                        MinStockLevel = 5,  // Sample minimum stock level
+                        Remarks = "From Seed Data", 
+                        CreatedAt = DateTime.UtcNow,  // Use current UTC time
                         CreatedBy = createdBy
                     });
                 }
             }
 
             // Save BranchProduct records
-            context.SaveChanges(); // THIS WAS MISSING IN YOUR ORIGINAL CODE
-
+            context.SaveChanges(); 
         }
     }
 }

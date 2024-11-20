@@ -5,7 +5,7 @@
 namespace Pacifica.API.Migrations
 {
     /// <inheritdoc />
-    public partial class InitCreate4 : Migration
+    public partial class AddBranchProductAuditTrai33 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Pacifica.API.Dtos.AuditTrails;
 using Pacifica.API.Dtos.BranchProduct;
 using Pacifica.API.Dtos.Product;
+using Pacifica.API.Models.GlobalAuditTrails;
 
 namespace Pacifica.API.Services.ProductService
 {
@@ -90,6 +91,48 @@ namespace Pacifica.API.Services.ProductService
                 {
                     Success = false,
                     Message = $"Error retrieving products: {ex.Message}",
+                    Data = null
+                };
+            }
+        }
+
+        public async Task<ApiResponse<Product>> GetDeletedProductByIdAsync(int productId)
+        {
+            try
+            {
+                // Query for a soft-deleted product by productId, including related Category and Supplier
+                var product = await _context.Products
+                    .IgnoreQueryFilters() // Disable all global query filters (like the soft delete filter)
+                    .Where(p => p.DeletedAt != null && p.Id == productId) // Only deleted products with matching productId
+                    .Include(p => p.Category)  // Include related Category
+                    .Include(p => p.Supplier)  // Include related Supplier
+                    .FirstOrDefaultAsync(); // Retrieve a single product or null
+
+                // If no product found
+                if (product == null)
+                {
+                    return new ApiResponse<Product>
+                    {
+                        Success = false,
+                        Message = "No deleted product found.",
+                        Data = null
+                    };
+                }
+
+                return new ApiResponse<Product>
+                {
+                    Success = true,
+                    Message = "Deleted product retrieved successfully.",
+                    Data = product
+                };
+            }
+            catch (Exception ex)
+            {
+                // Log exception (use a logging framework here)
+                return new ApiResponse<Product>
+                {
+                    Success = false,
+                    Message = $"Error retrieving deleted product: {ex.Message}",
                     Data = null
                 };
             }
@@ -417,6 +460,7 @@ namespace Pacifica.API.Services.ProductService
                         ProductId = product.Id,
                         Action = "Restore",
                         NewValue = $"ProductName: {product.ProductName}, SKU: {product.SKU}",
+                        Remarks = deletedProducts.Remarks,
                         ActionBy = deletedProducts.RestoredBy,
                         ActionDate = DateTime.Now
                     };
@@ -479,6 +523,7 @@ namespace Pacifica.API.Services.ProductService
                             ProductId = product.Id,
                             Action = "Deleted",
                             NewValue = $"ProductName: {product.ProductName}, SKU: {product.SKU}",
+                            Remarks = productsDelete.Remarks,
                             ActionBy = deletedBy,
                             ActionDate = DateTime.Now
                         };

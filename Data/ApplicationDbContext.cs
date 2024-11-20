@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Pacifica.API.Models.GlobalAuditTrails;
 
 namespace Pacifica.API.Data
 {
@@ -31,7 +32,9 @@ namespace Pacifica.API.Data
     public DbSet<TransactionReference> TransactionReferences { get; set; }
     public DbSet<TransactionType> TransactionTypes { get; set; }
     public DbSet<Status> Statuses { get; set; }
+    public DbSet<BranchProductAuditTrail> BranchProductAuditTrails { get; set; }
     public DbSet<ProductAuditTrail> ProductAuditTrails { get; set; }
+
 
     // Configurations for model building
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -113,9 +116,8 @@ namespace Pacifica.API.Data
       // Configure BranchProduct entity
       modelBuilder.Entity<BranchProduct>(entity =>
       {
-        entity.HasKey(bp => new { bp.BranchId, bp.ProductId });
+        entity.HasKey(bp => new { bp.BranchId, bp.ProductId }); // Composite primary key
         entity.Property(bp => bp.CreatedAt).HasDefaultValueSql("GETDATE()");
-        entity.Property(bp => bp.IsActive).HasDefaultValue(true);
 
         entity.HasOne(bp => bp.Branch)
                   .WithMany(b => b.BranchProducts)
@@ -131,7 +133,37 @@ namespace Pacifica.API.Data
                   .WithMany(p => p.BranchProducts)
                   .HasForeignKey(bp => bp.StatusId)
                   .OnDelete(DeleteBehavior.Cascade);
+
+
+        // Link to the Audit Trails
+
+        // Link to the Audit Trails
+        entity.HasMany(bp => bp.BranchProductAuditTrails)
+            .WithOne(bpat => bpat.BranchProduct)
+            .HasForeignKey(bpat => new { bpat.BranchId, bpat.ProductId })  // Adjusted to match the composite key
+            .OnDelete(DeleteBehavior.Restrict);
       });
+
+      // Configure BranchProductAuditTrail entity
+      modelBuilder.Entity<BranchProductAuditTrail>(entity =>
+      {
+        entity.ToTable("BranchProductAuditTrails");
+        entity.HasKey(e => e.Id);
+
+        entity.Property(e => e.Action).IsRequired().HasMaxLength(50);
+        entity.Property(e => e.ActionBy).IsRequired().HasMaxLength(200);
+        entity.Property(e => e.ActionDate).IsRequired();
+        entity.Property(e => e.OldValue).HasColumnType("text");
+        entity.Property(e => e.NewValue).HasColumnType("text");
+
+        entity.HasOne(bpat => bpat.BranchProduct)
+        .WithMany(bp => bp.BranchProductAuditTrails)
+        .HasForeignKey(bpat => new { bpat.BranchId, bpat.ProductId }) // Use both BranchId and ProductId as foreign key
+        .OnDelete(DeleteBehavior.Restrict)
+        .IsRequired(); // Make the relationship optional
+        
+      });
+
 
       // Configure Product entity
       modelBuilder.Entity<Product>(entity =>
@@ -170,11 +202,12 @@ namespace Pacifica.API.Data
         entity.Property(e => e.OldValue).HasColumnType("text");
         entity.Property(e => e.NewValue).HasColumnType("text");
 
-
         entity.HasOne(pa => pa.Product)  // Link to Product
                      .WithMany(p => p.ProductAuditTrails)  // A Product can have many ProductAuditTrailProducts
                      .HasForeignKey(patp => patp.ProductId)
-                     .OnDelete(DeleteBehavior.Restrict);
+                     .OnDelete(DeleteBehavior.Restrict)
+                     .IsRequired(); // Make the relationship optional
+
       });
 
       // Configure StockInOut entity
@@ -212,7 +245,8 @@ namespace Pacifica.API.Data
       modelBuilder.Entity<EmployeeBranch>().HasQueryFilter(eb => eb.DeletedAt == null);
       modelBuilder.Entity<EmployeeProfile>().HasQueryFilter(ep => ep.DeletedAt == null);
       modelBuilder.Entity<StockInOut>().HasQueryFilter(st => st.DeletedAt == null);
-
+      modelBuilder.Entity<ProductAuditTrail>().HasQueryFilter(pat => pat.Product.DeletedAt == null);
+      modelBuilder.Entity<BranchProductAuditTrail>().HasQueryFilter(bpat => bpat.BranchProduct.DeletedAt == null);
     }
   }
 }

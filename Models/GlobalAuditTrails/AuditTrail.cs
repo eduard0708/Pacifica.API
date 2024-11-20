@@ -1,21 +1,20 @@
 using System.ComponentModel.DataAnnotations;
+using System;
 
-namespace Pacifica.API.Models
+namespace Pacifica.API.Models.GlobalAuditTrails
 {
-    public class ProductAuditTrail
+    public class AuditTrail<T> where T : class
     {
         [Key]
         public int Id { get; set; }
 
-        public int ProductId { get; set; }
-        
+        public int EntityId { get; set; } // Reference to the EntityId (e.g., ProductId, BranchProductId)
+
         [Required]
         public string Action { get; set; } = string.Empty; // "Created", "Updated", "Deleted", or "Restored"
 
-        [StringLength(255)]
         public string? OldValue { get; set; } // JSON or string representation of old data
 
-        [StringLength(255)]
         public string? NewValue { get; set; } // JSON or string representation of new data
 
         [Required]
@@ -25,10 +24,9 @@ namespace Pacifica.API.Models
         public string? ActionBy { get; set; } // User who performed the action
 
         [StringLength(1500)]
-        public string? Remarks { get; set; } // User who performed the action
+        public string? Remarks { get; set; } // Optional field to store additional notes
 
-        public Product? Product { get; set; }
-
-
+        // Navigation properties
+        public T? Entity { get; set; } // This will be either Product, BranchProduct, etc.
     }
 }

@@ -8,6 +8,7 @@ namespace Pacifica.API.Services.ProductService
     {
         Task<ApiResponse<List<Product>>> GetAllProductsAsync();
         Task<ApiResponse<IEnumerable<Product>>> GetAllDeletedProductsAsync();
+        Task<ApiResponse<Product>> GetDeletedProductByIdAsync(int productId);
         Task<ApiResponse<Product>> GetProductByIdAsync(int id);
         Task<ApiResponse<List<ProductDto>>> CreateProductsAsync(List<CreateProductDto> product);
         Task<ApiResponse<Product>> UpdateProductAsync(int id, Product product);

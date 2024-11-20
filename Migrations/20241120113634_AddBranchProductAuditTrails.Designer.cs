@@ -12,8 +12,8 @@ using Pacifica.API.Data;
 namespace Pacifica.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241119114232_InitCreate2")]
-    partial class InitCreate2
+    [Migration("20241120113634_AddBranchProductAuditTrails")]
+    partial class AddBranchProductAuditTrails
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,20 +42,24 @@ namespace Pacifica.API.Migrations
                         .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("MinStockLevel")
+                        .HasColumnType("int");
 
                     b.Property<string>("Remarks")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasMaxLength(1500)
+                        .HasColumnType("nvarchar(1500)");
+
+                    b.Property<int>("ReorderLevel")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("RetailPrice")
                         .HasColumnType("decimal(18,2)");
@@ -605,6 +609,107 @@ namespace Pacifica.API.Migrations
                     b.ToTable("EmployeeProfiles");
                 });
 
+            modelBuilder.Entity("Pacifica.API.Models.GlobalAuditTrails.BranchProductAuditTrail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ActionBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("ActionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EntityBranchId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EntityId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EntityProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NewValue")
+                        .HasColumnType("text");
+
+                    b.Property<string>("OldValue")
+                        .HasColumnType("text");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(1500)
+                        .HasColumnType("nvarchar(1500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchId", "ProductId");
+
+                    b.HasIndex("EntityBranchId", "EntityProductId");
+
+                    b.ToTable("BranchProductAuditTrails", (string)null);
+                });
+
+            modelBuilder.Entity("Pacifica.API.Models.GlobalAuditTrails.ProductAuditTrail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ActionBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("ActionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EntityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NewValue")
+                        .HasColumnType("text");
+
+                    b.Property<string>("OldValue")
+                        .HasColumnType("text");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(1500)
+                        .HasColumnType("nvarchar(1500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntityId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductAuditTrails", (string)null);
+                });
+
             modelBuilder.Entity("Pacifica.API.Models.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -614,7 +719,6 @@ namespace Pacifica.API.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CategoryId")
-                        .HasMaxLength(50)
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -625,9 +729,6 @@ namespace Pacifica.API.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DateAdded")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
@@ -635,19 +736,14 @@ namespace Pacifica.API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime>("LastUpdated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("MinStockLevel")
-                        .HasColumnType("int");
-
                     b.Property<string>("ProductName")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("ReorderLevel")
-                        .HasColumnType("int");
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(1500)
+                        .HasColumnType("nvarchar(1500)");
 
                     b.Property<string>("SKU")
                         .IsRequired()
@@ -671,45 +767,6 @@ namespace Pacifica.API.Migrations
                     b.HasIndex("SupplierId");
 
                     b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("Pacifica.API.Models.ProductAuditTrail", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Action")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("ActionBy")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime>("ActionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("NewValue")
-                        .HasMaxLength(255)
-                        .HasColumnType("text");
-
-                    b.Property<string>("OldValue")
-                        .HasMaxLength(255)
-                        .HasColumnType("text");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ProductAuditTrails", (string)null);
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Status", b =>
@@ -944,6 +1001,10 @@ namespace Pacifica.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(1500)
+                        .HasColumnType("nvarchar(1500)");
+
                     b.Property<string>("TransactionTypeName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1081,6 +1142,42 @@ namespace Pacifica.API.Migrations
                     b.Navigation("Employee");
                 });
 
+            modelBuilder.Entity("Pacifica.API.Models.GlobalAuditTrails.BranchProductAuditTrail", b =>
+                {
+                    b.HasOne("BranchProduct", "BranchProduct")
+                        .WithMany("BranchProductAuditTrails")
+                        .HasForeignKey("BranchId", "ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BranchProduct", "Entity")
+                        .WithMany()
+                        .HasForeignKey("EntityBranchId", "EntityProductId");
+
+                    b.Navigation("BranchProduct");
+
+                    b.Navigation("Entity");
+                });
+
+            modelBuilder.Entity("Pacifica.API.Models.GlobalAuditTrails.ProductAuditTrail", b =>
+                {
+                    b.HasOne("Pacifica.API.Models.Product", "Entity")
+                        .WithMany()
+                        .HasForeignKey("EntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pacifica.API.Models.Product", "Product")
+                        .WithMany("ProductAuditTrails")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Entity");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("Pacifica.API.Models.Product", b =>
                 {
                     b.HasOne("Pacifica.API.Models.Category", "Category")
@@ -1098,17 +1195,6 @@ namespace Pacifica.API.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Supplier");
-                });
-
-            modelBuilder.Entity("Pacifica.API.Models.ProductAuditTrail", b =>
-                {
-                    b.HasOne("Pacifica.API.Models.Product", "Product")
-                        .WithMany("ProductAuditTrails")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.StockInOut", b =>
@@ -1144,6 +1230,11 @@ namespace Pacifica.API.Migrations
                     b.Navigation("TransactionReference");
 
                     b.Navigation("TransactionType");
+                });
+
+            modelBuilder.Entity("BranchProduct", b =>
+                {
+                    b.Navigation("BranchProductAuditTrails");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Address", b =>

@@ -1,4 +1,3 @@
-using AutoMapper;
 using Pacifica.API.Dtos.Branch;
 using Pacifica.API.Dtos.BranchProduct;
 using Pacifica.API.Dtos.Category;
@@ -8,6 +7,7 @@ using Pacifica.API.Dtos.TransactionReference;
 using Pacifica.API.Dtos.Admin;
 using Pacifica.API.Dtos.StockInOut;
 using Pacifica.API.Dtos.AuditTrails;
+using Pacifica.API.Models.GlobalAuditTrails;
 
 namespace Pacifica.API.Mapper
 {
@@ -55,10 +55,10 @@ namespace Pacifica.API.Mapper
             CreateMap<Supplier, UpdateSupplierDto>().ReverseMap();
 
             CreateMap<BranchProduct, BranchProductDto>().ReverseMap();
-            CreateMap<BranchProduct, AddBranchProductDto>().ReverseMap();
+            CreateMap<BranchProduct, AddProductToBranchDto>().ReverseMap();
             CreateMap<BranchProduct, UpdateBranchProductDto>().ReverseMap();
             CreateMap<BranchProduct, UpdateBranchProductDto>().ReverseMap();
-            // Add the missing mapping
+
             CreateMap<BranchProduct, BranchProductResponseDto>()
                 .ForMember(dest => dest.BranchName, opt => opt.MapFrom(src => src.Branch!.BranchName))
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product!.ProductName))

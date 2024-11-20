@@ -6,6 +6,7 @@ using Pacifica.API.Services.ProductService;
 
 namespace Pacifica.API.Controllers
 {
+    //[ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
@@ -24,7 +25,7 @@ namespace Pacifica.API.Controllers
         public async Task<ActionResult<ApiResponse<IEnumerable<ProductDto>>>> GetProducts()
         {
             var response = await _productService.GetAllProductsAsync();
-            
+
             var productDtos = _mapper.Map<IEnumerable<ProductDto>>(response.Data);
             return Ok(new ApiResponse<IEnumerable<ProductDto>>
             {
@@ -35,7 +36,7 @@ namespace Pacifica.API.Controllers
         }
 
         // GET: api/Product
-        [HttpGet("DeletedProducts")]
+        [HttpGet("GetAllDeleted")]
         public async Task<ActionResult<ApiResponse<IEnumerable<DeletetedProductsDto>>>> GetDeteltedProducts()
         {
             var response = await _productService.GetAllDeletedProductsAsync();
@@ -44,6 +45,34 @@ namespace Pacifica.API.Controllers
             {
                 Success = response.Success,
                 Message = response.Message,
+                Data = productDtos
+            });
+        }
+
+        [HttpGet("GetDeleted/{productId}")]
+        public async Task<ActionResult<ApiResponse<DeletetedProductsDto>>> GetDeletedProduct(int productId)
+        {
+            var response = await _productService.GetDeletedProductByIdAsync(productId);
+
+            if (!response.Success)
+            {
+                // Return failure response when product is not found
+                return Ok(new ApiResponse<DeletetedProductsDto>
+                {
+                    Success = response.Success,
+                    Message = response.Message,
+                    Data = null
+                });
+            }
+
+            // Map the Product entity to the DeletetedProductsDto
+            var productDtos = _mapper.Map<DeletetedProductsDto>(response.Data);
+
+            // Return the success response with the mapped DTO
+            return Ok(new ApiResponse<DeletetedProductsDto>
+            {
+                Success = true,
+                Message = "Deleted product retrieved successfully.",
                 Data = productDtos
             });
         }
@@ -72,19 +101,19 @@ namespace Pacifica.API.Controllers
         public async Task<ActionResult<ApiResponse<IEnumerable<ProductDto>>>> CreateMultipleProducts([FromBody] List<CreateProductDto> productDtos)
         {
 
-                // Create the product via the service
-                var response = await _productService.CreateProductsAsync(productDtos);
+            // Create the product via the service
+            var response = await _productService.CreateProductsAsync(productDtos);
 
-                if (!response.Success)
+            if (!response.Success)
+            {
+                // If any product fails to create, return an error response
+                return BadRequest(new ApiResponse<IEnumerable<ProductDto>>
                 {
-                    // If any product fails to create, return an error response
-                    return BadRequest(new ApiResponse<IEnumerable<ProductDto>>
-                    {
-                        Success = false,
-                        Message = $"Failed to create product: {response.Message}",
-                        Data = null
-                    });
-                }
+                    Success = false,
+                    Message = $"Failed to create product: {response.Message}",
+                    Data = null
+                });
+            }
 
 
             // Return the list of created products

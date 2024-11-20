@@ -4,7 +4,7 @@ using Pacifica.API.Services.BranchProductService;
 
 namespace Pacifica.API.Controllers
 {
-     [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
+     //[ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
     public class BranchProductController : ControllerBase
@@ -39,7 +39,7 @@ namespace Pacifica.API.Controllers
         }
         // POST: api/BranchProduct/AddProduct
         [HttpPost("AddProduct")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<BranchProductResponseDto>>>> AddProductsToBranch([FromBody] IEnumerable<AddBranchProductDto> branchProductDtos)
+        public async Task<ActionResult<ApiResponse<IEnumerable<BranchProductResponseDto>>>> AddProductsToBranch([FromBody] IEnumerable<AddProductToBranchDto> branchProductDtos)
         {
             // Map DTO list to BranchProduct list
             var branchProducts = _mapper.Map<IEnumerable<BranchProduct>>(branchProductDtos);

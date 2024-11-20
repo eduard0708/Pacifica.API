@@ -4,6 +4,9 @@ namespace Pacifica.API.Models
 {
     public class AuditDetails
     {
+        
+        [StringLength(1500)]  // Limits the length of the SKU
+        public string? Remarks { get; set; }
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.Now;

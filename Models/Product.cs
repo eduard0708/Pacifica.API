@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Pacifica.API.Models.GlobalAuditTrails;
 
 namespace Pacifica.API.Models
 {
@@ -13,10 +14,7 @@ namespace Pacifica.API.Models
         [Required]
         [StringLength(50)]  // Limits the length of the SKU
         public string SKU { get; set; } = string.Empty;
-
-        [StringLength(1500)]  // Limits the length of the SKU
-        public string Remarks { get; set; } = string.Empty;
-
+        
         // Foreign Key: Relates the product to its category
         public int CategoryId { get; set; }
         public Category? Category { get; set; }
