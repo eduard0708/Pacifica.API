@@ -65,6 +65,39 @@ namespace Pacifica.API
                 context.SaveChanges(); // Save categories
             }
 
+            if (!context.TransactionTypes.Any())
+            {
+                context.TransactionTypes.AddRange(
+                    new TransactionType { TransactionTypeName = "Stock-In" },
+                    new TransactionType { TransactionTypeName = "Stock-Out" }
+                );
+                context.SaveChanges(); // Save categories
+            }
+
+            if (!context.ReferenceStockIns.Any())
+            {
+                context.ReferenceStockIns.AddRange(
+                    new ReferenceStockIn { ReferenceStockInName = "Supplier BMEG" },
+                    new ReferenceStockIn { ReferenceStockInName = "Supplier Excel Feeds" },
+                    new ReferenceStockIn { ReferenceStockInName = "Supplier Robina" },
+                    new ReferenceStockIn { ReferenceStockInName = "Kalibo Branch" },
+                    new ReferenceStockIn { ReferenceStockInName = "Roxas Branch" }
+                );
+                context.SaveChanges(); // Save categories
+            }
+
+                   if (!context.ReferenceStockOuts.Any())
+            {
+                context.ReferenceStockOuts.AddRange(
+                    new ReferenceStockOut { ReferenceStockOutName = "Sold in Store" },
+                    new ReferenceStockOut { ReferenceStockOutName = "Transfer Kalibo Branch" },
+                    new ReferenceStockOut { ReferenceStockOutName = "Transfer Roxas Branch" },
+                    new ReferenceStockOut { ReferenceStockOutName = "Transfer Iloilo Branch" },
+                    new ReferenceStockOut { ReferenceStockOutName = "Damage Disposed" }
+                );
+                context.SaveChanges(); // Save categories
+            }
+
             // Seed data for Suppliers
             if (!context.Suppliers.Any())
             {
@@ -123,7 +156,7 @@ namespace Pacifica.API
                         StockQuantity = 100,  // Sample stock quantity
                         ReorderLevel = 10,  // Sample reorder level
                         MinStockLevel = 5,  // Sample minimum stock level
-                        Remarks = "From Seed Data", 
+                        Remarks = "From Seed Data",
                         CreatedAt = DateTime.UtcNow,  // Use current UTC time
                         CreatedBy = createdBy
                     });
@@ -131,7 +164,7 @@ namespace Pacifica.API
             }
 
             // Save BranchProduct records
-            context.SaveChanges(); 
+            context.SaveChanges();
         }
     }
 }

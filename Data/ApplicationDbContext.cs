@@ -29,7 +29,8 @@ namespace Pacifica.API.Data
     public DbSet<EmployeeBranch> EmployeeBranches { get; set; }
     public DbSet<StockInOut> StockInOuts { get; set; }
     public DbSet<Supplier> Suppliers { get; set; }
-    public DbSet<TransactionReference> TransactionReferences { get; set; }
+    public DbSet<ReferenceStockOut> ReferenceStockOuts { get; set; }
+    public DbSet<ReferenceStockIn> ReferenceStockIns { get; set; }
     public DbSet<TransactionType> TransactionTypes { get; set; }
     public DbSet<Status> Statuses { get; set; }
     public DbSet<BranchProductAuditTrail> BranchProductAuditTrails { get; set; }
@@ -226,9 +227,14 @@ namespace Pacifica.API.Data
                   .HasForeignKey(st => st.ProductId)
                   .OnDelete(DeleteBehavior.Cascade);
 
-        entity.HasOne(st => st.TransactionReference)
+        entity.HasOne(st => st.ReferenceStockIn)
                   .WithMany(tr => tr.StockInOuts)
-                  .HasForeignKey(st => st.TransactionReferenceId)
+                  .HasForeignKey(st => st.ReferenceStockInId)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+        entity.HasOne(st => st.ReferenceStockOut)
+                  .WithMany(tr => tr.StockInOuts)
+                  .HasForeignKey(st => st.ReferenceStockOutId)
                   .OnDelete(DeleteBehavior.Restrict);
 
         entity.HasOne(st => st.TransactionType)
