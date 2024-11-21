@@ -10,11 +10,14 @@ namespace Pacifica.API.Services.ProductService
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly ProductAuditTrailHelper _auditTrailHelper;
 
-        public ProductService(ApplicationDbContext context, IMapper mapper)
+        public ProductService(ApplicationDbContext context, IMapper mapper, ProductAuditTrailHelper auditTrailHelper)
         {
             _context = context;
             _mapper = mapper;
+            _auditTrailHelper = auditTrailHelper;
+
         }
 
         public async Task<ApiResponse<List<Product>>> GetAllProductsAsync()
