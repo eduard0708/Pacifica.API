@@ -50,7 +50,7 @@ namespace Pacifica.API.Controllers
         }
 
         [HttpGet("GetDeleted/{productId}")]
-        public async Task<ActionResult<ApiResponse<DeletetedProductsDto>>> GetDeletedProduct(int productId)
+        public async Task<ActionResult<ApiResponse<DeletetedProductsDto>>> GetDeletedProducts(int productId)
         {
             var response = await _productService.GetDeletedProductByIdAsync(productId);
 

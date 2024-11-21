@@ -35,9 +35,10 @@ builder.Services.AddControllers(); // **This is the fix**
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        // options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+        //  options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
         options.JsonSerializerOptions.ReferenceHandler = null;
         options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+
     });
 
 
@@ -68,6 +69,11 @@ builder.Services.AddScoped<ITransactionTypeService, TransactionTypeService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<IBranchProductService, BranchProductService>();
 builder.Services.AddScoped<IStockInOutService, StockInOutService>();
+builder.Services.AddScoped<ProductAuditTrailHelper>();
+
+
+// Register Logger service
+builder.Services.AddLogging(configure => configure.AddConsole()); // You can also add other providers (e.g., File, Debug)
 
 // Adding JWT Authentication (if you plan to use JWT tokens for Authentication)
 builder.Services.AddAuthentication(options =>

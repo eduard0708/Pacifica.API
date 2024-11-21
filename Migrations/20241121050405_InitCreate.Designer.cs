@@ -12,8 +12,8 @@ using Pacifica.API.Data;
 namespace Pacifica.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241120113634_AddBranchProductAuditTrails")]
-    partial class AddBranchProductAuditTrails
+    [Migration("20241121050405_InitCreate")]
+    partial class InitCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -633,15 +633,6 @@ namespace Pacifica.API.Migrations
                     b.Property<int>("BranchId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("EntityBranchId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EntityId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("EntityProductId")
-                        .HasColumnType("int");
-
                     b.Property<string>("NewValue")
                         .HasColumnType("text");
 
@@ -658,8 +649,6 @@ namespace Pacifica.API.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BranchId", "ProductId");
-
-                    b.HasIndex("EntityBranchId", "EntityProductId");
 
                     b.ToTable("BranchProductAuditTrails", (string)null);
                 });
@@ -685,9 +674,6 @@ namespace Pacifica.API.Migrations
                     b.Property<DateTime>("ActionDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EntityId")
-                        .HasColumnType("int");
-
                     b.Property<string>("NewValue")
                         .HasColumnType("text");
 
@@ -702,8 +688,6 @@ namespace Pacifica.API.Migrations
                         .HasColumnType("nvarchar(1500)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("EntityId");
 
                     b.HasIndex("ProductId");
 
@@ -1150,30 +1134,16 @@ namespace Pacifica.API.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BranchProduct", "Entity")
-                        .WithMany()
-                        .HasForeignKey("EntityBranchId", "EntityProductId");
-
                     b.Navigation("BranchProduct");
-
-                    b.Navigation("Entity");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.GlobalAuditTrails.ProductAuditTrail", b =>
                 {
-                    b.HasOne("Pacifica.API.Models.Product", "Entity")
-                        .WithMany()
-                        .HasForeignKey("EntityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Pacifica.API.Models.Product", "Product")
                         .WithMany("ProductAuditTrails")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Entity");
 
                     b.Navigation("Product");
                 });

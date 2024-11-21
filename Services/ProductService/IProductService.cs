@@ -14,8 +14,8 @@ namespace Pacifica.API.Services.ProductService
         Task<ApiResponse<Product>> UpdateProductAsync(int id, Product product);
         Task<ApiResponse<bool>> DeleteProductsAsync(DeletedProductsParam productsDelete);
         Task<ApiResponse<IEnumerable<Product>>> RestoreDeletedProductsAsync(RestoreDeletedProductsParam deletedProducts);
+        Task<ApiResponse<IEnumerable<GetFilter_Products>>> GetFilterProductsAsync(ProductFilterParams productFilter);
         Task<ApiResponse<List<AuditDetails>>> GetProductAuditDetailsAsync(int productId);
         Task<ApiResponse<List<ProductAuditTrailsDto>>> GetProductAuditTrailsAsync(int productId);
-        Task<ApiResponse<IEnumerable<GetFilter_Products>>> GetFilterProductsAsync(ProductFilterParams productFilter);
     }
 }

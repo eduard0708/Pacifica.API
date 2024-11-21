@@ -16,4 +16,8 @@ dotnet add package AutoMapper.Extensions.Microsoft.DependencyInjection
 
 dotnet tool install --global dotnet-ef
 
+// this is to be use for Logging errors
+dotnet add package Microsoft.Extensions.Logging
+
+
 mkdir Data, Models, Interfaces, Dtos, Sevices, Helpers, Mapper

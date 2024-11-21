@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using Pacifica.API.Dtos.AuditTrails;
 using Pacifica.API.Dtos.BranchProduct;
 using Pacifica.API.Services.BranchProductService;
 
 namespace Pacifica.API.Controllers
 {
-     //[ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
+    //[ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
     public class BranchProductController : ControllerBase
@@ -18,8 +19,8 @@ namespace Pacifica.API.Controllers
             _mapper = mapper;
         }
 
-        // GET: api/BranchProduct/BranchId
-        [HttpGet("GetAllByBranch/{branchId}")]
+
+        [HttpGet("get-allby-branch/{branchId}")]
         public async Task<ActionResult<ApiResponse<IEnumerable<GetAllBranchProductResponseDto>>>> GetAllProductsByBranch(int branchId)
         {
             var response = await _branchProductService.GetAllProductsByBranchAsync(branchId);
@@ -37,8 +38,9 @@ namespace Pacifica.API.Controllers
                 Data = branchProductDtos
             });
         }
-        // POST: api/BranchProduct/AddProduct
-        [HttpPost("AddProduct")]
+
+
+        [HttpPost("add-product")]
         public async Task<ActionResult<ApiResponse<IEnumerable<BranchProductResponseDto>>>> AddProductsToBranch([FromBody] IEnumerable<AddProductToBranchDto> branchProductDtos)
         {
             // Map DTO list to BranchProduct list
@@ -64,14 +66,10 @@ namespace Pacifica.API.Controllers
                 });
         }
 
-        [HttpGet("GetFilteredProducts")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<GetBranchProductFilterDto>>>> GetFilteredProducts(
-          [FromQuery] int branchId,
-          [FromQuery] string? productCategory = null,
-          [FromQuery] string? sku = null,
-          [FromQuery] string? productName = null)
+        [HttpGet("get-filtered")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<GetBranchProductFilterDto>>>> GetFilteredBranchProducts([FromQuery] FilterBranchProductsParams filter)
         {
-            var response = await _branchProductService.GetProductsFilteredByBranchAsync(branchId, productCategory, sku, productName);
+            var response = await _branchProductService.GetFilteredBranchProductsAsync(filter);
 
             if (!response.Success)
             {
@@ -81,11 +79,11 @@ namespace Pacifica.API.Controllers
             return Ok(response);
         }
 
-        // PUT: api/BranchProduct/UpdateProduct/5
-        [HttpPut("Update/{branchId}/{productId}")]
-        public async Task<ActionResult<ApiResponse<BranchProductResponseDto>>> UpdateBranchProduct(int branchId, int productId, [FromBody] UpdateBranchProductDto updateDto)
+
+        [HttpPut("update")]
+        public async Task<ActionResult<ApiResponse<BranchProductResponseDto>>> UpdateBranchProduct([FromBody] UpdateBranchProductDto updateDto)
         {
-            var response = await _branchProductService.UpdateBranchProductAsync(branchId, productId, updateDto);
+            var response = await _branchProductService.UpdateBranchProductAsync(updateDto);
 
             if (!response.Success)
             {
@@ -95,12 +93,52 @@ namespace Pacifica.API.Controllers
             return Ok(response);
         }
 
-        // DELETE: api/BranchProduct/DeleteProduct/5
-        [HttpDelete("Delete/{branchId}/{productId}")]
-        public async Task<ActionResult<ApiResponse<bool>>> SoftDeleteBranchProduct(int branchId, int productId)
+        [HttpDelete("delete")]
+        public async Task<ActionResult<ApiResponse<bool>>> SoftDeleteBranchProduct([FromQuery] SoftDeleteBranchProductParams deleteBranchProduct)
         {
-            // Call the service method with both branchId and productId
-            var response = await _branchProductService.SoftDeleteBranchProductAsync(branchId, productId);
+            // Call the service method with the parameters
+            var response = await _branchProductService.SoftDeleteBranchProductAsync(deleteBranchProduct);
+
+            // Return appropriate response based on the service method result
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpGet("branchproduct-audit-trails/{branchId}/{productId}")]
+        public async Task<ActionResult<ApiResponse<List<BranchProductAuditTrailsDto>>>> GetBranchProductAuditTraisl(int branchId, int productId)
+        {
+            var response = await _branchProductService.GetBranchProductAuditTrailsAsync(branchId, productId);
+            if (!response.Success)
+            {
+                return NotFound(response);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpGet("GetAllDeleted")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<BranchProductDto>>>> GetDeteltedBranchProducts()
+        {
+            var response = await _branchProductService.GetAllDeletedBranchProductsAsync();
+
+            return Ok(new ApiResponse<IEnumerable<BranchProductDto>>
+            {
+                Success = response.Success,
+                Message = response.Message,
+                Data = response.Data
+            });
+        }
+
+
+        [HttpPost("RestoreDeleted")]
+        public async Task<ActionResult<ApiResponse<List<int>>>> RestoreDeletedProducts([FromBody] RestoreDeletedBranchProductsParams restoreDeleted)
+        {
+         
+            var response = await _branchProductService.RestoreDeletedBrachProductsAsync(restoreDeleted);
 
             if (!response.Success)
             {
@@ -110,6 +148,8 @@ namespace Pacifica.API.Controllers
             return Ok(response);
         }
 
+     
+       
     }
 
 }

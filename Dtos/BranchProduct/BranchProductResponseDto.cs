@@ -22,8 +22,9 @@ namespace Pacifica.API.Dtos.BranchProduct
         public decimal CostPrice { get; set; }          // Cost price (from `branchProduct.CostPrice`)
         public decimal RetailPrice { get; set; }        // Retail price (from `branchProduct.RetailPrice`)
         public int StockQuantity { get; set; }          // Stock quantity (from `branchProduct.StockQuantity`)
+        public int MinStockLevel { get; set; }          // Stock quantity (from `branchProduct.StockQuantity`)
+        public int ReorderLevel { get; set; }          // Stock quantity (from `branchProduct.StockQuantity`)
         public string Remarks { get; set; } = string.Empty;  // Status name (to map from `statusDto.Status`)
-        public bool IsActive { get; set; }              // IsActive (from `branchProduct.IsActive`)
         public string? CreatedBy { get; set; }          // CreatedBy (from `branchProduct.CreatedBy`)
     }
 }

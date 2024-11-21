@@ -67,6 +67,8 @@ namespace Pacifica.API.Mapper
                 .ForMember(dest => dest.ProductSupplierId, opt => opt.MapFrom(src => src.Product!.SupplierId))
                 .ForMember(dest => dest.ProductSupplier, opt => opt.MapFrom(src => src.Product!.Supplier!.SupplierName))
                 .ForMember(dest => dest.ProductSKU, opt => opt.MapFrom(src => src.Product!.SKU))
+                .ForMember(dest => dest.MinStockLevel, opt => opt.MapFrom(src => src.MinStockLevel))
+                .ForMember(dest => dest.ReorderLevel, opt => opt.MapFrom(src => src.ReorderLevel))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status!.StatusName))
                 .ReverseMap();
 
@@ -84,6 +86,17 @@ namespace Pacifica.API.Mapper
                 .ForMember(dest => dest.Remarks, opt => opt.MapFrom(src => src.Remarks))
                 .ForMember(dest => dest.ActionBy, opt => opt.MapFrom(src => src.ActionBy))
                 .ForMember(dest => dest.ActionDate, opt => opt.MapFrom(src => src.ActionDate)).ReverseMap();
+
+
+            CreateMap<BranchProductAuditTrail, BranchProductAuditTrailsDto>()
+                .ForMember(dest => dest.BranchId, opt => opt.MapFrom(src => src.BranchId))
+                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
+                .ForMember(dest => dest.Action, opt => opt.MapFrom(src => src.Action))
+                .ForMember(dest => dest.NewValue, opt => opt.MapFrom(src => src.NewValue))
+                .ForMember(dest => dest.Remarks, opt => opt.MapFrom(src => src.Remarks))
+                .ForMember(dest => dest.ActionBy, opt => opt.MapFrom(src => src.ActionBy))
+                .ForMember(dest => dest.ActionDate, opt => opt.MapFrom(src => src.ActionDate)).ReverseMap();
         }
     }
+
 }

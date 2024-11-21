@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Pacifica.API.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -476,8 +476,8 @@ namespace Pacifica.API.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProductId = table.Column<int>(type: "int", nullable: false),
                     Action = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    OldValue = table.Column<string>(type: "text", maxLength: 255, nullable: true),
-                    NewValue = table.Column<string>(type: "text", maxLength: 255, nullable: true),
+                    OldValue = table.Column<string>(type: "text", nullable: true),
+                    NewValue = table.Column<string>(type: "text", nullable: true),
                     ActionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ActionBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Remarks = table.Column<string>(type: "nvarchar(1500)", maxLength: 1500, nullable: true)
@@ -546,6 +546,32 @@ namespace Pacifica.API.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "BranchProductAuditTrails",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BranchId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    Action = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    OldValue = table.Column<string>(type: "text", nullable: true),
+                    NewValue = table.Column<string>(type: "text", nullable: true),
+                    ActionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ActionBy = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Remarks = table.Column<string>(type: "nvarchar(1500)", maxLength: 1500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BranchProductAuditTrails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BranchProductAuditTrails_BranchProducts_BranchId_ProductId",
+                        columns: x => new { x.BranchId, x.ProductId },
+                        principalTable: "BranchProducts",
+                        principalColumns: new[] { "BranchId", "ProductId" },
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -589,6 +615,11 @@ namespace Pacifica.API.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BranchProductAuditTrails_BranchId_ProductId",
+                table: "BranchProductAuditTrails",
+                columns: new[] { "BranchId", "ProductId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_BranchProducts_ProductId",
@@ -673,7 +704,7 @@ namespace Pacifica.API.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "BranchProducts");
+                name: "BranchProductAuditTrails");
 
             migrationBuilder.DropTable(
                 name: "EmployeeBranches");
@@ -691,16 +722,10 @@ namespace Pacifica.API.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Statuses");
+                name: "BranchProducts");
 
             migrationBuilder.DropTable(
                 name: "Addresses");
-
-            migrationBuilder.DropTable(
-                name: "Branches");
-
-            migrationBuilder.DropTable(
-                name: "Products");
 
             migrationBuilder.DropTable(
                 name: "TransactionReferences");
@@ -710,6 +735,15 @@ namespace Pacifica.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Branches");
+
+            migrationBuilder.DropTable(
+                name: "Products");
+
+            migrationBuilder.DropTable(
+                name: "Statuses");
 
             migrationBuilder.DropTable(
                 name: "Categories");

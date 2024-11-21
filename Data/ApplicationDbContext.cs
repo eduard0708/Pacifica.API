@@ -161,7 +161,7 @@ namespace Pacifica.API.Data
         .HasForeignKey(bpat => new { bpat.BranchId, bpat.ProductId }) // Use both BranchId and ProductId as foreign key
         .OnDelete(DeleteBehavior.Restrict)
         .IsRequired(); // Make the relationship optional
-        
+
       });
 
 
@@ -245,8 +245,10 @@ namespace Pacifica.API.Data
       modelBuilder.Entity<EmployeeBranch>().HasQueryFilter(eb => eb.DeletedAt == null);
       modelBuilder.Entity<EmployeeProfile>().HasQueryFilter(ep => ep.DeletedAt == null);
       modelBuilder.Entity<StockInOut>().HasQueryFilter(st => st.DeletedAt == null);
-      modelBuilder.Entity<ProductAuditTrail>().HasQueryFilter(pat => pat.Product.DeletedAt == null);
-      modelBuilder.Entity<BranchProductAuditTrail>().HasQueryFilter(bpat => bpat.BranchProduct.DeletedAt == null);
+      modelBuilder.Entity<BranchProductAuditTrail>().HasQueryFilter(b => b.BranchProduct != null && b.BranchProduct.DeletedAt == null);
+
+
+
     }
   }
 }

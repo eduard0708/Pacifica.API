@@ -15,7 +15,7 @@ public class BranchProduct : AuditDetails
     public int StatusId { get; set; } // Foreign Key for ProductStatus
     public Status? Status { get; set; } // Navigation Property to ProductStatus
 
-    [Required(ErrorMessage = "Cost price is required.")]
+    [Required(ErrorMessage = "Cost price is required.")]    
     [Range(0, double.MaxValue, ErrorMessage = "Cost price must be a positive value.")]
     [Column(TypeName = "decimal(18,2)")]
     public decimal CostPrice { get; set; }
