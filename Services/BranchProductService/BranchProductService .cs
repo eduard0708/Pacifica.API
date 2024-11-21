@@ -22,15 +22,88 @@ namespace Pacifica.API.Services.BranchProductService
 
         }
 
-        // Existing method to get all products by branch
+        // // Existing method to get all products by branch
+        // public async Task<ApiResponse<IEnumerable<GetAllBranchProductResponseDto>>> GetAllProductsByBranchAsync(int branchId)
+        // {
+        //     try
+        //     {
+        //         var branchProducts = await _context.BranchProducts
+        //             .Where(bp => bp.BranchId == branchId && bp.DeletedAt == null)
+        //             .Include(bp => bp.Product)
+        //                 .ThenInclude(p => p!.Category)
+        //             .ToListAsync();
+
+        //         if (!branchProducts.Any())
+        //         {
+        //             return new ApiResponse<IEnumerable<GetAllBranchProductResponseDto>>
+        //             {
+        //                 Success = false,
+        //                 Message = "No products found for this branch.",
+        //                 Data = null
+        //             };
+        //         }
+
+        //         var branch = await _context.Branches.FindAsync(branchId);
+
+        //         var responseDtos = branchProducts.Select(bp => new GetAllBranchProductResponseDto
+        //         {
+        //             BranchId = branch!.Id,
+        //             BranchName = branch.BranchName, 
+        //             ProductId = bp.Product!.Id,
+        //             ProductName = bp.Product!.ProductName,
+        //             CategoryId = bp.Product.Category!.Id,
+        //             ProductCategory = bp.Product.Category!.CategoryName,
+        //             StatusId = bp.StatusId,
+        //             StatusName = bp.Status!.StatusName,                 
+        //             CostPrice = bp.CostPrice,
+        //             MinStockLevel = bp.MinStockLevel,
+        //             ReorderLevel = bp.ReorderLevel,
+        //             RetailPrice = bp.RetailPrice,
+        //             StockQuantity = bp.StockQuantity,
+        //             Remarks = bp.Remarks,
+        //             SKU = bp.Product.SKU,
+        //         }).ToList();
+
+        //         return new ApiResponse<IEnumerable<GetAllBranchProductResponseDto>>
+        //         {
+        //             Success = true,
+        //             Message = "Products retrieved successfully.",
+        //             Data = responseDtos
+        //         };
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return new ApiResponse<IEnumerable<GetAllBranchProductResponseDto>>
+        //         {
+        //             Success = false,
+        //             Message = $"Error occurred while fetching products: {ex.Message}",
+        //             Data = null
+        //         };
+        //     }
+        // }
+
         public async Task<ApiResponse<IEnumerable<GetAllBranchProductResponseDto>>> GetAllProductsByBranchAsync(int branchId)
         {
             try
             {
+                // Fetch the branch to ensure it exists
+                var branch = await _context.Branches.FindAsync(branchId);
+                if (branch == null)
+                {
+                    return new ApiResponse<IEnumerable<GetAllBranchProductResponseDto>>
+                    {
+                        Success = false,
+                        Message = "Branch not found.",
+                        Data = null
+                    };
+                }
+
+                // Fetch the branch products
                 var branchProducts = await _context.BranchProducts
                     .Where(bp => bp.BranchId == branchId && bp.DeletedAt == null)
                     .Include(bp => bp.Product)
-                        .ThenInclude(p => p!.Category)
+                        .ThenInclude(p => p.Category)
+                    .Include(bp => bp.Status)  // Include Status to avoid null reference issues
                     .ToListAsync();
 
                 if (!branchProducts.Any())
@@ -43,17 +116,20 @@ namespace Pacifica.API.Services.BranchProductService
                     };
                 }
 
-                var branch = await _context.Branches.FindAsync(branchId);
-
+                // Map the branch products to response DTO
                 var responseDtos = branchProducts.Select(bp => new GetAllBranchProductResponseDto
                 {
-                    BranchId = branch!.Id,
-                    BranchName = branch.BranchName,
+                    BranchId = bp.BranchId,
+                    BranchName = bp.Branch!.BranchName,
                     ProductId = bp.Product!.Id,
-                    ProductStatusId = bp.StatusId,
                     ProductName = bp.Product.ProductName,
-                    ProductCategory = bp.Product.Category!.CategoryName,
+                    CategoryId = bp.Product.Category!.Id,
+                    ProductCategory = bp.Product.Category.CategoryName,
+                    StatusId = bp.StatusId,
+                    StatusName = bp.Status!.StatusName,
                     CostPrice = bp.CostPrice,
+                    MinStockLevel = bp.MinStockLevel,
+                    ReorderLevel = bp.ReorderLevel,
                     RetailPrice = bp.RetailPrice,
                     StockQuantity = bp.StockQuantity,
                     Remarks = bp.Remarks,
@@ -69,10 +145,72 @@ namespace Pacifica.API.Services.BranchProductService
             }
             catch (Exception ex)
             {
+                // Log the exception (optional, depending on logging setup)
                 return new ApiResponse<IEnumerable<GetAllBranchProductResponseDto>>
                 {
                     Success = false,
                     Message = $"Error occurred while fetching products: {ex.Message}",
+                    Data = null
+                };
+            }
+        }
+
+
+
+        public async Task<ApiResponse<BranchProductResponseDto>> GetProductsInBranchAsync(int branchId, int productId)
+        {
+            try
+            {
+                // Fetch the branch product with specific branchId and productId, and ensure it's not deleted
+                var branchProduct = await _context.BranchProducts
+                    .Where(bp => bp.BranchId == branchId && bp.ProductId == productId && bp.DeletedAt == null)
+                    .Include(bp => bp.Product)
+                        .ThenInclude(p => p!.Category)
+                    .FirstOrDefaultAsync();
+
+                // If no product found for the given branchId and productId, return an error response
+                if (branchProduct == null)
+                {
+                    return new ApiResponse<BranchProductResponseDto>
+                    {
+                        Success = false,
+                        Message = "Product not found for this branch.",
+                        Data = null
+                    };
+                }
+
+                // Fetch branch details using branchId
+                var branch = await _context.Branches.FindAsync(branchId);
+
+                // Map the branch product data to a DTO
+                var responseDto = new BranchProductResponseDto
+                {
+                    BranchId = branch!.Id,
+                    BranchName = branch.BranchName,
+                    ProductId = branchProduct.Product!.Id,
+                    StatusId = branchProduct.StatusId,
+                    ProductName = branchProduct.Product.ProductName,
+                    ProductCategory = branchProduct.Product.Category!.CategoryName!,
+                    CostPrice = branchProduct.CostPrice,
+                    RetailPrice = branchProduct.RetailPrice,
+                    StockQuantity = branchProduct.StockQuantity,
+                    Remarks = branchProduct.Remarks!,
+                    ProductSKU = branchProduct.Product.SKU,
+                };
+
+                return new ApiResponse<BranchProductResponseDto>
+                {
+                    Success = true,
+                    Message = "Product retrieved successfully.",
+                    Data = responseDto
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<BranchProductResponseDto>
+                {
+                    Success = false,
+                    Message = $"Error occurred while fetching the product: {ex.Message}",
                     Data = null
                 };
             }
@@ -546,8 +684,8 @@ namespace Pacifica.API.Services.BranchProductService
             {
                 // Validate input parameters
                 if (restoreDeleted?.ProductIds == null || !restoreDeleted.ProductIds.Any() ||
-                    restoreDeleted.BranchIds == null || !restoreDeleted.BranchIds.Any() || restoreDeleted.RestoredBy == null) 
-                
+                    restoreDeleted.BranchIds == null || !restoreDeleted.BranchIds.Any() || restoreDeleted.RestoredBy == null)
+
                 {
                     response.Success = false;
                     response.Message = "No product or branch IDs provided.";

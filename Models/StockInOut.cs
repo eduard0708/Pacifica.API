@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using Pacifica.API.Models.GlobalAuditTrails;
 
 namespace Pacifica.API.Models
 {
-    public class StockInOut
+    public class StockInOut : AuditDetails
     {
         public int Id { get; set; }  // Unique identifier for the transaction
 
@@ -17,7 +18,6 @@ namespace Pacifica.API.Models
 
         public DateTime? DateReported { get; set; }  // Date when the transaction was reported (optional)
 
-        public string Remarks { get; set; } = string.Empty;  // Additional transaction notes
 
         //Navigation 
         [Required]
@@ -40,23 +40,8 @@ namespace Pacifica.API.Models
         [Required]
         public int BranchId { get; set; }
         public Branch? Branch { get; set; }
-
-        [Required]
-        public DateTime CreatedAt { get; set; } = DateTime.Now;  // Date when the transaction was created
-
-        public DateTime? UpdatedAt { get; set; }  // Date when the transaction was last updated
-
-        public DateTime? DeletedAt { get; set; }  // Soft delete timestamp (null if active)
-
-        [StringLength(100)]
-        public string? CreatedBy { get; set; }  // User who created the transaction
-
-        [Required]
-        public bool IsActive { get; set; } = true;  // Indicates if the transaction is active
-
-        [StringLength(100)]
-        public string? UpdatedBy { get; set; }  // User who last updated the transaction
-
+        
+        public IEnumerable<StockInOutAuditTrail>? StockInOutAuditTrails { get; set; }
 
     }
 }

@@ -7,6 +7,7 @@ namespace Pacifica.API.Services.BranchProductService
     {
         // Existing methods...
         Task<ApiResponse<IEnumerable<GetAllBranchProductResponseDto>>> GetAllProductsByBranchAsync(int branchId);
+        Task<ApiResponse<BranchProductResponseDto>> GetProductsInBranchAsync(int branchId, int productId);
         Task<ApiResponse<IEnumerable<BranchProductResponseDto>>> AddProductsToBranchAsync(IEnumerable<BranchProduct> branchProducts);
         Task<ApiResponse<IEnumerable<GetBranchProductFilterDto>>> GetFilteredBranchProductsAsync(FilterBranchProductsParams filter);
         Task<ApiResponse<BranchProductResponseDto>> UpdateBranchProductAsync(UpdateBranchProductDto updateDto);

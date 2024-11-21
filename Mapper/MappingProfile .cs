@@ -72,6 +72,8 @@ namespace Pacifica.API.Mapper
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status!.StatusName))
                 .ReverseMap();
 
+                
+
             CreateMap<StockInOut, CreateStockInOutDto>().ReverseMap();
 
             CreateMap<StockInOut, GetStockInOutDto>();

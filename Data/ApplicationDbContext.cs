@@ -215,7 +215,6 @@ namespace Pacifica.API.Data
       {
         entity.HasKey(st => st.Id);
         entity.Property(st => st.CreatedAt).HasDefaultValueSql("GETDATE()");
-        entity.Property(st => st.IsActive).HasDefaultValue(true);
 
         entity.HasOne(st => st.Branch)
                   .WithMany(b => b.StockInOuts)
@@ -238,6 +237,25 @@ namespace Pacifica.API.Data
                   .OnDelete(DeleteBehavior.Restrict);
       });
 
+      // Configure ProductAuditTrail
+      modelBuilder.Entity<StockInOutAuditTrail>(entity =>
+      {
+        entity.ToTable("StockInOutAuditTrails");
+        entity.HasKey(e => e.Id);
+
+        entity.Property(e => e.Action).IsRequired().HasMaxLength(50);
+        entity.Property(e => e.ActionBy).IsRequired().HasMaxLength(100);
+        entity.Property(e => e.ActionDate).IsRequired();
+        entity.Property(e => e.OldValue).HasColumnType("text");
+        entity.Property(e => e.NewValue).HasColumnType("text");
+
+        entity.HasOne(si => si.StockInOut)
+                     .WithMany(p => p.StockInOutAuditTrails)
+                     .HasForeignKey(patp => patp.StockInOutId)
+                     .OnDelete(DeleteBehavior.Restrict);
+
+      });
+
       // Apply soft delete query filters
       modelBuilder.Entity<Branch>().HasQueryFilter(b => b.DeletedAt == null);
       modelBuilder.Entity<BranchProduct>().HasQueryFilter(bp => bp.DeletedAt == null);
@@ -245,9 +263,9 @@ namespace Pacifica.API.Data
       modelBuilder.Entity<EmployeeBranch>().HasQueryFilter(eb => eb.DeletedAt == null);
       modelBuilder.Entity<EmployeeProfile>().HasQueryFilter(ep => ep.DeletedAt == null);
       modelBuilder.Entity<StockInOut>().HasQueryFilter(st => st.DeletedAt == null);
+      modelBuilder.Entity<ProductAuditTrail>().HasQueryFilter(b => b.Product != null && b.Product.DeletedAt == null);
       modelBuilder.Entity<BranchProductAuditTrail>().HasQueryFilter(b => b.BranchProduct != null && b.BranchProduct.DeletedAt == null);
-
-
+      modelBuilder.Entity<StockInOutAuditTrail>().HasQueryFilter(b => b.StockInOut != null && b.StockInOut.DeletedAt == null);
 
     }
   }

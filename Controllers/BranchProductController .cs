@@ -40,6 +40,27 @@ namespace Pacifica.API.Controllers
         }
 
 
+        [HttpGet("{branchId}/{productId}")]
+        public async Task<ActionResult<ApiResponse<BranchProductResponseDto>>> GetAllProductsByBranch(int branchId, int productId)
+        {
+            var response = await _branchProductService.GetProductsInBranchAsync(branchId, productId);
+
+            if (!response.Success)
+            {
+                return NotFound(response);
+            }
+
+            // var branchProductDtos = _mapper.Map<BranchProductResponseDto>>(response.Data);
+
+            return Ok(new ApiResponse<BranchProductResponseDto>
+            {
+                Success = response.Success,
+                Message = response.Message,
+                Data = response.Data
+            });
+        }
+
+
         [HttpPost("add-product")]
         public async Task<ActionResult<ApiResponse<IEnumerable<BranchProductResponseDto>>>> AddProductsToBranch([FromBody] IEnumerable<AddProductToBranchDto> branchProductDtos)
         {
@@ -137,7 +158,7 @@ namespace Pacifica.API.Controllers
         [HttpPost("RestoreDeleted")]
         public async Task<ActionResult<ApiResponse<List<int>>>> RestoreDeletedProducts([FromBody] RestoreDeletedBranchProductsParams restoreDeleted)
         {
-         
+
             var response = await _branchProductService.RestoreDeletedBrachProductsAsync(restoreDeleted);
 
             if (!response.Success)
@@ -148,8 +169,8 @@ namespace Pacifica.API.Controllers
             return Ok(response);
         }
 
-     
-       
+
+
     }
 
 }
