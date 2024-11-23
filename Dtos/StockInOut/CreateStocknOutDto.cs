@@ -25,7 +25,12 @@ namespace Pacifica.API.Dtos.StockInOut
         public int ProductId { get; set; }
 
         [Required]
-        public int TransactionReferenceId { get; set; }
+        public int? ReferenceStockInId { get; set; }
+
+        [Required]
+        public int? ReferenceStockOutId { get; set; }
+        
+
 
         [Required]
         public bool IsActive { get; set; } = true;

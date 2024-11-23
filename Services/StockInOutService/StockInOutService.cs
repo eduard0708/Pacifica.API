@@ -91,7 +91,8 @@ namespace Pacifica.API.Services.StockInOutService
                 .FirstOrDefaultAsync(t => t.BranchId == transaction.BranchId &&
                                           t.TransactionTypeId == transaction.TransactionTypeId &&
                                           t.ProductId == transaction.ProductId &&
-                                          t.TransactionReferenceId == transaction.TransactionReferenceId);
+                                          t.ReferenceStockIn!.Id == transaction.ReferenceStockInId && 
+                                          t.ReferenceStockOut!.Id == transaction.ReferenceStockOutId);
 
             if (existingTransaction != null)
             {
@@ -196,7 +197,8 @@ namespace Pacifica.API.Services.StockInOutService
                 .Where(t => t.TransactionNumber == referenceNumber)
                 .Join(_context.Branches, t => t.BranchId, b => b.Id, (t, b) => new { t, b })
                 .Join(_context.Products, tb => tb.t.ProductId, p => p.Id, (tb, p) => new { tb.t, tb.b, p })
-                .Join(_context.TransactionReferences, tbp => tbp.t.TransactionReferenceId, tr => tr.Id, (tbp, tr) => new { tbp.t, tbp.b, tbp.p, tr })
+                .Join(_context.ReferenceStockIns, tbi => tbi.t.ReferenceStockInId, tr => tr.Id, (tbi, tr) => new { tbi.t, tbi.b, tbi.p, tr })
+                .Join(_context.ReferenceStockOuts, tbo => tbo.t.ReferenceStockOutId, tr => tr.Id, (tbo, tr) => new { tbo.t, tbo.b, tbo.p, tr })
                 .Select(x => new GetByReferenceNumberStockInOutDto
                 {
                     Id = x.t.Id,
@@ -206,15 +208,17 @@ namespace Pacifica.API.Services.StockInOutService
                     ProductName = x.p.ProductName,
                     ProductCategoryId = x.p.Category!.Id,
                     ProductCategory = x.p.Category!.CategoryName,
-                    ReferenceNumberId = x.t.TransactionReferenceId,
-                    TransactionReferenceName = x.t.TransactionReference!.TransactionReferenceName ?? "unknown",
+                    ReferenceStockInId = x.t.ReferenceStockInId,
+                    ReferenceStockInName = x.t.ReferenceStockIn!.ReferenceStockInName ?? "unknown",
+                    ReferenceStockOutId = x.t.ReferenceStockOutId,
+                    ReferenceStockOutName = x.t.ReferenceStockOut!.ReferenceStockOutName ?? "unknown",
+                    TransactionDate = x.t.TransactionDate,
                     TransactionTypeId = x.t.TransactionTypeId,
                     TransactionTypeName = x.t.TransactionType!.TransactionTypeName ?? "unknown",
                     TransactionNumber = x.t.TransactionNumber,
                     StockQuantity = x.t.StockQuantity,
                     DateReported = x.t.DateReported,
                     Remarks = x.t.Remarks,
-                    TransactionDate = x.t.TransactionDate,
                 })
                 .ToListAsync();
 

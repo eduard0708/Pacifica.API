@@ -102,7 +102,7 @@ namespace Pacifica.API.Services.BranchProductService
                 var branchProducts = await _context.BranchProducts
                     .Where(bp => bp.BranchId == branchId && bp.DeletedAt == null)
                     .Include(bp => bp.Product)
-                        .ThenInclude(p => p.Category)
+                        .ThenInclude(p => p!.Category)
                     .Include(bp => bp.Status)  // Include Status to avoid null reference issues
                     .ToListAsync();
 

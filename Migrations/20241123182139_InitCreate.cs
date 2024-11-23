@@ -113,6 +113,48 @@ namespace Pacifica.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ReferenceStockIns",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ReferenceStockInName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Remarks = table.Column<string>(type: "nvarchar(1500)", maxLength: 1500, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReferenceStockIns", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ReferenceStockOuts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ReferenceStockOutName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Remarks = table.Column<string>(type: "nvarchar(1500)", maxLength: 1500, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReferenceStockOuts", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Statuses",
                 columns: table => new
                 {
@@ -120,12 +162,13 @@ namespace Pacifica.API.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     StatusName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Remarks = table.Column<string>(type: "nvarchar(1500)", maxLength: 1500, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
+                    DeletedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -151,26 +194,6 @@ namespace Pacifica.API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Suppliers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TransactionReferences",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TransactionReferenceName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TransactionReferences", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -503,19 +526,20 @@ namespace Pacifica.API.Migrations
                     StockQuantity = table.Column<int>(type: "int", nullable: false),
                     TransactionNumber = table.Column<int>(type: "int", nullable: false),
                     DateReported = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProductId = table.Column<int>(type: "int", nullable: false),
                     StockTransactionTypeId = table.Column<int>(type: "int", nullable: false),
                     StockTransactionType = table.Column<int>(type: "int", nullable: true),
-                    TransactionReferenceId = table.Column<int>(type: "int", nullable: false),
+                    ReferenceStockInId = table.Column<int>(type: "int", nullable: false),
+                    ReferenceStockOutId = table.Column<int>(type: "int", nullable: false),
                     TransactionTypeId = table.Column<int>(type: "int", nullable: false),
                     BranchId = table.Column<int>(type: "int", nullable: false),
+                    Remarks = table.Column<string>(type: "nvarchar(1500)", maxLength: 1500, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
+                    DeletedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -533,9 +557,15 @@ namespace Pacifica.API.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_StockInOuts_TransactionReferences_TransactionReferenceId",
-                        column: x => x.TransactionReferenceId,
-                        principalTable: "TransactionReferences",
+                        name: "FK_StockInOuts_ReferenceStockIns_ReferenceStockInId",
+                        column: x => x.ReferenceStockInId,
+                        principalTable: "ReferenceStockIns",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_StockInOuts_ReferenceStockOuts_ReferenceStockOutId",
+                        column: x => x.ReferenceStockOutId,
+                        principalTable: "ReferenceStockOuts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -569,6 +599,31 @@ namespace Pacifica.API.Migrations
                         columns: x => new { x.BranchId, x.ProductId },
                         principalTable: "BranchProducts",
                         principalColumns: new[] { "BranchId", "ProductId" },
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StockInOutAuditTrails",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StockInOutId = table.Column<int>(type: "int", nullable: false),
+                    Action = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    OldValue = table.Column<string>(type: "text", nullable: true),
+                    NewValue = table.Column<string>(type: "text", nullable: true),
+                    ActionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ActionBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Remarks = table.Column<string>(type: "nvarchar(1500)", maxLength: 1500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StockInOutAuditTrails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StockInOutAuditTrails_StockInOuts_StockInOutId",
+                        column: x => x.StockInOutId,
+                        principalTable: "StockInOuts",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -665,6 +720,11 @@ namespace Pacifica.API.Migrations
                 column: "SupplierId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_StockInOutAuditTrails_StockInOutId",
+                table: "StockInOutAuditTrails",
+                column: "StockInOutId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_StockInOuts_BranchId",
                 table: "StockInOuts",
                 column: "BranchId");
@@ -675,9 +735,14 @@ namespace Pacifica.API.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StockInOuts_TransactionReferenceId",
+                name: "IX_StockInOuts_ReferenceStockInId",
                 table: "StockInOuts",
-                column: "TransactionReferenceId");
+                column: "ReferenceStockInId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StockInOuts_ReferenceStockOutId",
+                table: "StockInOuts",
+                column: "ReferenceStockOutId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StockInOuts_TransactionTypeId",
@@ -716,7 +781,7 @@ namespace Pacifica.API.Migrations
                 name: "ProductAuditTrails");
 
             migrationBuilder.DropTable(
-                name: "StockInOuts");
+                name: "StockInOutAuditTrails");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -728,13 +793,13 @@ namespace Pacifica.API.Migrations
                 name: "Addresses");
 
             migrationBuilder.DropTable(
-                name: "TransactionReferences");
-
-            migrationBuilder.DropTable(
-                name: "TransactionTypes");
+                name: "StockInOuts");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Statuses");
 
             migrationBuilder.DropTable(
                 name: "Branches");
@@ -743,7 +808,13 @@ namespace Pacifica.API.Migrations
                 name: "Products");
 
             migrationBuilder.DropTable(
-                name: "Statuses");
+                name: "ReferenceStockIns");
+
+            migrationBuilder.DropTable(
+                name: "ReferenceStockOuts");
+
+            migrationBuilder.DropTable(
+                name: "TransactionTypes");
 
             migrationBuilder.DropTable(
                 name: "Categories");

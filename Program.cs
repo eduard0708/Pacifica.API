@@ -14,7 +14,6 @@ using Pacifica.API.Services.BranchService;
 using Pacifica.API.Services.CategoryService;
 using Pacifica.API.Services.ProductService;
 using Pacifica.API.Services.SupplierService;
-using Pacifica.API.Services.TransactionReferenceService;
 using Pacifica.API.Services.AuthService;
 using Pacifica.API.Services.EmployeeService;
 using Pacifica.API.Services.RoleService;
@@ -23,6 +22,9 @@ using Pacifica.API.Services.TransactionTypeService;
 using Pacifica.API.Services.StatusService;
 using Pacifica.API.Services.StockInOutService;
 using Pacifica.API;
+using System.ComponentModel.Design;
+using Pacifica.API.Services.ReferenceStockInService;
+using Pacifica.API.Services.ReferenceStockOutService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,15 +62,17 @@ builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<ITransactionReferenceService, TransactionReferenceService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IStatusService, StatusService>();
 builder.Services.AddScoped<ITransactionTypeService, TransactionTypeService>();
+builder.Services.AddScoped<IReferenceStockInService, ReferenceStockInService>();
+builder.Services.AddScoped<IReferenceStockOutService, ReferenceStockOutService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<IBranchProductService, BranchProductService>();
 builder.Services.AddScoped<IStockInOutService, StockInOutService>();
+
 builder.Services.AddScoped<ProductAuditTrailHelper>();
 
 

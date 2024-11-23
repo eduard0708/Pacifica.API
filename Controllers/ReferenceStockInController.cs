@@ -1,8 +1,6 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Pacifica.API.Dtos.TransactionReference;
 using Pacifica.API.Services.ReferenceStockInService;
-using Pacifica.API.Services.referenceStockInService;
 using Pacifica.API.Dtos.ReferenceStockIn;
 
 namespace Pacifica.API.Controllers
@@ -58,7 +56,7 @@ namespace Pacifica.API.Controllers
         [HttpPost]
         public async Task<ActionResult<ApiResponse<ReferenceStockInDto>>> CreateTransactionReference(CreateReferenceStockInDto ReferenceStockInDto)
         {
-            var transactionReference = _mapper.Map<TransactionReference>(ReferenceStockInDto);
+            var transactionReference = _mapper.Map<ReferenceStockIn>(ReferenceStockInDto);
             var response = await _referenceStockInService.CreateReferenceStockInAsync(transactionReference);
 
             if (!response.Success)
@@ -79,7 +77,7 @@ namespace Pacifica.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTransactionReference(int id, UpdateReferenceStockInDto ReferenceStockInDto)
         {
-            var transactionReference = _mapper.Map<TransactionReference>(ReferenceStockInDto);
+            var transactionReference = _mapper.Map<ReferenceStockIn>(ReferenceStockInDto);
             var response = await _referenceStockInService.UpdateReferenceStockInAsync(id, transactionReference);
 
             if (!response.Success)
