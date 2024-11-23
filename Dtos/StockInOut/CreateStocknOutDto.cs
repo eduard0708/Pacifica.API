@@ -29,12 +29,8 @@ namespace Pacifica.API.Dtos.StockInOut
 
         [Required]
         public int? ReferenceStockOutId { get; set; }
-        
-
 
         [Required]
-        public bool IsActive { get; set; } = true;
-
         public string? CreatedBy { get; set; }
 
     }
