@@ -1,6 +1,7 @@
 using Pacifica.API.Data;
 using Pacifica.API.Models;
 using Microsoft.EntityFrameworkCore;
+using Pacifica.API.Models.TransactionModels;
 
 namespace Pacifica.API
 {
@@ -63,37 +64,28 @@ namespace Pacifica.API
                     new Category { CategoryName = "Small Animal Feeds" }
                 );
                 context.SaveChanges(); // Save categories
-            }
+            }   
 
-            if (!context.TransactionTypes.Any())
+            if (!context.StockInReferences.Any())
             {
-                context.TransactionTypes.AddRange(
-                    new TransactionType { TransactionTypeName = "Stock-In" },
-                    new TransactionType { TransactionTypeName = "Stock-Out" }
+                context.StockInReferences.AddRange(
+                    new StockInReference { StockInReferenceName = "Supplier BMEG" },
+                    new StockInReference { StockInReferenceName = "Supplier Excel Feeds" },
+                    new StockInReference { StockInReferenceName = "Supplier Robina" },
+                    new StockInReference { StockInReferenceName = "Kalibo Branch" },
+                    new StockInReference { StockInReferenceName = "Roxas Branch" }
                 );
                 context.SaveChanges(); // Save categories
             }
 
-            if (!context.ReferenceStockIns.Any())
+                   if (!context.StockOutReferences.Any())
             {
-                context.ReferenceStockIns.AddRange(
-                    new ReferenceStockIn { ReferenceStockInName = "Supplier BMEG" },
-                    new ReferenceStockIn { ReferenceStockInName = "Supplier Excel Feeds" },
-                    new ReferenceStockIn { ReferenceStockInName = "Supplier Robina" },
-                    new ReferenceStockIn { ReferenceStockInName = "Kalibo Branch" },
-                    new ReferenceStockIn { ReferenceStockInName = "Roxas Branch" }
-                );
-                context.SaveChanges(); // Save categories
-            }
-
-                   if (!context.ReferenceStockOuts.Any())
-            {
-                context.ReferenceStockOuts.AddRange(
-                    new ReferenceStockOut { ReferenceStockOutName = "Sold in Store" },
-                    new ReferenceStockOut { ReferenceStockOutName = "Transfer Kalibo Branch" },
-                    new ReferenceStockOut { ReferenceStockOutName = "Transfer Roxas Branch" },
-                    new ReferenceStockOut { ReferenceStockOutName = "Transfer Iloilo Branch" },
-                    new ReferenceStockOut { ReferenceStockOutName = "Damage Disposed" }
+                context.StockOutReferences.AddRange(
+                    new StockOutReference { StockOutReferenceName = "Sold in Store" },
+                    new StockOutReference { StockOutReferenceName = "Transfer Kalibo Branch" },
+                    new StockOutReference { StockOutReferenceName = "Transfer Roxas Branch" },
+                    new StockOutReference { StockOutReferenceName = "Transfer Iloilo Branch" },
+                    new StockOutReference { StockOutReferenceName = "Damage Disposed" }
                 );
                 context.SaveChanges(); // Save categories
             }

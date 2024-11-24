@@ -93,17 +93,17 @@ namespace Pacifica.API.Controllers
             });
         }
 
-        // DELETE: api/TransactionReference/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTransactionReference(int id)
-        {
-            var response = await _StatusService.DeleteStatusAsync(id);
-            if (!response.Success)
-            {
-                return NotFound(response);
-            }
+        // // DELETE: api/TransactionReference/5
+        // [HttpDelete("{id}")]
+        // public async Task<IActionResult> DeleteTransactionReference(int id)
+        // {
+        //     var response = await _StatusService.DeleteStatusAsync(id);
+        //     if (!response.Success)
+        //     {
+        //         return NotFound(response);
+        //     }
 
-            return NoContent();
-        }
+        //     return NoContent();
+        // }
     }
 }

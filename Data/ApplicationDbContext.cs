@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Pacifica.API.Models.GlobalAuditTrails;
+using Pacifica.API.Models.TransactionModels;
 
 namespace Pacifica.API.Data
 {
@@ -27,11 +28,11 @@ namespace Pacifica.API.Data
     public DbSet<Category> Categories { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<EmployeeBranch> EmployeeBranches { get; set; }
-    public DbSet<StockInOut> StockInOuts { get; set; }
     public DbSet<Supplier> Suppliers { get; set; }
     public DbSet<ReferenceStockOut> ReferenceStockOuts { get; set; }
     public DbSet<ReferenceStockIn> ReferenceStockIns { get; set; }
-    public DbSet<TransactionType> TransactionTypes { get; set; }
+    public DbSet<StockInReference> StockInReferences { get; set; }
+    public DbSet<StockOutReference> StockOutReferences { get; set; }
     public DbSet<Status> Statuses { get; set; }
     public DbSet<BranchProductAuditTrail> BranchProductAuditTrails { get; set; }
     public DbSet<ProductAuditTrail> ProductAuditTrails { get; set; }
@@ -211,67 +212,15 @@ namespace Pacifica.API.Data
 
       });
 
-      // Configure StockInOut entity
-      modelBuilder.Entity<StockInOut>(entity =>
-      {
-        entity.HasKey(st => st.Id);
-        entity.Property(st => st.CreatedAt).HasDefaultValueSql("GETDATE()");
-
-        entity.HasOne(st => st.Branch)
-                  .WithMany(b => b.StockInOuts)
-                  .HasForeignKey(st => st.BranchId)
-                  .OnDelete(DeleteBehavior.Cascade);
-
-        entity.HasOne(st => st.Product)
-                  .WithMany(p => p.StockInOuts)
-                  .HasForeignKey(st => st.ProductId)
-                  .OnDelete(DeleteBehavior.Cascade);
-
-        entity.HasOne(st => st.ReferenceStockIn)
-                  .WithMany(tr => tr.StockInOuts)
-                  .HasForeignKey(st => st.ReferenceStockInId)
-                  .OnDelete(DeleteBehavior.Restrict);
-
-        entity.HasOne(st => st.ReferenceStockOut)
-                  .WithMany(tr => tr.StockInOuts)
-                  .HasForeignKey(st => st.ReferenceStockOutId)
-                  .OnDelete(DeleteBehavior.Restrict);
-
-        entity.HasOne(st => st.TransactionType)
-                  .WithMany(tt => tt.StockInOuts)
-                  .HasForeignKey(st => st.TransactionTypeId)
-                  .OnDelete(DeleteBehavior.Restrict);
-      });
-
-      // Configure ProductAuditTrail
-      modelBuilder.Entity<StockInOutAuditTrail>(entity =>
-      {
-        entity.ToTable("StockInOutAuditTrails");
-        entity.HasKey(e => e.Id);
-
-        entity.Property(e => e.Action).IsRequired().HasMaxLength(50);
-        entity.Property(e => e.ActionBy).IsRequired().HasMaxLength(100);
-        entity.Property(e => e.ActionDate).IsRequired();
-        entity.Property(e => e.OldValue).HasColumnType("text");
-        entity.Property(e => e.NewValue).HasColumnType("text");
-
-        entity.HasOne(si => si.StockInOut)
-                     .WithMany(p => p.StockInOutAuditTrails)
-                     .HasForeignKey(patp => patp.StockInOutId)
-                     .OnDelete(DeleteBehavior.Restrict);
-
-      });
-
+   
       // Apply soft delete query filters
       modelBuilder.Entity<Branch>().HasQueryFilter(b => b.DeletedAt == null);
       modelBuilder.Entity<BranchProduct>().HasQueryFilter(bp => bp.DeletedAt == null);
       modelBuilder.Entity<Employee>().HasQueryFilter(e => e.DeletedAt == null);
       modelBuilder.Entity<EmployeeBranch>().HasQueryFilter(eb => eb.DeletedAt == null);
       modelBuilder.Entity<EmployeeProfile>().HasQueryFilter(ep => ep.DeletedAt == null);
-      modelBuilder.Entity<StockInOut>().HasQueryFilter(st => st.DeletedAt == null);
       modelBuilder.Entity<ProductAuditTrail>().HasQueryFilter(b => b.Product != null && b.Product.DeletedAt == null);
       modelBuilder.Entity<BranchProductAuditTrail>().HasQueryFilter(b => b.BranchProduct != null && b.BranchProduct.DeletedAt == null);
-      modelBuilder.Entity<StockInOutAuditTrail>().HasQueryFilter(b => b.StockInOut != null && b.StockInOut.DeletedAt == null);
 
     }
   }

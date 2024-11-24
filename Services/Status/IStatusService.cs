@@ -6,6 +6,6 @@ namespace Pacifica.API.Services.StatusService
         Task<ApiResponse<Status>> GetStatusByIdAsync(int id);
         Task<ApiResponse<Status>> CreateStatusAsync(Status Status);
         Task<ApiResponse<Status>> UpdateStatusAsync(int id, Status Status);
-        Task<ApiResponse<bool>> DeleteStatusAsync(int id);
+        // Task<ApiResponse<bool>> DeleteStatusAsync(int id);
     }
 }

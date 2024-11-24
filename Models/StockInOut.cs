@@ -26,19 +26,15 @@ namespace Pacifica.API.Models
 
         [Required]
         public int StockTransactionTypeId { get; set; }  // Type of the transaction (e.g., In, Out)
-        public StockTransactionType? StockTransactionType { get; set; }
+        public TransactionType? TransactionType { get; set; }
 
         [Required]
-        public int ReferenceStockInId { get; set; }  // Reference ID (e.g., Sales Order)
+        public int? ReferenceStockInId { get; set; }  // Reference ID (e.g., Sales Order)
         public ReferenceStockIn? ReferenceStockIn { get; set; }  // Navigation property for TransactionReference
 
         [Required]
-        public int ReferenceStockOutId { get; set; }  // Reference ID (e.g., Sales Order)
+        public int? ReferenceStockOutId { get; set; }  // Reference ID (e.g., Sales Order)
         public ReferenceStockOut? ReferenceStockOut { get; set; }  // Navigation property for TransactionReference
-
-        [Required]
-        public int TransactionTypeId { get; set; }  // Reference ID (e.g., Sales Order)
-        public TransactionType? TransactionType { get; set; }  // Navigation property for TransactionReference
 
         [Required]
         public int BranchId { get; set; }

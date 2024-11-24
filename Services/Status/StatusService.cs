@@ -103,30 +103,31 @@ namespace Pacifica.API.Services.StatusService
             };
         }
 
-        public async Task<ApiResponse<bool>> DeleteStatusAsync(int id)
-        {
-            var Status = await _context.TransactionTypes.FindAsync(id);
-            if (Status == null || Status.DeletedAt != null)
-            {
-                return new ApiResponse<bool>
-                {
-                    Success = false,
-                    Message = "Transaction reference not found or already deleted.",
-                    Data = false
-                };
-            }
+        //     public async Task<ApiResponse<bool>> DeleteStatusAsync(int id)
+        //     {
+        //         var Status = await _context.TransactionTypes.FindAsync(id);
+        //         if (Status == null || Status.DeletedAt != null)
+        //         {
+        //             return new ApiResponse<bool>
+        //             {
+        //                 Success = false,
+        //                 Message = "Transaction reference not found or already deleted.",
+        //                 Data = false
+        //             };
+        //         }
 
-            Status.DeletedAt = DateTime.Now;
-            _context.TransactionTypes.Update(Status);
-            await _context.SaveChangesAsync();
+        //         Status.DeletedAt = DateTime.Now;
+        //         _context.TransactionTypes.Update(Status);
+        //         await _context.SaveChangesAsync();
 
-            return new ApiResponse<bool>
-            {
-                Success = true,
-                Message = "Transaction reference deleted successfully.",
-                Data = true
-            };
-        }
+        //         return new ApiResponse<bool>
+        //         {
+        //             Success = true,
+        //             Message = "Transaction reference deleted successfully.",
+        //             Data = true
+        //         };
+        //     }
+        // }
     }
 }
 

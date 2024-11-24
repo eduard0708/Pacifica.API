@@ -18,9 +18,7 @@ using Pacifica.API.Services.AuthService;
 using Pacifica.API.Services.EmployeeService;
 using Pacifica.API.Services.RoleService;
 using Pacifica.API.Services.TokenService;
-using Pacifica.API.Services.TransactionTypeService;
 using Pacifica.API.Services.StatusService;
-using Pacifica.API.Services.StockInOutService;
 using Pacifica.API;
 using System.ComponentModel.Design;
 using Pacifica.API.Services.ReferenceStockInService;
@@ -66,12 +64,10 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IStatusService, StatusService>();
-builder.Services.AddScoped<ITransactionTypeService, TransactionTypeService>();
 builder.Services.AddScoped<IReferenceStockInService, ReferenceStockInService>();
 builder.Services.AddScoped<IReferenceStockOutService, ReferenceStockOutService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 builder.Services.AddScoped<IBranchProductService, BranchProductService>();
-builder.Services.AddScoped<IStockInOutService, StockInOutService>();
 
 builder.Services.AddScoped<ProductAuditTrailHelper>();
 
