@@ -1,18 +1,18 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Pacifica.API.Models.Transaction;
 
 namespace Pacifica.API.Models.GlobalAuditTrails
 {
-    public class StockInOutAuditTrail  : AuditTrail
+    public class StockInAuditTrail : AuditTrail
     {
         [Key]
         public int Id { get; set; }
 
         [Required]
-        // Navigation properties
-        public int StockInOutId { get; set; }
+        public int StockInId { get; set; } // Foreign key to StockIn
 
         [JsonIgnore]
-        public StockInOut? StockInOut { get; set; }
+        public StockIn? StockIn { get; set; } // Navigation property to StockIn
     }
 }

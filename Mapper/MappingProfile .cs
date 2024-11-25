@@ -10,6 +10,8 @@ using Pacifica.API.Dtos.AuditTrails;
 using Pacifica.API.Models.GlobalAuditTrails;
 using Pacifica.API.Dtos.ReferenceStockIn;
 using Pacifica.API.Dtos.ReferenceStockOut;
+using Pacifica.API.Models.Transaction;
+using Pacifica.API.Dtos.StockIn;
 
 namespace Pacifica.API.Mapper
 {
@@ -77,6 +79,10 @@ namespace Pacifica.API.Mapper
 
 
             CreateMap<StockInOut, CreateStockInOutDto>().ReverseMap();
+
+
+            CreateMap<StockIn, StockInDTO>().ReverseMap();
+
 
             CreateMap<StockInOut, GetStockInOutDto>();
             CreateMap<CreateStockInOutDto, StockInOut>();

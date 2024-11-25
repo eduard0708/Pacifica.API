@@ -1,7 +1,7 @@
 using Pacifica.API.Data;
 using Pacifica.API.Models;
 using Microsoft.EntityFrameworkCore;
-using Pacifica.API.Models.TransactionModels;
+using Pacifica.API.Models.Transaction;
 
 namespace Pacifica.API
 {
@@ -64,7 +64,7 @@ namespace Pacifica.API
                     new Category { CategoryName = "Small Animal Feeds" }
                 );
                 context.SaveChanges(); // Save categories
-            }   
+            }
 
             if (!context.StockInReferences.Any())
             {
@@ -78,7 +78,7 @@ namespace Pacifica.API
                 context.SaveChanges(); // Save categories
             }
 
-                   if (!context.StockOutReferences.Any())
+            if (!context.StockOutReferences.Any())
             {
                 context.StockOutReferences.AddRange(
                     new StockOutReference { StockOutReferenceName = "Sold in Store" },
@@ -89,6 +89,20 @@ namespace Pacifica.API
                 );
                 context.SaveChanges(); // Save categories
             }
+
+
+            if (!context.PaymentMethods.Any())
+            {
+                context.PaymentMethods.AddRange(
+                    new PaymentMethod { PaymentMethodName = "Cash" },
+                    new PaymentMethod { PaymentMethodName = "Charge" }
+                    
+                );
+                context.SaveChanges(); // Save categories
+            }
+
+
+
 
             // Seed data for Suppliers
             if (!context.Suppliers.Any())

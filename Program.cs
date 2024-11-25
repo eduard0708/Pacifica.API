@@ -23,6 +23,7 @@ using Pacifica.API;
 using System.ComponentModel.Design;
 using Pacifica.API.Services.ReferenceStockInService;
 using Pacifica.API.Services.ReferenceStockOutService;
+using Pacifica.API.Services.StockInService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,6 +68,8 @@ builder.Services.AddScoped<IStatusService, StatusService>();
 builder.Services.AddScoped<IReferenceStockInService, ReferenceStockInService>();
 builder.Services.AddScoped<IReferenceStockOutService, ReferenceStockOutService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
+
+builder.Services.AddScoped<IStockInService, StockInService>();
 builder.Services.AddScoped<IBranchProductService, BranchProductService>();
 
 builder.Services.AddScoped<ProductAuditTrailHelper>();

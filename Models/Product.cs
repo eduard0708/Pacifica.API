@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Pacifica.API.Models.GlobalAuditTrails;
+using Pacifica.API.Models.Transaction;
 
 namespace Pacifica.API.Models
 {
@@ -14,7 +15,7 @@ namespace Pacifica.API.Models
         [Required]
         [StringLength(50)]  // Limits the length of the SKU
         public string SKU { get; set; } = string.Empty;
-        
+
         // Foreign Key: Relates the product to its category
         public int CategoryId { get; set; }
         public Category? Category { get; set; }
@@ -25,6 +26,8 @@ namespace Pacifica.API.Models
 
         // Navigation property for related stock transactions (inventory movements)
         public ICollection<StockInOut>? StockInOuts { get; set; }
+        public ICollection<StockIn>? StockIns { get; set; }
+        public ICollection<StockOut>? StockOuts { get; set; }
 
         // Navigation property for related branch products (branch-specific prices and stock)
         public ICollection<BranchProduct>? BranchProducts { get; set; }

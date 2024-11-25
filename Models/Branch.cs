@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Pacifica.API.Models.Transaction;
 
 namespace Pacifica.API.Models
 {
@@ -20,6 +21,9 @@ namespace Pacifica.API.Models
         public ICollection<BranchProduct>? BranchProducts { get; set; }  // Many-to-many relation with Product
 
         public ICollection<StockInOut>? StockInOuts { get; set; }  // Many-to-many relation with Product
+
+        public ICollection<StockOut>? StockOuts { get; set; }  // Many-to-many relation with Product
+        public ICollection<StockIn>? StockIns { get; set; }  // Many-to-many relation with Product
 
         [Required(ErrorMessage = "Creation date is required.")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;  // Date when the branch was created

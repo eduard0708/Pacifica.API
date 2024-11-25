@@ -12,8 +12,8 @@ using Pacifica.API.Data;
 namespace Pacifica.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241123182139_InitCreate")]
-    partial class InitCreate
+    [Migration("20241125194435_InitCreate3")]
+    partial class InitCreate3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -704,11 +704,9 @@ namespace Pacifica.API.Migrations
 
                     b.Property<string>("Action")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ActionBy")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -716,10 +714,10 @@ namespace Pacifica.API.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("NewValue")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OldValue")
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Remarks")
                         .HasMaxLength(1500)
@@ -732,7 +730,7 @@ namespace Pacifica.API.Migrations
 
                     b.HasIndex("StockInOutId");
 
-                    b.ToTable("StockInOutAuditTrails", (string)null);
+                    b.ToTable("StockInOutAuditTrail");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Product", b =>
@@ -941,9 +939,7 @@ namespace Pacifica.API.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -974,9 +970,6 @@ namespace Pacifica.API.Migrations
                     b.Property<int>("StockQuantity")
                         .HasColumnType("int");
 
-                    b.Property<int?>("StockTransactionType")
-                        .HasColumnType("int");
-
                     b.Property<int>("StockTransactionTypeId")
                         .HasColumnType("int");
 
@@ -986,7 +979,7 @@ namespace Pacifica.API.Migrations
                     b.Property<int>("TransactionNumber")
                         .HasColumnType("int");
 
-                    b.Property<int>("TransactionTypeId")
+                    b.Property<int?>("TransactionTypeId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -1008,7 +1001,7 @@ namespace Pacifica.API.Migrations
 
                     b.HasIndex("TransactionTypeId");
 
-                    b.ToTable("StockInOuts");
+                    b.ToTable("StockInOut");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Supplier", b =>
@@ -1057,6 +1050,182 @@ namespace Pacifica.API.Migrations
                     b.ToTable("Suppliers");
                 });
 
+            modelBuilder.Entity("Pacifica.API.Models.Transaction.PaymentMethod", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("PaymentMethodName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PaymentMethods");
+                });
+
+            modelBuilder.Entity("Pacifica.API.Models.Transaction.StockInReference", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(1500)
+                        .HasColumnType("nvarchar(1500)");
+
+                    b.Property<string>("StockInReferenceName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StockInReferences");
+                });
+
+            modelBuilder.Entity("Pacifica.API.Models.Transaction.StockOut", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateReported")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("PaymentMethodId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PaymentTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReferenceNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(1500)
+                        .HasColumnType("nvarchar(1500)");
+
+                    b.Property<decimal>("RetailPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("StockOutReferenceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TransactionName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("TransactionType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
+
+                    b.HasIndex("PaymentMethodId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("StockOutReferenceId");
+
+                    b.ToTable("StockOuts");
+                });
+
+            modelBuilder.Entity("Pacifica.API.Models.Transaction.StockOutReference", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(1500)
+                        .HasColumnType("nvarchar(1500)");
+
+                    b.Property<string>("StockOutReferenceName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StockOutReferences");
+                });
+
             modelBuilder.Entity("Pacifica.API.Models.TransactionType", b =>
                 {
                     b.Property<int>("Id")
@@ -1099,7 +1268,74 @@ namespace Pacifica.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TransactionTypes");
+                    b.ToTable("TransactionType");
+                });
+
+            modelBuilder.Entity("StockIn", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("CostPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateReported")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReferenceNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(1500)
+                        .HasColumnType("nvarchar(1500)");
+
+                    b.Property<decimal>("RetailPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("StockInReferenceId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("StockInReferenceId");
+
+                    b.ToTable("StockIns");
                 });
 
             modelBuilder.Entity("BranchProduct", b =>
@@ -1250,7 +1486,7 @@ namespace Pacifica.API.Migrations
                     b.HasOne("Pacifica.API.Models.StockInOut", "StockInOut")
                         .WithMany("StockInOutAuditTrails")
                         .HasForeignKey("StockInOutId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("StockInOut");
@@ -1292,20 +1528,18 @@ namespace Pacifica.API.Migrations
                     b.HasOne("Pacifica.API.Models.ReferenceStockIn", "ReferenceStockIn")
                         .WithMany("StockInOuts")
                         .HasForeignKey("ReferenceStockInId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Pacifica.API.Models.ReferenceStockOut", "ReferenceStockOut")
                         .WithMany("StockInOuts")
                         .HasForeignKey("ReferenceStockOutId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Pacifica.API.Models.TransactionType", "TransactionType")
                         .WithMany("StockInOuts")
-                        .HasForeignKey("TransactionTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("TransactionTypeId");
 
                     b.Navigation("Branch");
 
@@ -1316,6 +1550,66 @@ namespace Pacifica.API.Migrations
                     b.Navigation("ReferenceStockOut");
 
                     b.Navigation("TransactionType");
+                });
+
+            modelBuilder.Entity("Pacifica.API.Models.Transaction.StockOut", b =>
+                {
+                    b.HasOne("Pacifica.API.Models.Branch", "Branch")
+                        .WithMany("StockOuts")
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Pacifica.API.Models.Transaction.PaymentMethod", "PaymentMethod")
+                        .WithMany()
+                        .HasForeignKey("PaymentMethodId");
+
+                    b.HasOne("Pacifica.API.Models.Product", "Product")
+                        .WithMany("StockOuts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Pacifica.API.Models.Transaction.StockOutReference", "StockOutReference")
+                        .WithMany("StockOuts")
+                        .HasForeignKey("StockOutReferenceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
+
+                    b.Navigation("PaymentMethod");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("StockOutReference");
+                });
+
+            modelBuilder.Entity("StockIn", b =>
+                {
+                    b.HasOne("Pacifica.API.Models.Branch", "Branch")
+                        .WithMany("StockIns")
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Pacifica.API.Models.Product", "Product")
+                        .WithMany("StockIns")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Pacifica.API.Models.Transaction.StockInReference", "StockInReference")
+                        .WithMany("StockIns")
+                        .HasForeignKey("StockInReferenceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Branch");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("StockInReference");
                 });
 
             modelBuilder.Entity("BranchProduct", b =>
@@ -1335,6 +1629,10 @@ namespace Pacifica.API.Migrations
                     b.Navigation("EmployeeBranches");
 
                     b.Navigation("StockInOuts");
+
+                    b.Navigation("StockIns");
+
+                    b.Navigation("StockOuts");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Category", b =>
@@ -1358,6 +1656,10 @@ namespace Pacifica.API.Migrations
                     b.Navigation("ProductAuditTrails");
 
                     b.Navigation("StockInOuts");
+
+                    b.Navigation("StockIns");
+
+                    b.Navigation("StockOuts");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.ReferenceStockIn", b =>
@@ -1383,6 +1685,16 @@ namespace Pacifica.API.Migrations
             modelBuilder.Entity("Pacifica.API.Models.Supplier", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("Pacifica.API.Models.Transaction.StockInReference", b =>
+                {
+                    b.Navigation("StockIns");
+                });
+
+            modelBuilder.Entity("Pacifica.API.Models.Transaction.StockOutReference", b =>
+                {
+                    b.Navigation("StockOuts");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.TransactionType", b =>
