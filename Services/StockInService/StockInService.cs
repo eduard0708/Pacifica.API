@@ -132,6 +132,112 @@ namespace Pacifica.API.Services.StockInService
         }
 
         // Update existing StockIn
+        // public async Task<ApiResponse<StockInDTO>> UpdateStockInAsync(int id, StockInUpdateDTO stockInDto)
+        // {
+        //     var existingStockIn = await _context.StockIns
+        //         .FirstOrDefaultAsync(si => si.Id == id && si.DeletedAt == null);
+
+        //     if (existingStockIn == null)
+        //     {
+        //         return new ApiResponse<StockInDTO>
+        //         {
+        //             Success = false,
+        //             Message = "StockIn record not found.",
+        //             Data = null
+        //         };
+        //     }
+
+        //     // Map the updated values to the existing entity
+        //     _mapper.Map(stockInDto, existingStockIn);
+        //     existingStockIn.UpdatedAt = DateTime.Now;  // Update timestamp
+        //     existingStockIn.UpdatedBy = stockInDto.CreatedBy;  // Assuming createdBy is passed in DTO
+
+        //     _context.StockIns.Update(existingStockIn);
+        //     await _context.SaveChangesAsync();
+
+        //     // Update the BranchProduct stock quantity
+        //     var branchProduct = await _context.BranchProducts
+        //         .FirstOrDefaultAsync(bp => bp.BranchId == stockInDto.BranchId && bp.ProductId == stockInDto.ProductId && bp.DeletedAt == null);
+
+        //     if (branchProduct != null)
+        //     {
+        //         // If the StockIn is updated, adjust the quantity accordingly (new quantity - old quantity)
+        //         branchProduct.StockQuantity += stockInDto.Quantity - existingStockIn.Quantity; // Adjust stock
+        //         _context.BranchProducts.Update(branchProduct);
+        //         await _context.SaveChangesAsync();
+        //     }
+
+        //     var updatedStockInDto = _mapper.Map<StockInDTO>(existingStockIn);
+
+        //     return new ApiResponse<StockInDTO>
+        //     {
+        //         Success = true,
+        //         Message = "StockIn record updated successfully.",
+        //         Data = updatedStockInDto
+        //     };
+        // }
+
+        // public async Task<ApiResponse<StockInDTO>> UpdateStockInAsync(int id, StockInUpdateDTO stockInDto)
+        // {
+        //     var existingStockIn = await _context.StockIns
+        //         .FirstOrDefaultAsync(si => si.Id == id && si.DeletedAt == null);
+
+        //     if (existingStockIn == null)
+        //     {
+        //         return new ApiResponse<StockInDTO>
+        //         {
+        //             Success = false,
+        //             Message = "StockIn record not found.",
+        //             Data = null
+        //         };
+        //     }
+
+        //     // Store the old product and quantity for stock adjustments later
+        //     var oldProductId = existingStockIn.ProductId;
+        //     var oldQuantity = existingStockIn.Quantity;
+
+        //     // Map the updated values to the existing entity
+        //     _mapper.Map(stockInDto, existingStockIn);
+        //     existingStockIn.UpdatedAt = DateTime.Now;  // Update timestamp
+        //     existingStockIn.UpdatedBy = stockInDto.CreatedBy;  // Assuming CreatedBy is passed in DTO
+
+        //     _context.StockIns.Update(existingStockIn);
+        //     await _context.SaveChangesAsync();
+
+        //     // Get the BranchProduct for the old product (before the update)
+        //     var oldBranchProduct = await _context.BranchProducts
+        //         .FirstOrDefaultAsync(bp => bp.BranchId == stockInDto.BranchId && bp.ProductId == oldProductId && bp.DeletedAt == null);
+
+        //     if (oldBranchProduct != null)
+        //     {
+        //         // If the product has changed, we need to deduct the old quantity from the previous product
+        //         oldBranchProduct.StockQuantity -= oldQuantity; // Deduct old quantity
+        //         _context.BranchProducts.Update(oldBranchProduct);
+        //     }
+
+        //     // Get the BranchProduct for the new product (after the update)
+        //     var newBranchProduct = await _context.BranchProducts
+        //         .FirstOrDefaultAsync(bp => bp.BranchId == stockInDto.BranchId && bp.ProductId == stockInDto.ProductId && bp.DeletedAt == null);
+
+        //     if (newBranchProduct != null)
+        //     {
+        //         // If the new product exists, we add the updated quantity to the new product
+        //         newBranchProduct.StockQuantity += stockInDto.Quantity; // Add updated quantity
+        //         _context.BranchProducts.Update(newBranchProduct);
+        //     }
+
+        //     await _context.SaveChangesAsync();
+
+        //     // Map the updated StockIn entity to a DTO
+        //     var updatedStockInDto = _mapper.Map<StockInDTO>(existingStockIn);
+
+        //     return new ApiResponse<StockInDTO>
+        //     {
+        //         Success = true,
+        //         Message = "StockIn record updated successfully.",
+        //         Data = updatedStockInDto
+        //     };
+        // }
         public async Task<ApiResponse<StockInDTO>> UpdateStockInAsync(int id, StockInUpdateDTO stockInDto)
         {
             var existingStockIn = await _context.StockIns
@@ -147,26 +253,43 @@ namespace Pacifica.API.Services.StockInService
                 };
             }
 
+            // Store the old ProductId and Quantity for stock adjustments
+            var oldProductId = existingStockIn.ProductId;
+            var oldQuantity = existingStockIn.Quantity;
+
             // Map the updated values to the existing entity
             _mapper.Map(stockInDto, existingStockIn);
             existingStockIn.UpdatedAt = DateTime.Now;  // Update timestamp
-            existingStockIn.UpdatedBy = stockInDto.CreatedBy;  // Assuming createdBy is passed in DTO
+            existingStockIn.UpdatedBy = stockInDto.CreatedBy;  // Assuming CreatedBy is passed in DTO
 
             _context.StockIns.Update(existingStockIn);
             await _context.SaveChangesAsync();
 
-            // Update the BranchProduct stock quantity
-            var branchProduct = await _context.BranchProducts
-                .FirstOrDefaultAsync(bp => bp.BranchId == stockInDto.BranchId && bp.ProductId == stockInDto.ProductId && bp.DeletedAt == null);
+            // Get the BranchProduct for the old product (before the update)
+            var oldBranchProduct = await _context.BranchProducts
+                .FirstOrDefaultAsync(bp => bp.BranchId == stockInDto.BranchId && bp.ProductId == oldProductId && bp.DeletedAt == null);
 
-            if (branchProduct != null)
+            if (oldBranchProduct != null)
             {
-                // If the StockIn is updated, adjust the quantity accordingly (new quantity - old quantity)
-                branchProduct.StockQuantity += stockInDto.Quantity - existingStockIn.Quantity; // Adjust stock
-                _context.BranchProducts.Update(branchProduct);
-                await _context.SaveChangesAsync();
+                // Restore the old quantity by subtracting the previous quantity
+                oldBranchProduct.StockQuantity -= oldQuantity; // Deduct old quantity
+                _context.BranchProducts.Update(oldBranchProduct);
             }
 
+            // Get the BranchProduct for the new product (after the update)
+            var newBranchProduct = await _context.BranchProducts
+                .FirstOrDefaultAsync(bp => bp.BranchId == stockInDto.BranchId && bp.ProductId == stockInDto.ProductId && bp.DeletedAt == null);
+
+            if (newBranchProduct != null)
+            {
+                // If the product has changed, we need to add the new quantity
+                newBranchProduct.StockQuantity += stockInDto.Quantity; // Add new quantity
+                _context.BranchProducts.Update(newBranchProduct);
+            }
+
+            await _context.SaveChangesAsync();
+
+            // Map the updated StockIn entity to a DTO
             var updatedStockInDto = _mapper.Map<StockInDTO>(existingStockIn);
 
             return new ApiResponse<StockInDTO>
@@ -203,40 +326,6 @@ namespace Pacifica.API.Services.StockInService
                 Success = true,
                 Message = "StockIn records retrieved successfully.",
                 Data = stockInDtos
-            };
-        }
-
-        // Update existing StockIn by Reference Number
-        public async Task<ApiResponse<StockInDTO>> UpdateStockInByReferenceNumberAsync(string referenceNumber, StockInUpdateDTO stockInDto)
-        {
-            var existingStockIn = await _context.StockIns
-                .FirstOrDefaultAsync(si => si.ReferenceNumber == referenceNumber && si.DeletedAt == null);
-
-            if (existingStockIn == null)
-            {
-                return new ApiResponse<StockInDTO>
-                {
-                    Success = false,
-                    Message = "StockIn record not found.",
-                    Data = null
-                };
-            }
-
-            // Map the updated values to the existing entity
-            _mapper.Map(stockInDto, existingStockIn);
-            existingStockIn.UpdatedAt = DateTime.Now;  // Update timestamp
-            existingStockIn.UpdatedBy = stockInDto.CreatedBy;  // Assuming createdBy is passed in DTO
-
-            _context.StockIns.Update(existingStockIn);
-            await _context.SaveChangesAsync();
-
-            var updatedStockInDto = _mapper.Map<StockInDTO>(existingStockIn);
-
-            return new ApiResponse<StockInDTO>
-            {
-                Success = true,
-                Message = "StockIn record updated successfully.",
-                Data = updatedStockInDto
             };
         }
 
@@ -280,66 +369,6 @@ namespace Pacifica.API.Services.StockInService
                 Data = true
             };
         }
-
-        // Update multiple StockIn records
-        public async Task<ApiResponse<List<StockInDTO>>> UpdateStockInsAsync(List<StockInUpdateDTO> stockInDtos)
-        {
-            var updatedStockInDtos = new List<StockInDTO>();
-            var failedUpdates = new List<string>();
-
-            foreach (var stockInDto in stockInDtos)
-            {
-                var existingStockIn = await _context.StockIns
-                    .FirstOrDefaultAsync(si => si.Id == stockInDto.Id && si.DeletedAt == null);
-
-                if (existingStockIn == null)
-                {
-                    failedUpdates.Add($"StockIn record with ID {stockInDto.Id} not found.");
-                    continue; // Skip this update and move on to the next
-                }
-
-                // Map the updated values to the existing entity
-                _mapper.Map(stockInDto, existingStockIn);
-                existingStockIn.UpdatedAt = DateTime.Now;  // Update timestamp
-                existingStockIn.UpdatedBy = stockInDto.CreatedBy;  // Assuming createdBy is passed in DTO
-
-                _context.StockIns.Update(existingStockIn);
-                await _context.SaveChangesAsync();
-
-                // Update the BranchProduct stock quantity
-                var branchProduct = await _context.BranchProducts
-                    .FirstOrDefaultAsync(bp => bp.BranchId == stockInDto.BranchId && bp.ProductId == stockInDto.ProductId && bp.DeletedAt == null);
-
-                if (branchProduct != null)
-                {
-                    // If the StockIn is updated, adjust the quantity accordingly (new quantity - old quantity)
-                    branchProduct.StockQuantity += stockInDto.Quantity - existingStockIn.Quantity; // Adjust stock
-                    _context.BranchProducts.Update(branchProduct);
-                    await _context.SaveChangesAsync();
-                }
-
-                var updatedStockInDto = _mapper.Map<StockInDTO>(existingStockIn);
-                updatedStockInDtos.Add(updatedStockInDto);
-            }
-
-            if (failedUpdates.Any())
-            {
-                return new ApiResponse<List<StockInDTO>>
-                {
-                    Success = false,
-                    Message = $"Some updates failed: {string.Join(", ", failedUpdates)}",
-                    Data = updatedStockInDtos
-                };
-            }
-
-            return new ApiResponse<List<StockInDTO>>
-            {
-                Success = true,
-                Message = "StockIn records updated successfully.",
-                Data = updatedStockInDtos
-            };
-        }
-
 
     }
 }

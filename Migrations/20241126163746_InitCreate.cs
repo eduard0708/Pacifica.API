@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Pacifica.API.Migrations
 {
     /// <inheritdoc />
-    public partial class InitCreate3 : Migration
+    public partial class InitCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -640,7 +640,6 @@ namespace Pacifica.API.Migrations
                     DateReported = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     CostPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    RetailPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Remarks = table.Column<string>(type: "nvarchar(1500)", maxLength: 1500, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),

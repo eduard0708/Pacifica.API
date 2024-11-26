@@ -1311,9 +1311,6 @@ namespace Pacifica.API.Migrations
                         .HasMaxLength(1500)
                         .HasColumnType("nvarchar(1500)");
 
-                    b.Property<decimal>("RetailPrice")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<int>("StockInReferenceId")
                         .HasColumnType("int");
 

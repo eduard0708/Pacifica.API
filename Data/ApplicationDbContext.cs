@@ -235,10 +235,6 @@ namespace Pacifica.API.Data
                 .Property(si => si.CostPrice)
                 .HasColumnType("decimal(18,2)"); // Specify precision and scale for CostPrice
 
-            modelBuilder.Entity<StockIn>()
-                .Property(si => si.RetailPrice)
-                .HasColumnType("decimal(18,2)"); // Specify precision and scale for RetailPrice
-
             // StockOut entity configuration
             modelBuilder.Entity<StockOut>()
                 .HasKey(so => so.Id);

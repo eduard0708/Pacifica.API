@@ -98,20 +98,7 @@ namespace Pacifica.API.Controllers
             return NotFound(response);  // Returns 404 if stock in record is not found
         }
 
-        // PUT: api/StockIn/reference/{referenceNumber}
-        [HttpPut("reference/{referenceNumber}")]
-        public async Task<ActionResult<ApiResponse<StockInDTO>>> UpdateStockInByReferenceNumber(string referenceNumber, StockInUpdateDTO stockInUpdateDto)
-        {
-            var response = await _stockInService.UpdateStockInByReferenceNumberAsync(referenceNumber, stockInUpdateDto);
-
-            if (response.Success)
-            {
-                return Ok(response);  // Returns 200 OK with updated data
-            }
-
-            return NotFound(response);  // Returns 404 if stock in record is not found
-        }
-
+   
         // DELETE: api/StockIn/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<ApiResponse<bool>>> DeleteStockIn(int id)
@@ -125,29 +112,7 @@ namespace Pacifica.API.Controllers
 
             return NotFound(response);  // Returns 404 if stock in record not found
         }
-
-        [HttpPut("update-multiple")]
-        public async Task<IActionResult> UpdateMultipleStockInsAsync([FromBody] List<StockInUpdateDTO> stockInDtos)
-        {
-            if (stockInDtos == null || !stockInDtos.Any())
-            {
-                return BadRequest(new ApiResponse<List<StockInDTO>>
-                {
-                    Success = false,
-                    Message = "No StockIn records provided for update.",
-                    Data = null
-                });
-            }
-
-            var response = await _stockInService.UpdateStockInsAsync(stockInDtos);
-
-            if (response.Success)
-            {
-                return Ok(response); // Return the success response with the updated data
-            }
-
-            // Return the failed response with the list of failed updates and messages
-            return BadRequest(response);
-        }
+    
+    
     }
 }

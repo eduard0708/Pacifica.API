@@ -12,8 +12,8 @@ using Pacifica.API.Data;
 namespace Pacifica.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241126055805_Officedata")]
-    partial class Officedata
+    [Migration("20241126163746_InitCreate")]
+    partial class InitCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1313,9 +1313,6 @@ namespace Pacifica.API.Migrations
                     b.Property<string>("Remarks")
                         .HasMaxLength(1500)
                         .HasColumnType("nvarchar(1500)");
-
-                    b.Property<decimal>("RetailPrice")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("StockInReferenceId")
                         .HasColumnType("int");

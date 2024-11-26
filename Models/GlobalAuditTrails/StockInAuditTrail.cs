@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using Pacifica.API.Models.Transaction;
 
 namespace Pacifica.API.Models.GlobalAuditTrails
 {
