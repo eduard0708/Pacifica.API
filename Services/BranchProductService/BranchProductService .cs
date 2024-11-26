@@ -155,8 +155,6 @@ namespace Pacifica.API.Services.BranchProductService
             }
         }
 
-
-
         public async Task<ApiResponse<BranchProductResponseDto>> GetProductsInBranchAsync(int branchId, int productId)
         {
             try

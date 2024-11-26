@@ -72,8 +72,21 @@ namespace Pacifica.API.Services.StockInService
         public async Task<ApiResponse<StockInDTO>> CreateStockInAsync(StockInCreateDTO stockInDto)
         {
             var stockIn = _mapper.Map<StockIn>(stockInDto);
+
+            // Add the StockIn record
             _context.StockIns.Add(stockIn);
             await _context.SaveChangesAsync();
+
+            // Update the BranchProduct stock quantity
+            var branchProduct = await _context.BranchProducts
+                .FirstOrDefaultAsync(bp => bp.BranchId == stockInDto.BranchId && bp.ProductId == stockInDto.ProductId && bp.DeletedAt == null);
+
+            if (branchProduct != null)
+            {
+                branchProduct.StockQuantity += stockInDto.Quantity; // Add the quantity to the existing stock
+                _context.BranchProducts.Update(branchProduct);
+                await _context.SaveChangesAsync();
+            }
 
             var createdStockInDto = _mapper.Map<StockInDTO>(stockIn);
 
@@ -89,7 +102,23 @@ namespace Pacifica.API.Services.StockInService
         public async Task<ApiResponse<IEnumerable<StockInDTO>>> CreateMultipleStockInAsync(IEnumerable<StockInCreateDTO> stockInDtos)
         {
             var stockIns = _mapper.Map<IEnumerable<StockIn>>(stockInDtos);
+
             _context.StockIns.AddRange(stockIns);
+            await _context.SaveChangesAsync();
+
+            // Update BranchProduct stock quantities for each StockIn
+            foreach (var stockInDto in stockInDtos)
+            {
+                var branchProduct = await _context.BranchProducts
+                    .FirstOrDefaultAsync(bp => bp.BranchId == stockInDto.BranchId && bp.ProductId == stockInDto.ProductId && bp.DeletedAt == null);
+
+                if (branchProduct != null)
+                {
+                    branchProduct.StockQuantity += stockInDto.Quantity; // Add the quantity to the existing stock
+                    _context.BranchProducts.Update(branchProduct);
+                }
+            }
+
             await _context.SaveChangesAsync();
 
             var createdStockInDtos = _mapper.Map<IEnumerable<StockInDTO>>(stockIns);
@@ -107,6 +136,81 @@ namespace Pacifica.API.Services.StockInService
         {
             var existingStockIn = await _context.StockIns
                 .FirstOrDefaultAsync(si => si.Id == id && si.DeletedAt == null);
+
+            if (existingStockIn == null)
+            {
+                return new ApiResponse<StockInDTO>
+                {
+                    Success = false,
+                    Message = "StockIn record not found.",
+                    Data = null
+                };
+            }
+
+            // Map the updated values to the existing entity
+            _mapper.Map(stockInDto, existingStockIn);
+            existingStockIn.UpdatedAt = DateTime.Now;  // Update timestamp
+            existingStockIn.UpdatedBy = stockInDto.CreatedBy;  // Assuming createdBy is passed in DTO
+
+            _context.StockIns.Update(existingStockIn);
+            await _context.SaveChangesAsync();
+
+            // Update the BranchProduct stock quantity
+            var branchProduct = await _context.BranchProducts
+                .FirstOrDefaultAsync(bp => bp.BranchId == stockInDto.BranchId && bp.ProductId == stockInDto.ProductId && bp.DeletedAt == null);
+
+            if (branchProduct != null)
+            {
+                // If the StockIn is updated, adjust the quantity accordingly (new quantity - old quantity)
+                branchProduct.StockQuantity += stockInDto.Quantity - existingStockIn.Quantity; // Adjust stock
+                _context.BranchProducts.Update(branchProduct);
+                await _context.SaveChangesAsync();
+            }
+
+            var updatedStockInDto = _mapper.Map<StockInDTO>(existingStockIn);
+
+            return new ApiResponse<StockInDTO>
+            {
+                Success = true,
+                Message = "StockIn record updated successfully.",
+                Data = updatedStockInDto
+            };
+        }
+
+        // Get StockIn by Reference Number
+        public async Task<ApiResponse<IEnumerable<StockInDTO>>> GetStockInByReferenceNumberAsync(string referenceNumber)
+        {
+            // Fetch all stock-in records with the given reference number
+            var stockIns = await _context.StockIns
+                .Where(si => si.ReferenceNumber == referenceNumber && si.DeletedAt == null) // Apply any necessary filters, e.g., DeletedAt check
+                .ToListAsync();
+
+            if (stockIns == null || !stockIns.Any())
+            {
+                return new ApiResponse<IEnumerable<StockInDTO>>
+                {
+                    Success = false,
+                    Message = "No StockIn records found with the given reference number.",
+                    Data = null
+                };
+            }
+
+            // Map the stock-in entities to DTOs
+            var stockInDtos = _mapper.Map<IEnumerable<StockInDTO>>(stockIns);
+
+            return new ApiResponse<IEnumerable<StockInDTO>>
+            {
+                Success = true,
+                Message = "StockIn records retrieved successfully.",
+                Data = stockInDtos
+            };
+        }
+
+        // Update existing StockIn by Reference Number
+        public async Task<ApiResponse<StockInDTO>> UpdateStockInByReferenceNumberAsync(string referenceNumber, StockInUpdateDTO stockInDto)
+        {
+            var existingStockIn = await _context.StockIns
+                .FirstOrDefaultAsync(si => si.ReferenceNumber == referenceNumber && si.DeletedAt == null);
 
             if (existingStockIn == null)
             {
@@ -158,6 +262,17 @@ namespace Pacifica.API.Services.StockInService
             _context.StockIns.Update(stockIn);
             await _context.SaveChangesAsync();
 
+            // Optionally, you can update the BranchProduct stock quantity in case of deletion
+            var branchProduct = await _context.BranchProducts
+                .FirstOrDefaultAsync(bp => bp.BranchId == stockIn.BranchId && bp.ProductId == stockIn.ProductId && bp.DeletedAt == null);
+
+            if (branchProduct != null)
+            {
+                branchProduct.StockQuantity -= stockIn.Quantity; // Remove the quantity from the stock
+                _context.BranchProducts.Update(branchProduct);
+                await _context.SaveChangesAsync();
+            }
+
             return new ApiResponse<bool>
             {
                 Success = true,
@@ -165,5 +280,6 @@ namespace Pacifica.API.Services.StockInService
                 Data = true
             };
         }
+
     }
 }
