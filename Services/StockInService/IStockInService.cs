@@ -13,6 +13,7 @@ namespace Pacifica.API.Services.StockInService
         Task<ApiResponse<StockInDTO>> CreateStockInAsync(StockInCreateDTO stockInDto);
         Task<ApiResponse<IEnumerable<StockInDTO>>> CreateMultipleStockInAsync(IEnumerable<StockInCreateDTO> stockInDtos);
         Task<ApiResponse<StockInDTO>> UpdateStockInAsync(int id, StockInUpdateDTO stockInDto);
+        Task<ApiResponse<List<StockInDTO>>> UpdateStockInsAsync(List<StockInUpdateDTO> stockInDtos);
         Task<ApiResponse<StockInDTO>> UpdateStockInByReferenceNumberAsync(string referenceNumber, StockInUpdateDTO stockInDto);  // New method to update by reference number
         Task<ApiResponse<bool>> DeleteStockInAsync(int id);
     }

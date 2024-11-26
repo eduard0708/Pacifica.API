@@ -9,7 +9,6 @@ namespace Pacifica.API.Dtos.StockIn
         public DateTime DateReported { get; set; }
         public int Quantity { get; set; }
         public decimal CostPrice { get; set; }
-        public decimal RetailPrice { get; set; }
         public int StockInReferenceId { get; set; }
         public string? UpdatedByd { get; set; }
 
