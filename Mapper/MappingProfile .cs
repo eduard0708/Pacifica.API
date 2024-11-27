@@ -12,6 +12,8 @@ using Pacifica.API.Models.Transaction;
 using Pacifica.API.Dtos.StockInReference;
 using Pacifica.API.Dtos.StockOut;
 using Pacifica.API.Dtos.StockOutReference;
+using Pacifica.API.Models.Inventory;
+using Pacifica.API.Dtos.Inventory;
 
 namespace Pacifica.API.Mapper
 {
@@ -112,7 +114,12 @@ namespace Pacifica.API.Mapper
                 .ForMember(dest => dest.Remarks, opt => opt.MapFrom(src => src.Remarks))
                 .ForMember(dest => dest.ActionBy, opt => opt.MapFrom(src => src.ActionBy))
                 .ForMember(dest => dest.ActionDate, opt => opt.MapFrom(src => src.ActionDate)).ReverseMap();
+
+
+            CreateMap<BeginningInventory, BeginningInventoryDto>().ReverseMap();
+            CreateMap<MonthlyInventory, MonthlyInventoryDto>().ReverseMap();
+            CreateMap<BranchProductInventoryAuditTrail, BranchProductInventoryAuditTrailDto>().ReverseMap();
         }
     }
-
 }
+

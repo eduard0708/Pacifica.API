@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Pacifica.API.Models.GlobalAuditTrails;
+using Pacifica.API.Models.Inventory;
 
 public class BranchProduct : AuditDetails
 {
@@ -15,7 +16,7 @@ public class BranchProduct : AuditDetails
     public int StatusId { get; set; } // Foreign Key for ProductStatus
     public Status? Status { get; set; } // Navigation Property to ProductStatus
 
-    [Required(ErrorMessage = "Cost price is required.")]    
+    [Required(ErrorMessage = "Cost price is required.")]
     [Range(0, double.MaxValue, ErrorMessage = "Cost price must be a positive value.")]
     [Column(TypeName = "decimal(18,2)")]
     public decimal CostPrice { get; set; }
@@ -43,4 +44,9 @@ public class BranchProduct : AuditDetails
     public Product? Product { get; set; }
 
     public ICollection<BranchProductAuditTrail>? BranchProductAuditTrails { get; set; }
+
+    // Collections to represent inventory history and audit trail for this branch-product combination
+    public ICollection<BeginningInventory>? BeginningInventories { get; set; }
+    public ICollection<MonthlyInventory>? MonthlyInventories { get; set; }
+    public ICollection<BranchProductInventoryAuditTrail>? BranchProductInventoryAuditTrails { get; set; }
 }

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Pacifica.API.Models.GlobalAuditTrails;
+using Pacifica.API.Models.Inventory;
 using Pacifica.API.Models.Transaction;
 
 namespace Pacifica.API.Data
@@ -40,6 +41,10 @@ namespace Pacifica.API.Data
         public DbSet<ProductAuditTrail> ProductAuditTrails { get; set; }
         public DbSet<StockInAuditTrail> StockInAuditTrails { get; set; }
         public DbSet<StockOutAuditTrail> StockOutAuditTrails { get; set; }
+
+        public DbSet<BeginningInventory> BeginningInventories { get; set; }
+        public DbSet<MonthlyInventory> MonthlyInventories { get; set; }
+        public DbSet<BranchProductInventoryAuditTrail> BranchProductInventoryAuditTrails { get; set; }
 
 
 
@@ -302,6 +307,37 @@ namespace Pacifica.API.Data
             modelBuilder.Entity<StockOut>()
                 .Property(so => so.RetailPrice)
                 .HasColumnType("decimal(18,2)"); // Specify precision and scale for RetailPrice
+
+
+            // Configure BranchProduct to BeginningInventory relationship
+            modelBuilder.Entity<BeginningInventory>()
+                .HasOne(bi => bi.BranchProduct)
+                .WithMany(bp => bp.BeginningInventories)
+                .HasForeignKey(bi => new { bi.BranchId, bi.ProductId }) // Composite FK
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure BranchProduct to MonthlyInventory relationship
+            modelBuilder.Entity<MonthlyInventory>()
+                .HasOne(mi => mi.BranchProduct)
+                .WithMany(bp => bp.MonthlyInventories)
+                .HasForeignKey(mi => new { mi.BranchId, mi.ProductId }) // Composite FK
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure BranchProduct to AuditTrail relationship
+            modelBuilder.Entity<BranchProductInventoryAuditTrail>()
+                .HasOne(bait => bait.BranchProduct)
+                .WithMany(bp => bp.BranchProductInventoryAuditTrails)
+                .HasForeignKey(bait => new { bait.BranchId, bait.ProductId }) // Composite FK
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Optionally, configure other properties like indexes or default values
+            modelBuilder.Entity<BranchProductInventoryAuditTrail>()
+                .HasIndex(bait => new { bait.BranchId, bait.ProductId, bait.DateAdjusted })
+                .HasDatabaseName("IX_AuditTrail_BranchProduct_Date");
+
+            modelBuilder.Entity<MonthlyInventory>()
+                .HasIndex(mi => new { mi.BranchId, mi.ProductId, mi.Date })
+                .HasDatabaseName("IX_MonthlyInventory_BranchProduct_Date");
 
 
 
