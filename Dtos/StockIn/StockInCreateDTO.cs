@@ -10,7 +10,7 @@ namespace Pacifica.API.Dtos.StockIn
         public int Quantity { get; set; }
         public decimal CostPrice { get; set; }
         public int StockInReferenceId { get; set; }
-        public string? UpdatedByd { get; set; }
+        public string? CreatedBy { get; set; }
 
     }
 }

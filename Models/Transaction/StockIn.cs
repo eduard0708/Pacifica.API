@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Pacifica.API.Models.GlobalAuditTrails;
 using Pacifica.API.Models.Transaction;
 
 public class StockIn : AuditDetails
@@ -28,4 +29,7 @@ public class StockIn : AuditDetails
     public Product? Product { get; set; }
     public Branch? Branch { get; set; }
     public StockInReference? StockInReference { get; set; }
+
+    public ICollection<StockInAuditTrail>? StockInAuditTrails { get; set; }
+
 }

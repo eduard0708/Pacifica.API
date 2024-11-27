@@ -39,6 +39,8 @@ namespace Pacifica.API.Data
         public DbSet<Status> Statuses { get; set; }
         public DbSet<BranchProductAuditTrail> BranchProductAuditTrails { get; set; }
         public DbSet<ProductAuditTrail> ProductAuditTrails { get; set; }
+        public DbSet<StockInAuditTrail> StockInAuditTrails { get; set; }
+
 
         // Configurations for model building
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -207,6 +209,25 @@ namespace Pacifica.API.Data
                     .IsRequired(); // Make the relationship optional
             });
 
+            // Configure StockInAuditTrail
+            modelBuilder.Entity<StockInAuditTrail>(entity =>
+            {
+                entity.ToTable("StockInAuditTrails");
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Action).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.ActionBy).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.ActionDate).IsRequired();
+                entity.Property(e => e.OldValue).HasColumnType("text");
+                entity.Property(e => e.NewValue).HasColumnType("text");
+
+                entity.HasOne(si => si.StockIn)  // Link to Product
+                    .WithMany(s => s.StockInAuditTrails)  // A Product can have many ProductAuditTrailProducts
+                    .HasForeignKey(siat => siat.StockInId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired(); // Make the relationship optional
+            });
+
             // Configure StockIn, StockOut, StockInReference, and StockOutReference entities
             // StockIn entity configuration
             modelBuilder.Entity<StockIn>()
@@ -275,8 +296,20 @@ namespace Pacifica.API.Data
             modelBuilder.Entity<StockIn>()
             .HasQueryFilter(si => si.Branch!.DeletedAt == null); // Filter on StockIn
 
+            // Disable soft delete query filters on StockInAuditTrail to ensure audit data is always visible
+            modelBuilder.Entity<StockInAuditTrail>()
+                .HasQueryFilter(siat => siat == null); // This can be adjusted if there's a "DeletedAt" field on the audit itself.
+
+            // Ensure that global query filters on StockIn and Branch do not interfere with the audit trail
+            modelBuilder.Entity<StockIn>()
+                .HasQueryFilter(si => si.DeletedAt == null || si.DeletedAt != null);  // Adjust depending on soft-delete behavior
+
+
+
             modelBuilder.Entity<StockOut>()
                 .HasQueryFilter(so => so.Branch!.DeletedAt == null); // Filter on StockOut
+
+
 
 
         }

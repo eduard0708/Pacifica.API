@@ -98,12 +98,12 @@ namespace Pacifica.API.Controllers
             return NotFound(response);  // Returns 404 if stock in record is not found
         }
 
-   
+
         // DELETE: api/StockIn/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<ApiResponse<bool>>> DeleteStockIn(int id)
+        [HttpDelete]
+        public async Task<ActionResult<ApiResponse<bool>>> DeleteStockIn([FromBody] StockInDeleteParams deleteParams)
         {
-            var response = await _stockInService.DeleteStockInAsync(id);
+            var response = await _stockInService.DeleteStockInAsync(deleteParams);
 
             if (response.Success)
             {
@@ -112,7 +112,33 @@ namespace Pacifica.API.Controllers
 
             return NotFound(response);  // Returns 404 if stock in record not found
         }
-    
-    
+
+        [HttpPost("restore")]
+        public async Task<ActionResult<ApiResponse<bool>>> RestoreStockIn([FromBody] StockInRestoreParams restoreParams)
+        {
+            // Call the service method to restore the StockIn record.
+            var response = await _stockInService.RestoreStockInAsync(restoreParams);
+
+            if (!response.Success)
+            {
+                return NotFound(response);  // Return 404 if not found or failed.
+            }
+
+            return Ok(response);  // Return 200 with the success response.
+        }
+
+        [HttpGet("deleted")]
+        public async Task<ActionResult<ApiResponse<List<StockIn>>>> GetAllDeletedStockIn()
+        {
+            // Call the service method to get all deleted StockIn records.
+            var response = await _stockInService.GetAllDeletedStockInAsync();
+
+            if (!response.Success)
+            {
+                return NotFound(response);  // Return 404 if no deleted records found.
+            }
+
+            return Ok(response);  // Return 200 with the list of deleted StockIn records.
+        }
     }
 }

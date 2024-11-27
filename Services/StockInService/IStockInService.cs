@@ -13,6 +13,9 @@ namespace Pacifica.API.Services.StockInService
         Task<ApiResponse<StockInDTO>> CreateStockInAsync(StockInCreateDTO stockInDto);
         Task<ApiResponse<IEnumerable<StockInDTO>>> CreateMultipleStockInAsync(IEnumerable<StockInCreateDTO> stockInDtos);
         Task<ApiResponse<StockInDTO>> UpdateStockInAsync(int id, StockInUpdateDTO stockInDto);
-         Task<ApiResponse<bool>> DeleteStockInAsync(int id);
+        Task<ApiResponse<bool>> DeleteStockInAsync(StockInDeleteParams deleteParams);
+        Task<ApiResponse<bool>> RestoreStockInAsync(StockInRestoreParams restoreParams);
+        Task<ApiResponse<List<StockIn>>> GetAllDeletedStockInAsync();
+
     }
 }
