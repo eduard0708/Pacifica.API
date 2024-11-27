@@ -20,8 +20,6 @@ namespace Pacifica.API.Models
 
         public ICollection<BranchProduct>? BranchProducts { get; set; }  // Many-to-many relation with Product
 
-        public ICollection<StockInOut>? StockInOuts { get; set; }  // Many-to-many relation with Product
-
         public ICollection<StockOut>? StockOuts { get; set; }  // Many-to-many relation with Product
         public ICollection<StockIn>? StockIns { get; set; }  // Many-to-many relation with Product
 

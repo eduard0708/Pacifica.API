@@ -29,9 +29,8 @@ namespace Pacifica.API.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<EmployeeBranch> EmployeeBranches { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
-        public DbSet<ReferenceStockOut> ReferenceStockOuts { get; set; }
-        public DbSet<ReferenceStockIn> ReferenceStockIns { get; set; }
         public DbSet<StockInReference> StockInReferences { get; set; }
+
         public DbSet<StockOutReference> StockOutReferences { get; set; }
         public DbSet<StockOut> StockOuts { get; set; }
         public DbSet<StockIn> StockIns { get; set; }
@@ -40,6 +39,8 @@ namespace Pacifica.API.Data
         public DbSet<BranchProductAuditTrail> BranchProductAuditTrails { get; set; }
         public DbSet<ProductAuditTrail> ProductAuditTrails { get; set; }
         public DbSet<StockInAuditTrail> StockInAuditTrails { get; set; }
+        public DbSet<StockOutAuditTrail> StockOutAuditTrails { get; set; }
+
 
 
         // Configurations for model building
@@ -228,6 +229,25 @@ namespace Pacifica.API.Data
                     .IsRequired(); // Make the relationship optional
             });
 
+            // Configure StockOuAuditTrail
+            modelBuilder.Entity<StockOutAuditTrail>(entity =>
+            {
+                entity.ToTable("StockOuAuditTrails");
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Action).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.ActionBy).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.ActionDate).IsRequired();
+                entity.Property(e => e.OldValue).HasColumnType("text");
+                entity.Property(e => e.NewValue).HasColumnType("text");
+
+                entity.HasOne(si => si.StockOut)  // Link to Product
+                    .WithMany(s => s.StockOutAuditTrails)  // A Product can have many ProductAuditTrailProducts
+                    .HasForeignKey(soit => soit.StockOutId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired(); // Make the relationship optional
+            });
+
             // Configure StockIn, StockOut, StockInReference, and StockOutReference entities
             // StockIn entity configuration
             modelBuilder.Entity<StockIn>()
@@ -296,21 +316,24 @@ namespace Pacifica.API.Data
             modelBuilder.Entity<StockIn>()
             .HasQueryFilter(si => si.Branch!.DeletedAt == null); // Filter on StockIn
 
+            modelBuilder.Entity<StockOut>()
+            .HasQueryFilter(si => si.Branch!.DeletedAt == null); // Filter on StockOut
+
             // Disable soft delete query filters on StockInAuditTrail to ensure audit data is always visible
             modelBuilder.Entity<StockInAuditTrail>()
+                .HasQueryFilter(siat => siat == null); // This can be adjusted if there's a "DeletedAt" field on the audit itself.
+
+            // Disable soft delete query filters on StockInAuditTrail to ensure audit data is always visible
+            modelBuilder.Entity<StockOutAuditTrail>()
                 .HasQueryFilter(siat => siat == null); // This can be adjusted if there's a "DeletedAt" field on the audit itself.
 
             // Ensure that global query filters on StockIn and Branch do not interfere with the audit trail
             modelBuilder.Entity<StockIn>()
                 .HasQueryFilter(si => si.DeletedAt == null || si.DeletedAt != null);  // Adjust depending on soft-delete behavior
 
-
-
+            // Ensure that global query filters on StockIn and Branch do not interfere with the audit trail
             modelBuilder.Entity<StockOut>()
-                .HasQueryFilter(so => so.Branch!.DeletedAt == null); // Filter on StockOut
-
-
-
+                .HasQueryFilter(si => si.DeletedAt == null || si.DeletedAt != null);  // Adjust depending on soft-delete behavior
 
         }
     }

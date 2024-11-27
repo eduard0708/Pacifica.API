@@ -25,7 +25,6 @@ namespace Pacifica.API.Models
         public Supplier? Supplier { get; set; }
 
         // Navigation property for related stock transactions (inventory movements)
-        public ICollection<StockInOut>? StockInOuts { get; set; }
         public ICollection<StockIn>? StockIns { get; set; }
         public ICollection<StockOut>? StockOuts { get; set; }
 

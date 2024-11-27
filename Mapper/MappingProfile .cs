@@ -5,13 +5,13 @@ using Pacifica.API.Dtos.Product;
 using Pacifica.API.Dtos.Supplier;
 using Pacifica.API.Dtos.TransactionReference;
 using Pacifica.API.Dtos.Admin;
-using Pacifica.API.Dtos.StockInOut;
 using Pacifica.API.Dtos.AuditTrails;
 using Pacifica.API.Models.GlobalAuditTrails;
-using Pacifica.API.Dtos.ReferenceStockIn;
-using Pacifica.API.Dtos.ReferenceStockOut;
-using Pacifica.API.Models.Transaction;
 using Pacifica.API.Dtos.StockIn;
+using Pacifica.API.Models.Transaction;
+using Pacifica.API.Dtos.StockInReference;
+using Pacifica.API.Dtos.StockOut;
+using Pacifica.API.Dtos.StockOutReference;
 
 namespace Pacifica.API.Mapper
 {
@@ -77,9 +77,6 @@ namespace Pacifica.API.Mapper
                 .ReverseMap();
 
 
-
-            CreateMap<StockInOut, CreateStockInOutDto>().ReverseMap();
-
             CreateMap<StockIn, StockInDTO>().ReverseMap();
             CreateMap<StockIn, StockInCreateDTO>().ReverseMap();
             CreateMap<StockIn, StockInUpdateDTO>().ReverseMap();
@@ -87,20 +84,14 @@ namespace Pacifica.API.Mapper
 
 
             CreateMap<StockIn, StockInDTO>().ReverseMap();
+            CreateMap<StockInReference, StockInReferenceDto>().ReverseMap();
+            CreateMap<StockInReference, CreateStockInReferenceDto>().ReverseMap();
+            CreateMap<StockInReference, UpdateStockInReferenceDto>().ReverseMap();
 
-
-            CreateMap<StockInOut, GetStockInOutDto>();
-            CreateMap<CreateStockInOutDto, StockInOut>();
-
-            CreateMap<GetByReferenceNumberStockInOutDto, StockInOut>().ReverseMap();
-
-            CreateMap<ReferenceStockIn, ReferenceStockInDto>().ReverseMap();
-            CreateMap<ReferenceStockIn, CreateReferenceStockInDto>().ReverseMap();
-            CreateMap<ReferenceStockIn, UpdateReferenceStockInDto>().ReverseMap();
-
-            CreateMap<ReferenceStockOut, ReferenceStockOutDto>().ReverseMap();
-            CreateMap<ReferenceStockOut, CreateReferenceStockOutDto>().ReverseMap();
-            CreateMap<ReferenceStockOut, UpdateReferenceStockOutDto>().ReverseMap();
+            CreateMap<StockOut, StockOutDTO>().ReverseMap();
+            CreateMap<StockOutReference, StockOutReferenceDto>().ReverseMap();
+            CreateMap<StockOutReference, CreateStockOutReferenceDto>().ReverseMap();
+            CreateMap<StockOutReference, UpdateStockOutReferenceDto>().ReverseMap();
 
 
             // Map ProductAuditTrail to ProductAuditTrailsDto

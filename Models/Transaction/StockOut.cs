@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Pacifica.API.Models.GlobalAuditTrails;
 
 namespace Pacifica.API.Models.Transaction
 {
@@ -41,5 +42,7 @@ namespace Pacifica.API.Models.Transaction
         public Branch? Branch { get; set; }
         public PaymentMethod? PaymentMethod { get; set; }
         public StockOutReference? StockOutReference { get; set; }
+        public ICollection<StockOutAuditTrail>? StockOutAuditTrails { get; set; }
+
     }
 }
