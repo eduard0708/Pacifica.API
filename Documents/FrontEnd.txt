@@ -1,0 +1,7 @@
+
+install ionic-cli
+        npm i -g @ionic/cli  
+
+
+Create a new new Ionic application
+        ionic start Pacifica.WEB blank --type=angular
