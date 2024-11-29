@@ -42,9 +42,9 @@ namespace Pacifica.API.Data
         public DbSet<StockInAuditTrail> StockInAuditTrails { get; set; }
         public DbSet<StockOutAuditTrail> StockOutAuditTrails { get; set; }
 
-        public DbSet<BeginningInventory> BeginningInventories { get; set; }
-        public DbSet<MonthlyInventory> MonthlyInventories { get; set; }
-        public DbSet<BranchProductInventoryAuditTrail> BranchProductInventoryAuditTrails { get; set; }
+
+        public DbSet<WeeklyInventory> WeeklyInventories { get; set; }
+
 
 
 
@@ -52,6 +52,16 @@ namespace Pacifica.API.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // // Automatically set 'Year' based on InventoryDate in the WeeklyInventory
+            // modelBuilder.Entity<WeeklyInventory>()
+            //     .Property(w => w.Year)
+            //     .HasDefaultValueSql("YEAR(GETDATE())");  // Default current year if not provided.
+
+            // // Configure Discrepancy calculation logic (EF won't do the calculation but can define the column behavior)
+            // modelBuilder.Entity<WeeklyInventory>()
+            //     .Property(w => w.Discrepancy)
+            //     .HasComputedColumnSql("[SystemQuantity] - [ActualQuantity]"); // This can create a computed column in the database
 
             // Configure Employee entity
             modelBuilder.Entity<Employee>(entity =>
@@ -152,6 +162,7 @@ namespace Pacifica.API.Data
                     .HasForeignKey(bpat => new { bpat.BranchId, bpat.ProductId })  // Adjusted to match the composite key
                     .OnDelete(DeleteBehavior.Restrict);
             });
+
 
             // Configure BranchProductAuditTrail entity
             modelBuilder.Entity<BranchProductAuditTrail>(entity =>
@@ -310,34 +321,46 @@ namespace Pacifica.API.Data
 
 
             // Configure BranchProduct to BeginningInventory relationship
-            modelBuilder.Entity<BeginningInventory>()
+            modelBuilder.Entity<WeeklyInventory>()
                 .HasOne(bi => bi.BranchProduct)
-                .WithMany(bp => bp.BeginningInventories)
+                .WithMany(bp => bp.WeeklyInventories)
                 .HasForeignKey(bi => new { bi.BranchId, bi.ProductId }) // Composite FK
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Configure BranchProduct to MonthlyInventory relationship
-            modelBuilder.Entity<MonthlyInventory>()
-                .HasOne(mi => mi.BranchProduct)
-                .WithMany(bp => bp.MonthlyInventories)
-                .HasForeignKey(mi => new { mi.BranchId, mi.ProductId }) // Composite FK
-                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<WeeklyInventory>()
+                .Property(w => w.SystemQuantity)
+                .HasColumnType("decimal(18, 2)");
 
-            // Configure BranchProduct to AuditTrail relationship
-            modelBuilder.Entity<BranchProductInventoryAuditTrail>()
-                .HasOne(bait => bait.BranchProduct)
-                .WithMany(bp => bp.BranchProductInventoryAuditTrails)
-                .HasForeignKey(bait => new { bait.BranchId, bait.ProductId }) // Composite FK
-                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<WeeklyInventory>()
+                .Property(w => w.ActualQuantity)
+                .HasColumnType("decimal(18, 2)");
 
-            // Optionally, configure other properties like indexes or default values
-            modelBuilder.Entity<BranchProductInventoryAuditTrail>()
-                .HasIndex(bait => new { bait.BranchId, bait.ProductId, bait.DateAdjusted })
-                .HasDatabaseName("IX_AuditTrail_BranchProduct_Date");
+            modelBuilder.Entity<WeeklyInventory>()
+                .Property(w => w.Discrepancy)
+                .HasColumnType("decimal(18, 2)");
 
-            modelBuilder.Entity<MonthlyInventory>()
-                .HasIndex(mi => new { mi.BranchId, mi.ProductId, mi.Date })
-                .HasDatabaseName("IX_MonthlyInventory_BranchProduct_Date");
+            // // Configure BranchProduct to MonthlyInventory relationship
+            // modelBuilder.Entity<MonthlyInventory>()
+            //     .HasOne(mi => mi.BranchProduct)
+            //     .WithMany(bp => bp.MonthlyInventories)
+            //     .HasForeignKey(mi => new { mi.BranchId, mi.ProductId }) // Composite FK
+            //     .OnDelete(DeleteBehavior.Restrict);
+
+            // // Configure BranchProduct to AuditTrail relationship
+            // modelBuilder.Entity<BranchProductInventoryAuditTrail>()
+            //     .HasOne(bait => bait.BranchProduct)
+            //     .WithMany(bp => bp.BranchProductInventoryAuditTrails)
+            //     .HasForeignKey(bait => new { bait.BranchId, bait.ProductId }) // Composite FK
+            //     .OnDelete(DeleteBehavior.Restrict);
+
+            // // Optionally, configure other properties like indexes or default values
+            // modelBuilder.Entity<BranchProductInventoryAuditTrail>()
+            //     .HasIndex(bait => new { bait.BranchId, bait.ProductId, bait.DateAdjusted })
+            //     .HasDatabaseName("IX_AuditTrail_BranchProduct_Date");
+
+            // modelBuilder.Entity<MonthlyInventory>()
+            //     .HasIndex(mi => new { mi.BranchId, mi.ProductId, mi.Date })
+            //     .HasDatabaseName("IX_MonthlyInventory_BranchProduct_Date");
 
 
 
@@ -370,6 +393,11 @@ namespace Pacifica.API.Data
             // Ensure that global query filters on StockIn and Branch do not interfere with the audit trail
             modelBuilder.Entity<StockOut>()
                 .HasQueryFilter(si => si.DeletedAt == null || si.DeletedAt != null);  // Adjust depending on soft-delete behavior
+
+            // Ensure that global query filters on StockIn and Branch do not interfere with the audit trail
+            modelBuilder.Entity<WeeklyInventory>()
+                .HasQueryFilter(si => si.DeletedAt == null || si.DeletedAt != null);  // Adjust depending on soft-delete behavior
+
 
         }
     }

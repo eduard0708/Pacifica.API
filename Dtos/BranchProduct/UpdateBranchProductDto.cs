@@ -17,8 +17,8 @@ namespace Pacifica.API.Dtos.BranchProduct
         [Range(0.01, double.MaxValue, ErrorMessage = "RetailPrice must be greater than zero.")]
         public decimal RetailPrice { get; set; }
 
-        [Range(0, int.MaxValue, ErrorMessage = "StockQuantity cannot be negative.")]
-        public int StockQuantity { get; set; }
+        [Range(0, 7, ErrorMessage = "StockQuantity cannot be negative.")]
+        public decimal StockQuantity { get; set; }
 
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "ReorderLevel must be greater than zero.")]

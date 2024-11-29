@@ -29,8 +29,9 @@ public class BranchProduct : AuditDetails
 
 
     [Required(ErrorMessage = "Stock quantity is required.")]
-    [Range(0, int.MaxValue, ErrorMessage = "Stock quantity cannot be negative.")]
-    public int StockQuantity { get; set; }
+    [Range(0, 9000000, ErrorMessage = "Stock quantity must be between 0 and 1,000,000,000.")]
+    [Column(TypeName = "decimal(7,1)")]
+    public Decimal StockQuantity { get; set; }
 
     // Reorder level for the product (stock threshold for reordering)
     [Required]  // Ensures ReorderLevel is provided
@@ -39,14 +40,14 @@ public class BranchProduct : AuditDetails
     // Minimum stock level for the product
     [Required]  // Ensures MinStockLevel is provided
     public int MinStockLevel { get; set; }
+    
+    public bool IsWeekly { get; set; } = false;// Indicates whether the product is a weekly inventory item
 
     public Branch? Branch { get; set; }
     public Product? Product { get; set; }
 
     public ICollection<BranchProductAuditTrail>? BranchProductAuditTrails { get; set; }
+    public ICollection<WeeklyInventory>? WeeklyInventories { get; set; }
 
-    // Collections to represent inventory history and audit trail for this branch-product combination
-    public ICollection<BeginningInventory>? BeginningInventories { get; set; }
-    public ICollection<MonthlyInventory>? MonthlyInventories { get; set; }
-    public ICollection<BranchProductInventoryAuditTrail>? BranchProductInventoryAuditTrails { get; set; }
+
 }

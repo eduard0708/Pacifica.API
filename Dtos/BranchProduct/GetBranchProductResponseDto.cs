@@ -11,7 +11,7 @@ namespace Pacifica.API.Dtos.BranchProduct
         public string? ProductCategory { get; set; }
         public decimal CostPrice { get; set; }
         public decimal RetailPrice { get; set; }
-        public int StockQuantity { get; set; }
+        public decimal StockQuantity { get; set; }
         public string? SKU { get; set; }
         public string? Remarks { get; set; }
         public bool IsActive { get; set; }

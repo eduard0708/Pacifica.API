@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 
 namespace Pacifica.API.Dtos.Inventory
 {
-    public class MonthlyInventoryDto
+    public class BaseInventoryDTO
     {
+        
         public int BranchId { get; set; }
         public int ProductId { get; set; }
-        public int StockQuantity { get; set; }
-        public decimal CostPrice { get; set; }
-        public decimal RetailPrice { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime InventoryDate { get; set; }
+        public int ActualQuantity { get; set; }
+        public string? Remarks { get; set; }
+
     }
 }

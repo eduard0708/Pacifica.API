@@ -1,44 +1,77 @@
-
 using Microsoft.AspNetCore.Mvc;
 using Pacifica.API.Dtos.Inventory;
 using Pacifica.API.Services.InventoryService;
+using Pacifica.API.Helper;  // Assuming ApiResponse is defined here
 
 namespace Pacifica.API.Controllers
 {
-   [Route("api/[controller]")]
-[ApiController]
-public class InventoryController : ControllerBase
-{
-    private readonly IInventoryService _inventoryService;
-
-    public InventoryController(IInventoryService inventoryService)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class InventoryController : ControllerBase
     {
-        _inventoryService = inventoryService;
-    }
+        private readonly IInventoryService _inventoryService;
 
-    // POST: api/Inventory/SetBeginningInventory
-    [HttpPost("SetBeginningInventory")]
-    public async Task<ActionResult<BeginningInventoryDto>> SetBeginningInventory(BeginningInventoryDto dto)
-    {
-        var result = await _inventoryService.SetBeginningInventoryAsync(dto);
-        return CreatedAtAction(nameof(SetBeginningInventory), new { id = result.Id }, result);
-    }
+        public InventoryController(IInventoryService inventoryService)
+        {
+            _inventoryService = inventoryService;
+        }
 
-    // POST: api/Inventory/UpdateMonthlyInventory
-    [HttpPost("UpdateMonthlyInventory")]
-    public async Task<ActionResult<MonthlyInventoryDto>> UpdateMonthlyInventory(MonthlyInventoryDto dto)
-    {
-        var result = await _inventoryService.UpdateMonthlyInventoryAsync(dto);
-        return CreatedAtAction(nameof(UpdateMonthlyInventory), new { id = result.BranchId }, result);
-    }
+        // Endpoint to create Weekly Inventory
+        [HttpPost("weekly")]
+        public async Task<IActionResult> CreateWeeklyInventory([FromBody] CreateWeeklyInventoryDTO inventoryDto)
+        {
+            var response = await _inventoryService.CreateWeeklyInventoryAsync(inventoryDto);
 
-    // POST: api/Inventory/RecordAuditTrail
-    [HttpPost("RecordAuditTrail")]
-    public async Task<ActionResult<BranchProductInventoryAuditTrailDto>> RecordAuditTrail(BranchProductInventoryAuditTrailDto dto)
-    {
-        var result = await _inventoryService.RecordAuditTrailAsync(dto);
-        return CreatedAtAction(nameof(RecordAuditTrail), new { id = result.Id }, result);
-    }
-}
+            if (!response.Success)
+            {
+                return BadRequest(new ApiResponse<ResponseWeeklyInventoryDTO>
+                {
+                    Success = false,
+                    Message = response.Message,
+                    Data = null
+                });
+            }
 
+            // Returning the created inventory with a 201 status code
+            return CreatedAtAction(nameof(GetWeeklyInventoryById), new { id = response.Data!.Id }, response);
+        }
+
+        // Get Weekly Inventory by ID
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetWeeklyInventoryById(int id)
+        {
+            var response = await _inventoryService.GetWeeklyInventoryByIdAsync(id);
+
+            if (!response.Success)
+            {
+                return NotFound(new ApiResponse<ResponseWeeklyInventoryDTO>
+                {
+                    Success = false,
+                    Message = response.Message,
+                    Data = null
+                });
+            }
+
+            return Ok(response);
+        }
+
+        // Get Filtered Weekly Inventories
+        [HttpGet("filtered")]
+        public async Task<IActionResult> GetFilteredWeeklyInventoriesAsync([FromQuery] FilterWeeklyInventoryParams filterParams)
+        {
+            var response = await _inventoryService.GetFilteredWeeklyInventoriesAsync(filterParams);
+
+            if (!response.Success)
+            {
+                return BadRequest(new ApiResponse<IEnumerable<ResponseWeeklyInventoryDTO>>
+                {
+                    Success = false,
+                    Message = response.Message,
+                    Data = null
+                });
+            }
+
+            return Ok(response);
+        }
+    }
 }
