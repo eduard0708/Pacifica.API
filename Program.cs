@@ -44,6 +44,16 @@ builder.Services.AddControllers()
 
     });
 
+// **Enable CORS** - Add this code to configure CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200") // Allow the frontend to access the backend
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 // Adding the DbContext to the service container
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -123,6 +133,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// **Use CORS Middleware** - Add this line to enable CORS globally
+app.UseCors("AllowLocalhost"); // This will apply the CORS policy
 
 // Add middleware for Authentication & Authorization (if using JWT)
 app.UseAuthentication();
