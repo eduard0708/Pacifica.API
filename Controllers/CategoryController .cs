@@ -20,7 +20,7 @@ namespace Pacifica.API.Controllers
         }
 
         // GET: api/Category
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<ActionResult<ApiResponse<IEnumerable<CategoryDto>>>> GetCategories()
         {
             var response = await _categoryService.GetAllCategoriesAsync();
@@ -33,6 +33,64 @@ namespace Pacifica.API.Controllers
             });
         }
 
+        [HttpGet]
+        public async Task<ActionResult<ApiResponse<IEnumerable<CategoryDto>>>> GetCategoriesByPageAsync(
+       [FromQuery] int? page,
+       [FromQuery] int? pageSize,
+       [FromQuery] string sortField = "categoryName",  // Default sort field
+       [FromQuery] int sortOrder = 1  // Default sort order (1 = ascending, -1 = descending)
+   )
+        {
+            // Check if page or pageSize are not provided
+            if (!page.HasValue || !pageSize.HasValue)
+            {
+                return BadRequest(new ApiResponse<IEnumerable<CategoryDto>>
+                {
+                    Success = false,
+                    Message = "Page and pageSize parameters are required."
+                });
+            }
+
+            // Ensure page and pageSize are valid
+            if (page < 1) return BadRequest(new ApiResponse<IEnumerable<CategoryDto>>
+            {
+                Success = false,
+                Message = "Page must be greater than or equal to 1."
+            });
+
+            if (pageSize < 1) return BadRequest(new ApiResponse<IEnumerable<CategoryDto>>
+            {
+                Success = false,
+                Message = "PageSize must be greater than or equal to 1."
+            });
+
+            // List of valid sort fields
+            var validSortFields = new List<string> { "categoryName", "description", "createdAt", "isDeleted" }; // Add more fields as needed
+            if (!validSortFields.Contains(sortField))
+            {
+                return BadRequest(new ApiResponse<IEnumerable<CategoryDto>>
+                {
+                    Success = false,
+                    Message = "Invalid sort field.",
+                    Data = null,
+                    TotalCount = 0
+                });
+            }
+
+            // Call service method to get branches by page, passing sortField and sortOrder
+            var response = await _categoryService.GetCategoriesByPageAsync(page.Value, pageSize.Value, sortField, sortOrder);
+
+            // Map data to DTOs
+            var branchDtos = _mapper.Map<IEnumerable<CategoryDto>>(response.Data);
+
+            return Ok(new ApiResponse<IEnumerable<CategoryDto>>
+            {
+                Success = response.Success,
+                Message = response.Message,
+                Data = branchDtos,
+                TotalCount = response.TotalCount
+            });
+        }
 
         // GET: api/Category/5
         [HttpGet("{id}")]

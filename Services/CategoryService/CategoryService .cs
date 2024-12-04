@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Pacifica.API.Data;
@@ -38,6 +39,81 @@ namespace Pacifica.API.Services.CategoryService
                 Data = categories
             };
         }
+
+        public async Task<ApiResponse<IEnumerable<Category>>> GetCategoriesByPageAsync(int page, int pageSize, string sortField, int sortOrder)
+        {
+            var validSortFields = new List<string> { "CategoryName", "Description", "createdAt", "isDeleted" };
+
+
+            if (!validSortFields.Contains(sortField))
+            {
+                return new ApiResponse<IEnumerable<Category>>
+                {
+                    Success = false,
+                    Message = "Invalid sort field.",
+                    Data = null,
+                    TotalCount = 0
+                };
+            }
+
+            // Map sortField to an actual Expression<Func<Branch, object>> that EF Core can process
+            var sortExpression = GetSortExpression(sortField);
+
+            if (sortExpression == null)
+            {
+                return new ApiResponse<IEnumerable<Category>>
+                {
+                    Success = false,
+                    Message = "Invalid sort expression.",
+                    Data = null,
+                    TotalCount = 0
+                };
+            }
+
+            var totalCount = await _context.Categories
+                .IgnoreQueryFilters() // Ignore QueryFilters for soft delete    
+                .Where(b => b.DeletedAt == null) // Soft delete filter
+                .CountAsync();
+
+            // Dynamically order the query based on the sort expression and sort order
+            IQueryable<Category> query = _context.Categories
+                 .IgnoreQueryFilters();  // Ignore global filters, so we can apply soft delete filter manually
+
+            // Apply sorting dynamically based on sortOrder
+            query = sortOrder == 1 ? _context.Categories.IgnoreQueryFilters().OrderBy(sortExpression) : query.OrderByDescending(sortExpression);
+
+            // Apply pagination
+            var branches = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new ApiResponse<IEnumerable<Category>>
+            {
+                Success = true,
+                Message = "Branches retrieved successfully.",
+                Data = branches,
+                TotalCount = totalCount
+            };
+        }
+
+        private Expression<Func<Category, object>> GetSortExpression(string sortField)
+        {
+            switch (sortField)
+            {
+                case "CategoryName":
+                    return x => x.CategoryName!;
+                case "Description":
+                    return x => x.Description!;
+                case "createdAt":
+                    return x => x.CreatedAt;
+                case "isDeleted":
+                    return x => x.IsDeleted!;
+                default:
+                    return null!;
+            }
+        }
+
 
         public async Task<ApiResponse<IEnumerable<Category>>> GetBranchesByPageAsync(int page, int pageSize)
         {

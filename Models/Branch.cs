@@ -16,8 +16,6 @@ namespace Pacifica.API.Models
         [MaxLength(500, ErrorMessage = "Branch location cannot exceed 500 characters.")]
         public string BranchLocation { get; set; } = string.Empty;  // Location of the ranch
 
-        [Required(ErrorMessage = "Branch Deleted status is required.")]
-        public bool IsDeleted { get; set; } = true;  // Indicates if the branch is active
         public ICollection<EmployeeBranch>? EmployeeBranches { get; set; }  // Many-to-many relation with Employee
 
         public ICollection<BranchProduct>? BranchProducts { get; set; }  // Many-to-many relation with Product
@@ -27,3 +25,4 @@ namespace Pacifica.API.Models
 
     }
 }
+

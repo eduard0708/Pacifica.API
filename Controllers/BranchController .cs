@@ -34,7 +34,7 @@ namespace Pacifica.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<IEnumerable<BranchDto>>>> GetBranches(
+        public async Task<ActionResult<ApiResponse<IEnumerable<BranchDto>>>> GetBranchesByPageAsync(
        [FromQuery] int? page,
        [FromQuery] int? pageSize,
        [FromQuery] string sortField = "branchName",  // Default sort field
@@ -65,7 +65,7 @@ namespace Pacifica.API.Controllers
             });
 
             // List of valid sort fields
-            var validSortFields = new List<string> { "branchName", "branchLocation", "createdAt" }; // Add more fields as needed
+            var validSortFields = new List<string> { "branchName", "branchLocation", "createdAt", "isDeleted" }; // Add more fields as needed
             if (!validSortFields.Contains(sortField))
             {
                 return BadRequest(new ApiResponse<IEnumerable<BranchDto>>

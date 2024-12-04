@@ -42,7 +42,8 @@ namespace Pacifica.API.Services.BranchService
 
         public async Task<ApiResponse<IEnumerable<Branch>>> GetBranchesByPageAsync(int page, int pageSize, string sortField, int sortOrder)
         {
-            var validSortFields = new List<string> { "branchName", "branchLocation", "createdAt" };
+            var validSortFields = new List<string> { "branchName", "branchLocation", "createdAt", "isDeleted" };
+
 
             if (!validSortFields.Contains(sortField))
             {
@@ -70,15 +71,16 @@ namespace Pacifica.API.Services.BranchService
             }
 
             var totalCount = await _context.Branches
+                .IgnoreQueryFilters() // Ignore QueryFilters for soft delete    
                 .Where(b => b.DeletedAt == null) // Soft delete filter
                 .CountAsync();
 
             // Dynamically order the query based on the sort expression and sort order
             IQueryable<Branch> query = _context.Branches
-                .Where(b => b.DeletedAt == null); // Soft delete filter
+                 .IgnoreQueryFilters();  // Ignore global filters, so we can apply soft delete filter manually
 
             // Apply sorting dynamically based on sortOrder
-            query = sortOrder == 1 ? query.OrderBy(sortExpression) : query.OrderByDescending(sortExpression);
+            query = sortOrder == 1 ? _context.Branches.IgnoreQueryFilters().OrderBy(sortExpression) : query.OrderByDescending(sortExpression);
 
             // Apply pagination
             var branches = await query
@@ -105,6 +107,8 @@ namespace Pacifica.API.Services.BranchService
                     return x => x.BranchLocation;
                 case "createdAt":
                     return x => x.CreatedAt;
+                case "isDeleted":
+                    return x => x.IsDeleted!;
                 default:
                     return null!;
             }
@@ -190,6 +194,7 @@ namespace Pacifica.API.Services.BranchService
             }
 
             branch.DeletedAt = DateTime.Now;
+            branch.IsDeleted = true;
             _context.Branches.Update(branch);
             await _context.SaveChangesAsync();
 
