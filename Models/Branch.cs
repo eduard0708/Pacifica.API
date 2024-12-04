@@ -3,7 +3,7 @@ using Pacifica.API.Models.Transaction;
 
 namespace Pacifica.API.Models
 {
-    public class Branch
+    public class Branch : AuditDetails
     {
         [Key]
         public int Id { get; set; }  // Primary key for the Branch entity
@@ -14,8 +14,10 @@ namespace Pacifica.API.Models
 
         [Required(ErrorMessage = "Branch location is required.")]
         [MaxLength(500, ErrorMessage = "Branch location cannot exceed 500 characters.")]
-        public string BranchLocation { get; set; } = string.Empty;  // Location of the branch
+        public string BranchLocation { get; set; } = string.Empty;  // Location of the ranch
 
+        [Required(ErrorMessage = "Branch Deleted status is required.")]
+        public bool IsDeleted { get; set; } = true;  // Indicates if the branch is active
         public ICollection<EmployeeBranch>? EmployeeBranches { get; set; }  // Many-to-many relation with Employee
 
         public ICollection<BranchProduct>? BranchProducts { get; set; }  // Many-to-many relation with Product
@@ -23,20 +25,5 @@ namespace Pacifica.API.Models
         public ICollection<StockOut>? StockOuts { get; set; }  // Many-to-many relation with Product
         public ICollection<StockIn>? StockIns { get; set; }  // Many-to-many relation with Product
 
-        [Required(ErrorMessage = "Creation date is required.")]
-        public DateTime CreatedAt { get; set; } = DateTime.Now;  // Date when the branch was created
-
-        public DateTime? UpdatedAt { get; set; }  // Date when the branch was last updated
-
-        public DateTime? DeletedAt { get; set; }  // Soft delete date (null means not deleted)
-
-        [StringLength(100, ErrorMessage = "Creator's name cannot exceed 100 characters.")]
-        public string? CreatedBy { get; set; }  // Tracks who created the branch
-
-        [Required(ErrorMessage = "Branch active status is required.")]
-        public bool IsActive { get; set; } = true;  // Indicates if the branch is active
-
-        [StringLength(100, ErrorMessage = "Updator's name cannot exceed 100 characters.")]
-        public string? UpdatedBy { get; set; }  // Tracks who last updated the branch
     }
 }

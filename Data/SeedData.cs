@@ -1,5 +1,4 @@
-using Pacifica.API.Data;
-using Pacifica.API.Models;
+
 using Microsoft.EntityFrameworkCore;
 using Pacifica.API.Models.Transaction;
 

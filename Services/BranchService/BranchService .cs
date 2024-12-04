@@ -161,6 +161,7 @@ namespace Pacifica.API.Services.BranchService
 
             existingBranch.BranchName = branch.BranchName;
             existingBranch.BranchLocation = branch.BranchLocation;
+            existingBranch.IsDeleted = branch.IsDeleted;
             existingBranch.UpdatedAt = DateTime.Now;
             existingBranch.UpdatedBy = branch.UpdatedBy;
 

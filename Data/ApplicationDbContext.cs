@@ -108,7 +108,7 @@ namespace Pacifica.API.Data
             modelBuilder.Entity<Branch>(entity =>
             {
                 entity.Property(b => b.CreatedAt).HasDefaultValueSql("GETDATE()");
-                entity.Property(b => b.IsActive).HasDefaultValue(true);
+                entity.Property(b => b.IsDeleted).HasDefaultValue(false);
 
                 entity.HasMany(b => b.EmployeeBranches)
                     .WithOne(e => e.Branch)
