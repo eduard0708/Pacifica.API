@@ -5,8 +5,7 @@ namespace Pacifica.API.Models
     public class AuditDetails
     {
 
-        [StringLength(1500)] 
-        [Required(ErrorMessage = "Max Remarks Character is only 1500.")]
+        [StringLength(1500, ErrorMessage = "Max Remarks Character is only 1500.")]
         public string? Remarks { get; set; }
 
         [Required(ErrorMessage = "Deleted status is required.")]
