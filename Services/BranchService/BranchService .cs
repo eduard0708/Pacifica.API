@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Pacifica.API.Data;
@@ -37,6 +38,76 @@ namespace Pacifica.API.Services.BranchService
                 Message = "Branches retrieved successfully.",
                 Data = branches
             };
+        }
+
+        public async Task<ApiResponse<IEnumerable<Branch>>> GetBranchesByPageAsync(int page, int pageSize, string sortField, int sortOrder)
+        {
+            var validSortFields = new List<string> { "branchName", "branchLocation", "createdAt" };
+
+            if (!validSortFields.Contains(sortField))
+            {
+                return new ApiResponse<IEnumerable<Branch>>
+                {
+                    Success = false,
+                    Message = "Invalid sort field.",
+                    Data = null,
+                    TotalCount = 0
+                };
+            }
+
+            // Map sortField to an actual Expression<Func<Branch, object>> that EF Core can process
+            var sortExpression = GetSortExpression(sortField);
+
+            if (sortExpression == null)
+            {
+                return new ApiResponse<IEnumerable<Branch>>
+                {
+                    Success = false,
+                    Message = "Invalid sort expression.",
+                    Data = null,
+                    TotalCount = 0
+                };
+            }
+
+            var totalCount = await _context.Branches
+                .Where(b => b.DeletedAt == null) // Soft delete filter
+                .CountAsync();
+
+            // Dynamically order the query based on the sort expression and sort order
+            IQueryable<Branch> query = _context.Branches
+                .Where(b => b.DeletedAt == null); // Soft delete filter
+
+            // Apply sorting dynamically based on sortOrder
+            query = sortOrder == 1 ? query.OrderBy(sortExpression) : query.OrderByDescending(sortExpression);
+
+            // Apply pagination
+            var branches = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new ApiResponse<IEnumerable<Branch>>
+            {
+                Success = true,
+                Message = "Branches retrieved successfully.",
+                Data = branches,
+                TotalCount = totalCount
+            };
+        }
+
+        private Expression<Func<Branch, object>> GetSortExpression(string sortField)
+        {
+            switch (sortField)
+            {
+                case "branchName":
+                    return x => x.BranchName;
+                case "branchLocation":
+                    return x => x.BranchLocation;
+                case "createdAt":
+                    return x => x.CreatedAt;
+                default:
+                    return null!;
+            }
         }
 
         public async Task<ApiResponse<Branch>> GetBranchByIdAsync(int id)

@@ -16,19 +16,20 @@ namespace Pacifica.API
             if (!context.Branches.Any())
             {
                 context.Branches.AddRange(
-                    new Branch { BranchName = "Main Branch" },
-                    new Branch { BranchName = "North Branch" },
-                    new Branch { BranchName = "South Branch" },
-                    new Branch { BranchName = "East Branch" },
-                    new Branch { BranchName = "West Branch" },
-                    new Branch { BranchName = "Central Branch" },
-                    new Branch { BranchName = "Suburban Branch" },
-                    new Branch { BranchName = "City Center Branch" },
-                    new Branch { BranchName = "Coastal Branch" },
-                    new Branch { BranchName = "Mountain Branch" }  // New Branch
+                    new Branch { BranchName = "Main Branch", BranchLocation = "Downtown" },
+                    new Branch { BranchName = "North Branch", BranchLocation = "Northside" },
+                    new Branch { BranchName = "South Branch", BranchLocation = "Southside" },
+                    new Branch { BranchName = "East Branch", BranchLocation = "East End" },
+                    new Branch { BranchName = "West Branch", BranchLocation = "Westfield" },
+                    new Branch { BranchName = "Central Branch", BranchLocation = "Central Business District" },
+                    new Branch { BranchName = "Suburban Branch", BranchLocation = "Suburbs" },
+                    new Branch { BranchName = "City Center Branch", BranchLocation = "City Center" },
+                    new Branch { BranchName = "Coastal Branch", BranchLocation = "Coastal Area" },
+                    new Branch { BranchName = "Mountain Branch", BranchLocation = "Mountain Region" } // New Branch
                 );
                 context.SaveChanges(); // Save branches to the database
             }
+
 
             // Seed data for Status (Product Status)
             if (!context.Statuses.Any())
@@ -52,19 +53,20 @@ namespace Pacifica.API
             if (!context.Categories.Any())
             {
                 context.Categories.AddRange(
-                    new Category { CategoryName = "Fish Foods" },
-                    new Category { CategoryName = "Aquarium Accessories" },
-                    new Category { CategoryName = "Hog Feeds" },
-                    new Category { CategoryName = "Chicken Feeds" },
-                    new Category { CategoryName = "Bird Feeds" },
-                    new Category { CategoryName = "Dog Foods" },
-                    new Category { CategoryName = "Cat Foods" },
-                    new Category { CategoryName = "Pet Toys" },
-                    new Category { CategoryName = "Aquarium Equipment" },
-                    new Category { CategoryName = "Small Animal Feeds" }
+                    new Category { CategoryName = "Fish Foods", Description = "Food products for fish, including flakes, pellets, and live foods." },
+                    new Category { CategoryName = "Aquarium Accessories", Description = "Accessories like filters, heaters, and tanks for aquariums." },
+                    new Category { CategoryName = "Hog Feeds", Description = "Nutritious feed specifically formulated for hogs." },
+                    new Category { CategoryName = "Chicken Feeds", Description = "Varieties of feed for poultry, including chickens, turkeys, and ducks." },
+                    new Category { CategoryName = "Bird Feeds", Description = "Food for pet birds, including seeds, pellets, and treats." },
+                    new Category { CategoryName = "Dog Foods", Description = "Nutritional food for dogs, including dry, wet, and raw options." },
+                    new Category { CategoryName = "Cat Foods", Description = "Specialized food products for cats, including dry and wet food." },
+                    new Category { CategoryName = "Pet Toys", Description = "Toys and entertainment for pets, including chews, balls, and interactive toys." },
+                    new Category { CategoryName = "Aquarium Equipment", Description = "Equipment for maintaining aquariums, such as pumps, lights, and water treatments." },
+                    new Category { CategoryName = "Small Animal Feeds", Description = "Feed for small animals such as rabbits, guinea pigs, and hamsters." }
                 );
                 context.SaveChanges(); // Save categories
             }
+
 
             if (!context.StockInReferences.Any())
             {
@@ -96,7 +98,7 @@ namespace Pacifica.API
                 context.PaymentMethods.AddRange(
                     new PaymentMethod { PaymentMethodName = "Cash" },
                     new PaymentMethod { PaymentMethodName = "Charge" }
-                    
+
                 );
                 context.SaveChanges(); // Save categories
             }

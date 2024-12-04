@@ -39,6 +39,38 @@ namespace Pacifica.API.Services.CategoryService
             };
         }
 
+        public async Task<ApiResponse<IEnumerable<Category>>> GetBranchesByPageAsync(int page, int pageSize)
+        {
+            var totalCount = await _context.Categories
+                .Where(b => b.DeletedAt == null) // Soft delete filter
+                .CountAsync();
+
+            var branches = await _context.Categories
+                .Where(b => b.DeletedAt == null) // Soft delete filter
+                .Skip((page - 1) * pageSize)  // Skip based on page number and page size
+                .Take(pageSize)               // Take the number of items specified by pageSize
+                .ToListAsync();
+
+            if (!branches.Any())
+            {
+                return new ApiResponse<IEnumerable<Category>>
+                {
+                    Success = false,
+                    Message = "No branches found.",
+                    Data = null,
+                    TotalCount = totalCount // Include the total count for pagination
+                };
+            }
+
+            return new ApiResponse<IEnumerable<Category>>
+            {
+                Success = true,
+                Message = "Branches retrieved successfully.",
+                Data = branches,
+                TotalCount = totalCount // Include the total count for pagination
+            };
+        }
+
         public async Task<ApiResponse<Category>> GetCategoryByIdAsync(int id)
         {
             var category = await _context.Categories
