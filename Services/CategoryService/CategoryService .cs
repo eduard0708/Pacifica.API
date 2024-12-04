@@ -42,20 +42,7 @@ namespace Pacifica.API.Services.CategoryService
 
         public async Task<ApiResponse<IEnumerable<Category>>> GetCategoriesByPageAsync(int page, int pageSize, string sortField, int sortOrder)
         {
-            var validSortFields = new List<string> { "CategoryName", "Description", "createdAt", "isDeleted" };
-
-
-            if (!validSortFields.Contains(sortField))
-            {
-                return new ApiResponse<IEnumerable<Category>>
-                {
-                    Success = false,
-                    Message = "Invalid sort field.",
-                    Data = null,
-                    TotalCount = 0
-                };
-            }
-
+           
             // Map sortField to an actual Expression<Func<Branch, object>> that EF Core can process
             var sortExpression = GetSortExpression(sortField);
 
@@ -72,7 +59,6 @@ namespace Pacifica.API.Services.CategoryService
 
             var totalCount = await _context.Categories
                 .IgnoreQueryFilters() // Ignore QueryFilters for soft delete    
-                .Where(b => b.DeletedAt == null) // Soft delete filter
                 .CountAsync();
 
             // Dynamically order the query based on the sort expression and sort order
@@ -101,9 +87,9 @@ namespace Pacifica.API.Services.CategoryService
         {
             switch (sortField)
             {
-                case "CategoryName":
+                case "categoryName":
                     return x => x.CategoryName!;
-                case "Description":
+                case "description":
                     return x => x.Description!;
                 case "createdAt":
                     return x => x.CreatedAt;

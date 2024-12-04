@@ -39,7 +39,6 @@ namespace Pacifica.API.Controllers
             });
         }
 
-
         [HttpGet("{branchId}/{productId}")]
         public async Task<ActionResult<ApiResponse<BranchProductResponseDto>>> GetAllProductsByBranch(int branchId, int productId)
         {
@@ -59,7 +58,6 @@ namespace Pacifica.API.Controllers
                 Data = response.Data
             });
         }
-
 
         [HttpPost("add-product")]
         public async Task<ActionResult<ApiResponse<IEnumerable<BranchProductResponseDto>>>> AddProductsToBranch([FromBody] IEnumerable<AddProductToBranchDto> branchProductDtos)
@@ -99,7 +97,6 @@ namespace Pacifica.API.Controllers
 
             return Ok(response);
         }
-
 
         [HttpPut("update")]
         public async Task<ActionResult<ApiResponse<BranchProductResponseDto>>> UpdateBranchProduct([FromBody] UpdateBranchProductDto updateDto)

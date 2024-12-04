@@ -35,8 +35,8 @@ namespace Pacifica.API.Controllers
 
         [HttpGet]
         public async Task<ActionResult<ApiResponse<IEnumerable<CategoryDto>>>> GetCategoriesByPageAsync(
-       [FromQuery] int? page,
-       [FromQuery] int? pageSize,
+       [FromQuery] int? page = 1,
+       [FromQuery] int? pageSize = 5,
        [FromQuery] string sortField = "categoryName",  // Default sort field
        [FromQuery] int sortOrder = 1  // Default sort order (1 = ascending, -1 = descending)
    )
@@ -66,6 +66,7 @@ namespace Pacifica.API.Controllers
 
             // List of valid sort fields
             var validSortFields = new List<string> { "categoryName", "description", "createdAt", "isDeleted" }; // Add more fields as needed
+
             if (!validSortFields.Contains(sortField))
             {
                 return BadRequest(new ApiResponse<IEnumerable<CategoryDto>>

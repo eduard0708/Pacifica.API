@@ -42,20 +42,6 @@ namespace Pacifica.API.Services.BranchService
 
         public async Task<ApiResponse<IEnumerable<Branch>>> GetBranchesByPageAsync(int page, int pageSize, string sortField, int sortOrder)
         {
-            var validSortFields = new List<string> { "branchName", "branchLocation", "createdAt", "isDeleted" };
-
-
-            if (!validSortFields.Contains(sortField))
-            {
-                return new ApiResponse<IEnumerable<Branch>>
-                {
-                    Success = false,
-                    Message = "Invalid sort field.",
-                    Data = null,
-                    TotalCount = 0
-                };
-            }
-
             // Map sortField to an actual Expression<Func<Branch, object>> that EF Core can process
             var sortExpression = GetSortExpression(sortField);
 
@@ -72,7 +58,6 @@ namespace Pacifica.API.Services.BranchService
 
             var totalCount = await _context.Branches
                 .IgnoreQueryFilters() // Ignore QueryFilters for soft delete    
-                .Where(b => b.DeletedAt == null) // Soft delete filter
                 .CountAsync();
 
             // Dynamically order the query based on the sort expression and sort order
