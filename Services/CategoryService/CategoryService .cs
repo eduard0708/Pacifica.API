@@ -100,7 +100,6 @@ namespace Pacifica.API.Services.CategoryService
             }
         }
 
-
         public async Task<ApiResponse<IEnumerable<Category>>> GetBranchesByPageAsync(int page, int pageSize)
         {
             var totalCount = await _context.Categories
@@ -186,6 +185,7 @@ namespace Pacifica.API.Services.CategoryService
             existingCategory.Description = category.Description;
             existingCategory.UpdatedAt = DateTime.Now;
             existingCategory.UpdatedBy = category.UpdatedBy;
+            existingCategory.IsDeleted = true;
 
             _context.Categories.Update(existingCategory);
             await _context.SaveChangesAsync();
