@@ -5,7 +5,7 @@ using Pacifica.API.Services.SupplierService;
 
 namespace Pacifica.API.Controllers
 {
-   [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
+    //[ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
     public class SupplierController : ControllerBase
@@ -30,6 +30,67 @@ namespace Pacifica.API.Controllers
                 Success = response.Success,
                 Message = response.Message,
                 Data = supplierDtos
+            });
+        }
+
+
+        [HttpGet]
+        public async Task<ActionResult<ApiResponse<IEnumerable<SupplierDto>>>> GetSuppliersByPageAsync(
+               [FromQuery] int? page = 1,
+               [FromQuery] int? pageSize = 5,
+               [FromQuery] string sortField = "supplierName",  // Default sort field
+               [FromQuery] int sortOrder = 1  // Default sort order (1 = ascending, -1 = descending)
+           )
+        {
+            // Check if page or pageSize are not provided
+            if (!page.HasValue || !pageSize.HasValue)
+            {
+                return BadRequest(new ApiResponse<IEnumerable<SupplierDto>>
+                {
+                    Success = false,
+                    Message = "Page and pageSize parameters are required."
+                });
+            }
+
+            // Ensure page and pageSize are valid
+            if (page < 1) return BadRequest(new ApiResponse<IEnumerable<SupplierDto>>
+            {
+                Success = false,
+                Message = "Page must be greater than or equal to 1."
+            });
+
+            if (pageSize < 1) return BadRequest(new ApiResponse<IEnumerable<SupplierDto>>
+            {
+                Success = false,
+                Message = "PageSize must be greater than or equal to 1."
+            });
+
+            // List of valid sort fields
+            var validSortFields = new List<string> { "supplierName", "contactPerson", "contactNumber", "isDeleted" }; // Add more fields as needed
+
+            if (!validSortFields.Contains(sortField))
+            {
+                return BadRequest(new ApiResponse<IEnumerable<SupplierDto>>
+                {
+                    Success = false,
+                    Message = "Invalid sort field.",
+                    Data = null,
+                    TotalCount = 0
+                });
+            }
+
+            // Call service method to get branches by page, passing sortField and sortOrder
+            var response = await _supplierService.GetSuppliersByPageAsync(page.Value, pageSize.Value, sortField, sortOrder);
+
+            // Map data to DTOs
+            var branchDtos = _mapper.Map<IEnumerable<SupplierDto>>(response.Data);
+
+            return Ok(new ApiResponse<IEnumerable<SupplierDto>>
+            {
+                Success = response.Success,
+                Message = response.Message,
+                Data = branchDtos,
+                TotalCount = response.TotalCount
             });
         }
 

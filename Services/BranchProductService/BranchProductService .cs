@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Pacifica.API.Dtos.AuditTrails;
@@ -21,66 +22,6 @@ namespace Pacifica.API.Services.BranchProductService
             _logger = logger;
 
         }
-
-        // // Existing method to get all products by branch
-        // public async Task<ApiResponse<IEnumerable<GetAllBranchProductResponseDto>>> GetAllProductsByBranchAsync(int branchId)
-        // {
-        //     try
-        //     {
-        //         var branchProducts = await _context.BranchProducts
-        //             .Where(bp => bp.BranchId == branchId && bp.DeletedAt == null)
-        //             .Include(bp => bp.Product)
-        //                 .ThenInclude(p => p!.Category)
-        //             .ToListAsync();
-
-        //         if (!branchProducts.Any())
-        //         {
-        //             return new ApiResponse<IEnumerable<GetAllBranchProductResponseDto>>
-        //             {
-        //                 Success = false,
-        //                 Message = "No products found for this branch.",
-        //                 Data = null
-        //             };
-        //         }
-
-        //         var branch = await _context.Branches.FindAsync(branchId);
-
-        //         var responseDtos = branchProducts.Select(bp => new GetAllBranchProductResponseDto
-        //         {
-        //             BranchId = branch!.Id,
-        //             BranchName = branch.BranchName, 
-        //             ProductId = bp.Product!.Id,
-        //             ProductName = bp.Product!.ProductName,
-        //             CategoryId = bp.Product.Category!.Id,
-        //             ProductCategory = bp.Product.Category!.CategoryName,
-        //             StatusId = bp.StatusId,
-        //             StatusName = bp.Status!.StatusName,                 
-        //             CostPrice = bp.CostPrice,
-        //             MinStockLevel = bp.MinStockLevel,
-        //             ReorderLevel = bp.ReorderLevel,
-        //             RetailPrice = bp.RetailPrice,
-        //             StockQuantity = bp.StockQuantity,
-        //             Remarks = bp.Remarks,
-        //             SKU = bp.Product.SKU,
-        //         }).ToList();
-
-        //         return new ApiResponse<IEnumerable<GetAllBranchProductResponseDto>>
-        //         {
-        //             Success = true,
-        //             Message = "Products retrieved successfully.",
-        //             Data = responseDtos
-        //         };
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         return new ApiResponse<IEnumerable<GetAllBranchProductResponseDto>>
-        //         {
-        //             Success = false,
-        //             Message = $"Error occurred while fetching products: {ex.Message}",
-        //             Data = null
-        //         };
-        //     }
-        // }
 
         public async Task<ApiResponse<IEnumerable<GetAllBranchProductResponseDto>>> GetAllProductsByBranchAsync(int branchId)
         {
@@ -155,6 +96,83 @@ namespace Pacifica.API.Services.BranchProductService
             }
         }
 
+        public async Task<ApiResponse<IEnumerable<BranchProductResponseDto>>> GetBranchProductsByPageAsync(
+            int branchId,
+            int page,
+            int pageSize,
+            string sortField,
+            int sortOrder)
+        {
+            // Map sortField to an actual Expression<Func<BranchProduct, object>> that EF Core can process
+            var sortExpression = GetSortExpression(sortField);
+
+            if (sortExpression == null)
+            {
+                return new ApiResponse<IEnumerable<BranchProductResponseDto>>
+                {
+                    Success = false,
+                    Message = "Invalid sort expression.",
+                    Data = null,
+                    TotalCount = 0
+                };
+            }
+
+            // Filter by branchId
+            IQueryable<BranchProduct> query = _context.BranchProducts
+                .Include(bp => bp.Product) // Include related Product data if necessary
+                .Where(bp => bp.BranchId == branchId);
+
+            // Count total records
+            var totalCount = await query.CountAsync();
+
+            // Apply sorting dynamically based on sortOrder
+            query = sortOrder == 1
+                ? query.OrderBy(sortExpression)
+                : query.OrderByDescending(sortExpression);
+
+            // Apply pagination
+            var branchProducts = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Map to DTO
+            var branchProductDtos = _mapper.Map<IEnumerable<BranchProductResponseDto>>(branchProducts);
+
+            return new ApiResponse<IEnumerable<BranchProductResponseDto>>
+            {
+                Success = true,
+                Message = "Branch products retrieved successfully.",
+                Data = branchProductDtos,
+                TotalCount = totalCount
+            };
+        }
+
+        private Expression<Func<BranchProduct, object>> GetSortExpression(string sortField)
+        {
+            switch (sortField)
+            {
+                case "productName":
+                    return bp => bp.Product!.ProductName;
+                case "status":
+                    return bp => bp.Status!;
+                case "costPrice":
+                    return bp => bp.CostPrice;
+                case "retailPrice":
+                    return bp => bp.RetailPrice;
+                case "stockQuantity":
+                    return bp => bp.StockQuantity;
+                case "createdAt":
+                    return bp => bp.CreatedAt;
+                case "minStockLevel":
+                    return bp => bp.MinStockLevel;
+                case "reorderLevel":
+                    return bp => bp.ReorderLevel;
+                default:
+                    return null!;
+            }
+        }
+
         public async Task<ApiResponse<BranchProductResponseDto>> GetProductsInBranchAsync(int branchId, int productId)
         {
             try
@@ -188,7 +206,7 @@ namespace Pacifica.API.Services.BranchProductService
                     ProductId = branchProduct.Product!.Id,
                     StatusId = branchProduct.StatusId,
                     ProductName = branchProduct.Product.ProductName,
-                    ProductCategory = branchProduct.Product.Category!.CategoryName!,
+                    Category = branchProduct.Product.Category!.CategoryName!,
                     CostPrice = branchProduct.CostPrice,
                     RetailPrice = branchProduct.RetailPrice,
                     StockQuantity = branchProduct.StockQuantity,
@@ -387,11 +405,11 @@ namespace Pacifica.API.Services.BranchProductService
                                 ProductId = product.Id,
                                 ProductName = product.ProductName,
 
-                                ProductCategoryId = product.CategoryId,
-                                ProductCategory = product.Category?.CategoryName ?? "No Category",
+                                CategoryId = product.CategoryId,
+                                Category = product.Category?.CategoryName ?? "No Category",
 
-                                ProductSupplierId = product.SupplierId,
-                                ProductSupplier = product.Supplier?.SupplierName ?? "No Supplier",
+                                SupplierId = product.SupplierId,
+                                Supplier = product.Supplier?.SupplierName ?? "No Supplier",
 
                                 ProductSKU = product.SKU,
 

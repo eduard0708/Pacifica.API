@@ -5,7 +5,7 @@ using Pacifica.API.Services.BranchProductService;
 
 namespace Pacifica.API.Controllers
 {
-    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
+   // [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
     public class BranchProductController : ControllerBase
@@ -18,7 +18,6 @@ namespace Pacifica.API.Controllers
             _branchProductService = branchProductService;
             _mapper = mapper;
         }
-
 
         [HttpGet("get-allby-branch/{branchId}")]
         public async Task<ActionResult<ApiResponse<IEnumerable<GetAllBranchProductResponseDto>>>> GetAllProductsByBranch(int branchId)
@@ -56,6 +55,81 @@ namespace Pacifica.API.Controllers
                 Success = response.Success,
                 Message = response.Message,
                 Data = response.Data
+            });
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<ApiResponse<IEnumerable<BranchProductResponseDto>>>> GetBranchProductsByPageAsync(
+                [FromQuery] int branchId = 1, // Branch ID to filter products
+                [FromQuery] int? page = 1,
+                [FromQuery] int? pageSize = 5,
+                [FromQuery] string sortField = "productName", // Default sort field
+                [FromQuery] int sortOrder = 1 )// Default sort order (1 = ascending, -1 = descending)
+        {
+            // Validate required parameters
+            if (!page.HasValue || !pageSize.HasValue)
+            {
+                return BadRequest(new ApiResponse<IEnumerable<BranchProductResponseDto>>
+                {
+                    Success = false,
+                    Message = "Page and pageSize parameters are required."
+                });
+            }
+
+            if (page < 1)
+            {
+                return BadRequest(new ApiResponse<IEnumerable<BranchProductResponseDto>>
+                {
+                    Success = false,
+                    Message = "Page must be greater than or equal to 1."
+                });
+            }
+
+            if (pageSize < 1)
+            {
+                return BadRequest(new ApiResponse<IEnumerable<BranchProductResponseDto>>
+                {
+                    Success = false,
+                    Message = "PageSize must be greater than or equal to 1."
+                });
+            }
+
+            // List of valid sort fields
+            var validSortFields = new List<string> { "productName", "status", "costPrice", "retailPrice","stockQuantity",
+                               "minStockLevel","reorderLevel", "createdAt" }; // Add fields relevant to BranchProduct
+            if (!validSortFields.Contains(sortField))
+            {
+                return BadRequest(new ApiResponse<IEnumerable<BranchProductResponseDto>>
+                {
+                    Success = false,
+                    Message = $"Invalid sort field. Valid fields are: {string.Join(", ", validSortFields)}.",
+                    Data = null
+                });
+            }
+
+            // Fetch paginated and sorted products for the branch
+            var response = await _branchProductService.GetBranchProductsByPageAsync(branchId, page.Value, pageSize.Value, sortField, sortOrder);
+
+            if (!response.Success)
+            {
+                return NotFound(new ApiResponse<IEnumerable<BranchProductResponseDto>>
+                {
+                    Success = false,
+                    Message = response.Message,
+                    Data = null,
+                    TotalCount = 0
+                });
+            }
+
+            // Map response data to DTOs
+            var branchProductDtos = _mapper.Map<IEnumerable<BranchProductResponseDto>>(response.Data);
+
+            return Ok(new ApiResponse<IEnumerable<BranchProductResponseDto>>
+            {
+                Success = response.Success,
+                Message = response.Message,
+                Data = branchProductDtos,
+                TotalCount = response.TotalCount
             });
         }
 
@@ -151,7 +225,6 @@ namespace Pacifica.API.Controllers
             });
         }
 
-
         [HttpPost("RestoreDeleted")]
         public async Task<ActionResult<ApiResponse<List<int>>>> RestoreDeletedProducts([FromBody] RestoreDeletedBranchProductsParams restoreDeleted)
         {
@@ -165,9 +238,6 @@ namespace Pacifica.API.Controllers
 
             return Ok(response);
         }
-
-
-
     }
 
 }

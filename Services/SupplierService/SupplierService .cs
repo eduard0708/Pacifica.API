@@ -1,10 +1,9 @@
-using AutoMapper;
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using Pacifica.API.Data;
-using Pacifica.API.Dtos.Supplier;
 
 namespace Pacifica.API.Services.SupplierService
 {
+
     public class SupplierService : ISupplierService
     {
         private readonly ApplicationDbContext _context;
@@ -52,6 +51,65 @@ namespace Pacifica.API.Services.SupplierService
             }
         }
 
+        public async Task<ApiResponse<IEnumerable<Supplier>>> GetSuppliersByPageAsync(int page, int pageSize, string sortField, int sortOrder)
+        {
+            // Map sortField to an actual Expression<Func<Branch, object>> that EF Core can process
+            var sortExpression = GetSortExpression(sortField);
+
+            if (sortExpression == null)
+            {
+                return new ApiResponse<IEnumerable<Supplier>>
+                {
+                    Success = false,
+                    Message = "Invalid sort expression.",
+                    Data = null,
+                    TotalCount = 0
+                };
+            }
+
+            var totalCount = await _context.Suppliers
+                .IgnoreQueryFilters() // Ignore QueryFilters for soft delete    
+                .CountAsync();
+
+            // Dynamically order the query based on the sort expression and sort order
+            IQueryable<Supplier> query = _context.Suppliers
+                 .IgnoreQueryFilters();  // Ignore global filters, so we can apply soft delete filter manually
+
+            // Apply sorting dynamically based on sortOrder
+            query = sortOrder == 1 ? _context.Suppliers.IgnoreQueryFilters().OrderBy(sortExpression) : query.OrderByDescending(sortExpression);
+
+            // Apply pagination
+            var branches = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new ApiResponse<IEnumerable<Supplier>>
+            {
+                Success = true,
+                Message = "Supplier retrieved successfully.",
+                Data = branches,
+                TotalCount = totalCount
+            };
+        }
+
+        private Expression<Func<Supplier, object>> GetSortExpression(string sortField)
+        {
+            switch (sortField)
+            {
+                case "supplierName":
+                    return x => x.SupplierName!;
+                case "contactPerson":
+                    return x => x.ContactPerson!;
+                case "contactNumber":
+                    return x => x.ContactNumber!;
+                case "isDeleted":
+                    return x => x.IsDeleted!;
+                default:
+                    return null!;
+            }
+        }
+
         public async Task<ApiResponse<Supplier>> GetSupplierByIdAsync(int id)
         {
             try
@@ -89,7 +147,7 @@ namespace Pacifica.API.Services.SupplierService
 
         public async Task<ApiResponse<Supplier>> CreateSupplierAsync(Supplier supplier)
         {
-            
+
             try
             {
                 _context.Suppliers.Add(supplier);
@@ -131,7 +189,7 @@ namespace Pacifica.API.Services.SupplierService
                 existingSupplier.SupplierName = supplier.SupplierName;
                 existingSupplier.ContactPerson = supplier.ContactPerson;
                 existingSupplier.ContactNumber = supplier.ContactNumber;
-                existingSupplier.IsActive = supplier.IsActive;
+                existingSupplier.IsDeleted = supplier.IsDeleted;
                 existingSupplier.UpdatedAt = DateTime.Now;
                 existingSupplier.UpdatedBy = supplier.UpdatedBy;
 
@@ -192,5 +250,6 @@ namespace Pacifica.API.Services.SupplierService
                 };
             }
         }
+
     }
 }

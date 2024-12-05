@@ -29,7 +29,6 @@ namespace Pacifica.API
                 context.SaveChanges(); // Save branches to the database
             }
 
-
             // Seed data for Status (Product Status)
             if (!context.Statuses.Any())
             {
@@ -66,7 +65,6 @@ namespace Pacifica.API
                 context.SaveChanges(); // Save categories
             }
 
-
             if (!context.StockInReferences.Any())
             {
                 context.StockInReferences.AddRange(
@@ -91,7 +89,6 @@ namespace Pacifica.API
                 context.SaveChanges(); // Save categories
             }
 
-
             if (!context.PaymentMethods.Any())
             {
                 context.PaymentMethods.AddRange(
@@ -102,26 +99,25 @@ namespace Pacifica.API
                 context.SaveChanges(); // Save categories
             }
 
-
-
-
             // Seed data for Suppliers
             if (!context.Suppliers.Any())
             {
                 context.Suppliers.AddRange(
-                    new Supplier { SupplierName = "AKFF AKWARYUM PETS" },
-                    new Supplier { SupplierName = "AQUA GOLD TRADING/AQUATINUM CORP" },
-                    new Supplier { SupplierName = "ASVET INC." },
-                    new Supplier { SupplierName = "BELMAN LABORATORIES" },
-                    new Supplier { SupplierName = "GENERAL ANIMAL FEED & NUTRITION" },
-                    new Supplier { SupplierName = "PETCO SUPPLY" },
-                    new Supplier { SupplierName = "PETSMART INC." },
-                    new Supplier { SupplierName = "TROPICAL AQUATICS LTD" },
-                    new Supplier { SupplierName = "AQUATIC NATURE" },
-                    new Supplier { SupplierName = "MARINE AQUATICS SUPPLY" }
+                    new Supplier { SupplierName = "AKFF AKWARYUM PETS", ContactPerson = "John Doe", ContactNumber = "+1234567890" },
+                    new Supplier { SupplierName = "AQUA GOLD TRADING/AQUATINUM CORP", ContactPerson = "Jane Smith", ContactNumber = "+2345678901" },
+                    new Supplier { SupplierName = "ASVET INC.", ContactPerson = "Mark Johnson", ContactNumber = "+3456789012" },
+                    new Supplier { SupplierName = "BELMAN LABORATORIES", ContactPerson = "Emily Davis", ContactNumber = "+4567890123" },
+                    new Supplier { SupplierName = "GENERAL ANIMAL FEED & NUTRITION", ContactPerson = "Michael Brown", ContactNumber = "+5678901234" },
+                    new Supplier { SupplierName = "PETCO SUPPLY", ContactPerson = "Sarah Wilson", ContactNumber = "+6789012345" },
+                    new Supplier { SupplierName = "PETSMART INC.", ContactPerson = "David Lee", ContactNumber = "+7890123456" },
+                    new Supplier { SupplierName = "TROPICAL AQUATICS LTD", ContactPerson = "Alice Walker", ContactNumber = "+8901234567" },
+                    new Supplier { SupplierName = "AQUATIC NATURE", ContactPerson = "Tom Harris", ContactNumber = "+9012345678" },
+                    new Supplier { SupplierName = "MARINE AQUATICS SUPPLY", ContactPerson = "Sophie Clark", ContactNumber = "+0123456789" }
                 );
-                context.SaveChanges(); // Save suppliers
+
+                context.SaveChanges(); // Save suppliers with contact details
             }
+
 
             // Seed data for Products
             if (!context.Products.Any())

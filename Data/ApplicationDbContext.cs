@@ -204,7 +204,7 @@ namespace Pacifica.API.Data
             modelBuilder.Entity<Supplier>(entity =>
             {
                 entity.Property(s => s.CreatedAt).HasDefaultValueSql("GETDATE()");
-                entity.Property(s => s.IsActive).HasDefaultValue(true);
+                entity.Property(s => s.IsDeleted).HasDefaultValue(false);
             });
 
             // Configure ProductAuditTrail

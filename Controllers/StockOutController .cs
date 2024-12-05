@@ -5,6 +5,7 @@ using Pacifica.API.Services.StockOutService;  // Change to StockOutService
 
 namespace Pacifica.API.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
     public class StockOutController : ControllerBase  // Rename the controller to StockOutController

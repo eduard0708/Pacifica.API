@@ -68,17 +68,17 @@ namespace Pacifica.API.Mapper
             CreateMap<BranchProduct, BranchProductResponseDto>()
                 .ForMember(dest => dest.BranchName, opt => opt.MapFrom(src => src.Branch!.BranchName))
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product!.ProductName))
-                .ForMember(dest => dest.ProductCategoryId, opt => opt.MapFrom(src => src.Product!.CategoryId))
-                .ForMember(dest => dest.ProductCategory, opt => opt.MapFrom(src => src.Product!.Category!.CategoryName))
-                .ForMember(dest => dest.ProductSupplierId, opt => opt.MapFrom(src => src.Product!.SupplierId))
-                .ForMember(dest => dest.ProductSupplier, opt => opt.MapFrom(src => src.Product!.Supplier!.SupplierName))
+                .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.Product!.CategoryId))
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Product!.Category!.CategoryName))
+                .ForMember(dest => dest.SupplierId, opt => opt.MapFrom(src => src.Product!.SupplierId))
+                .ForMember(dest => dest.Supplier, opt => opt.MapFrom(src => src.Product!.Supplier!.SupplierName))
                 .ForMember(dest => dest.ProductSKU, opt => opt.MapFrom(src => src.Product!.SKU))
                 .ForMember(dest => dest.MinStockLevel, opt => opt.MapFrom(src => src.MinStockLevel))
                 .ForMember(dest => dest.ReorderLevel, opt => opt.MapFrom(src => src.ReorderLevel))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status!.StatusName))
                 .ReverseMap();
 
-
+                
             CreateMap<StockIn, StockInDTO>().ReverseMap();
             CreateMap<StockIn, StockInCreateDTO>().ReverseMap();
             CreateMap<StockIn, StockInUpdateDTO>().ReverseMap();
