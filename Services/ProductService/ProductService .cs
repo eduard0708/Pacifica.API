@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Pacifica.API.Dtos.AuditTrails;
 using Pacifica.API.Dtos.BranchProduct;
@@ -20,7 +21,82 @@ namespace Pacifica.API.Services.ProductService
 
         }
 
+        public async Task<ApiResponse<IEnumerable<Product>>> GetProductsByPageAsync(int page, int pageSize, string sortField, int sortOrder)
+        {
+            // Map sortField to an actual Expression<Func<Product, object>> that EF Core can process
+            var sortExpression = GetSortExpression(sortField);
+
+            if (sortExpression == null)
+            {
+                return new ApiResponse<IEnumerable<Product>>
+                {
+                    Success = false,
+                    Message = "Invalid sort expression.",
+                    Data = null,
+                    TotalCount = 0
+                };
+            }
+
+            // Get the total count of products
+            var totalCount = await _context.Products
+                .IgnoreQueryFilters() // Ignore QueryFilters for soft delete if necessary
+                .CountAsync();
+
+            // Dynamically order the query based on the sort expression and sort order
+            IQueryable<Product> query = _context.Products
+                .IgnoreQueryFilters();  // Ignore global filters, so we can apply soft delete filter manually
+
+
+            // Eagerly load Category and Supplier
+            query = query.Include(p => p.Category)
+                         .Include(p => p.Supplier);
+
+            // Apply sorting dynamically based on sortOrder
+            query = sortOrder == 1 ? query.OrderBy(sortExpression) : query.OrderByDescending(sortExpression);
+
+            // Apply pagination
+            var products = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new ApiResponse<IEnumerable<Product>>
+            {
+                Success = true,
+                Message = "Products retrieved successfully.",
+                Data = products,
+                TotalCount = totalCount
+            };
+        }
+
+        private Expression<Func<Product, object>> GetSortExpression(string sortField)
+        {
+            switch (sortField)
+            {
+                case "productName":
+                    return x => x.ProductName;
+                case "category":
+                    return x => x.Category!;
+                case "sku":
+                    return x => x.SKU;
+                case "supplier":
+                    return x => x.Supplier!;
+                case "remarks":
+                    return x => x.Remarks!;
+                case "createdAt":
+                    return x => x.CreatedAt;
+                case "isDeleted":
+                    return x => x.IsDeleted!;
+
+
+
+                default:
+                    return null!; // Return null if invalid sort field
+            }
+        }
+
         public async Task<ApiResponse<List<Product>>> GetAllProductsAsync()
+
         {
             try
             {
@@ -179,7 +255,57 @@ namespace Pacifica.API.Services.ProductService
             }
         }
 
-        public async Task<ApiResponse<List<ProductDto>>> CreateProductsAsync(List<CreateProductDto> productDtos)
+        public async Task<ApiResponse<ProductDto>> CreateProductAsync(CreateProductDto productDto)
+        {
+            try
+            {
+                // Map the single CreateProductDto to a single Product entity
+                var product = _mapper.Map<Product>(productDto);
+
+                // Add the product to the database
+                _context.Products.Add(product);
+
+                // Save the product to the database
+                await _context.SaveChangesAsync();
+
+                // Log the creation in ProductAuditTrail
+                var auditTrail = new ProductAuditTrail
+                {
+                    ProductId = product.Id,
+                    Action = "Created",
+                    NewValue = $"ProductName: {product.ProductName}, SKU: {product.SKU}",
+                    ActionBy = product.CreatedBy,
+                    ActionDate = DateTime.Now
+                };
+
+                // Add the audit trail for the created product
+                _context.ProductAuditTrails.Add(auditTrail);
+                await _context.SaveChangesAsync();  // Save the audit trail
+
+                // Map the created product to a ProductDto
+                var createdProduct = _mapper.Map<ProductDto>(product);
+
+                // Return success response with the created product DTO
+                return new ApiResponse<ProductDto>
+                {
+                    Success = true,
+                    Message = "Product created successfully.",
+                    Data = createdProduct
+                };
+            }
+            catch (Exception ex)
+            {
+                // Log exception
+                return new ApiResponse<ProductDto>
+                {
+                    Success = false,
+                    Message = $"Error creating product: {ex.Message}",
+                    Data = null
+                };
+            }
+        }
+
+        public async Task<ApiResponse<List<ProductDto>>> CreateMulipleProductsAsync(List<CreateProductDto> productDtos)
         {
             try
             {

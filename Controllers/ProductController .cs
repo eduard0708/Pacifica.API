@@ -6,7 +6,7 @@ using Pacifica.API.Services.ProductService;
 
 namespace Pacifica.API.Controllers
 {
-    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
+    //[ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
@@ -21,7 +21,7 @@ namespace Pacifica.API.Controllers
         }
 
         // GET: api/Product
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<ActionResult<ApiResponse<IEnumerable<ProductDto>>>> GetProducts()
         {
             var response = await _productService.GetAllProductsAsync();
@@ -32,6 +32,66 @@ namespace Pacifica.API.Controllers
                 Success = response.Success,
                 Message = response.Message,
                 Data = productDtos
+            });
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<ApiResponse<IEnumerable<ProductDto>>>> GetProductsByPageAsync(
+                [FromQuery] int? page = 1,
+                [FromQuery] int? pageSize = 5,
+                [FromQuery] string sortField = "productName",  // Default sort field
+                [FromQuery] int sortOrder = 1  // Default sort order (1 = ascending, -1 = descending)
+            )
+        {
+            // Check if page or pageSize are not provided
+            if (!page.HasValue || !pageSize.HasValue)
+            {
+                return BadRequest(new ApiResponse<IEnumerable<ProductDto>>
+                {
+                    Success = false,
+                    Message = "Page and pageSize parameters are required."
+                });
+            }
+
+            // Ensure page and pageSize are valid
+            if (page < 1) return BadRequest(new ApiResponse<IEnumerable<ProductDto>>
+            {
+                Success = false,
+                Message = "Page must be greater than or equal to 1."
+            });
+
+            if (pageSize < 1) return BadRequest(new ApiResponse<IEnumerable<ProductDto>>
+            {
+                Success = false,
+                Message = "PageSize must be greater than or equal to 1."
+            });
+
+            // List of valid sort fields
+            var validSortFields = new List<string> { "productName", "category", "sku", "supplier", "remarks", "createdAt", "isDeleted" }; // Add more fields as needed
+
+            if (!validSortFields.Contains(sortField))
+            {
+                return BadRequest(new ApiResponse<IEnumerable<ProductDto>>
+                {
+                    Success = false,
+                    Message = "Invalid sort field.",
+                    Data = null,
+                    TotalCount = 0
+                });
+            }
+
+            // Call service method to get products by page, passing sortField and sortOrder
+            var response = await _productService.GetProductsByPageAsync(page.Value, pageSize.Value, sortField, sortOrder);
+
+            // Map data to DTOs
+            var productDtos = _mapper.Map<IEnumerable<ProductDto>>(response.Data);
+
+            return Ok(new ApiResponse<IEnumerable<ProductDto>>
+            {
+                Success = response.Success,
+                Message = response.Message,
+                Data = productDtos,
+                TotalCount = response.TotalCount
             });
         }
 
@@ -97,12 +157,12 @@ namespace Pacifica.API.Controllers
         }
 
         // POST: api/Product/CreateMultiple
-        [HttpPost]
+        [HttpPost("multiple")]
         public async Task<ActionResult<ApiResponse<IEnumerable<ProductDto>>>> CreateMultipleProducts([FromBody] List<CreateProductDto> productDtos)
         {
 
             // Create the product via the service
-            var response = await _productService.CreateProductsAsync(productDtos);
+            var response = await _productService.CreateMulipleProductsAsync(productDtos);
 
             if (!response.Success)
             {
@@ -118,6 +178,35 @@ namespace Pacifica.API.Controllers
 
             // Return the list of created products
             return Ok(new ApiResponse<IEnumerable<ProductDto>>
+            {
+                Success = true,
+                Message = "Products created successfully.",
+                Data = response.Data
+            });
+        }
+
+        // POST: api/Product
+        [HttpPost]
+        public async Task<ActionResult<ApiResponse<ProductDto>>> CreateProduct([FromBody] CreateProductDto productDtos)
+        {
+
+            // Create the product via the service
+            var response = await _productService.CreateProductAsync(productDtos);
+
+            if (!response.Success)
+            {
+                // If any product fails to create, return an error response
+                return BadRequest(new ApiResponse<ProductDto>
+                {
+                    Success = false,
+                    Message = $"Failed to create product: {response.Message}",
+                    Data = null
+                });
+            }
+
+
+            // Return the list of created products
+            return Ok(new ApiResponse<ProductDto>
             {
                 Success = true,
                 Message = "Products created successfully.",

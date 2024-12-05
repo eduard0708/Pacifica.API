@@ -11,6 +11,5 @@ namespace Pacifica.API.Dtos.Product
         public string? Supplier { get; set; }
         public string? Remarks { get; set; }
         
- 
     }
 }

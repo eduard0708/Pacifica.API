@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Pacifica.API.Dtos.Inventory;
 using Pacifica.API.Services.InventoryService;
-using Pacifica.API.Helper;  // Assuming ApiResponse is defined here
 
 namespace Pacifica.API.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [ApiController]
     [Route("api/[controller]")]
     public class InventoryController : ControllerBase

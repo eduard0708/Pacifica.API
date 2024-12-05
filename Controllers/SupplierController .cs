@@ -20,7 +20,7 @@ namespace Pacifica.API.Controllers
         }
 
         // GET: api/Supplier
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<ActionResult<ApiResponse<IEnumerable<SupplierDto>>>> GetSuppliers()
         {
             var response = await _supplierService.GetAllSuppliersAsync();
