@@ -33,6 +33,20 @@ namespace Pacifica.API.Controllers
             });
         }
 
+        //respond for the select list in the front-end application
+        [HttpGet("select")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<SelectCategoryDTO>>>> GetSelectCategories()
+        {
+            var response = await _categoryService.GetSelectCategoriesAsync();
+            
+            return Ok(new ApiResponse<IEnumerable<SelectCategoryDTO>>
+            {
+                Success = response.Success,
+                Message = response.Message,
+                Data = response.Data
+            });
+        }
+
         [HttpGet]
         public async Task<ActionResult<ApiResponse<IEnumerable<CategoryDto>>>> GetCategoriesByPageAsync(
        [FromQuery] int? page = 1,

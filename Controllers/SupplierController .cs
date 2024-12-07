@@ -33,7 +33,6 @@ namespace Pacifica.API.Controllers
             });
         }
 
-
         [HttpGet]
         public async Task<ActionResult<ApiResponse<IEnumerable<SupplierDto>>>> GetSuppliersByPageAsync(
                [FromQuery] int? page = 1,
@@ -112,6 +111,29 @@ namespace Pacifica.API.Controllers
                 Data = supplierDto
             });
         }
+
+     // GET: supplier for seelction dropdown list
+        [HttpGet("select")]
+        public async Task<ActionResult<ApiResponse<SelectSupplierDTO>>> GetSelectSupplier([FromQuery]int id)
+        {
+            var response = await _supplierService.GetSelectSuppliersAsync(id);
+            if (!response.Success)
+            {
+                return NotFound(response);
+            }
+
+            var supplierDto = _mapper.Map<SelectSupplierDTO>(response.Data);
+            return Ok(new ApiResponse<SelectSupplierDTO>
+            {
+                Success = response.Success,
+                Message = response.Message,
+                Data = supplierDto
+            });
+        }
+
+
+
+
 
         // POST: api/Supplier
         [HttpPost]

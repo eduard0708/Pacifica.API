@@ -1,5 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using Pacifica.API.Dtos.Category;
+using Pacifica.API.Dtos.Supplier;
 
 namespace Pacifica.API.Services.SupplierService
 {
@@ -46,6 +48,49 @@ namespace Pacifica.API.Services.SupplierService
                 {
                     Success = false,
                     Message = $"Error occurred while fetching suppliers: {ex.Message}",
+                    Data = null
+                };
+            }
+        }
+
+        public async Task<ApiResponse<IEnumerable<SelectSupplierDTO>>> GetSelectSuppliersAsync(int id)
+        {
+            try
+            {
+                var suppliers = await _context.Products
+                    .Where(p => p.DeletedAt == null && p.SupplierId == id) // Add the correct condition
+                    .Include(p => p.Supplier) // Ensure the Supplier navigation property is loaded
+                    .Select(p => new SelectSupplierDTO
+                    {
+                        Id = p.Id,
+                        SupplierName = p.Supplier!.SupplierName // Access Supplier's name
+                    })
+                    .ToListAsync();
+
+                if (suppliers == null || !suppliers.Any())
+                {
+                    return new ApiResponse<IEnumerable<SelectSupplierDTO>>
+                    {
+                        Success = false,
+                        Message = "No suppliers found.",
+                        Data = null
+                    };
+                }
+
+                return new ApiResponse<IEnumerable<SelectSupplierDTO>>
+                {
+                    Success = true,
+                    Message = "Suppliers retrieved successfully.",
+                    Data = suppliers
+                };
+            }
+            catch (Exception ex)
+            {
+                // Handle exception and log if necessary
+                return new ApiResponse<IEnumerable<SelectSupplierDTO>>
+                {
+                    Success = false,
+                    Message = $"An error occurred: {ex.Message}",
                     Data = null
                 };
             }

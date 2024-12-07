@@ -1,4 +1,6 @@
 
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Pacifica.API.Models.Inventory
 {
     public class InventorySnapshot : AuditDetails
@@ -9,12 +11,17 @@ namespace Pacifica.API.Models.Inventory
         public DateTime InventoryDate { get; set; }  // Date of the inventory
         public int Year { get; set; }  // Date of the inventory
         public int Month { get; set; }  // Date of the inventory
-        public decimal ActualQuantity { get; set; }  // Actual quantity counted
-        public decimal CostPrice { get; set; }  // Actual quantity counted
-        public decimal SystemQuantity { get; set; }  // Quantity from the system
-        public decimal Discrepancy { get; set; }    // The difference between system and actual quantity
 
+        [Column(TypeName = "decimal(18, 2)")]
+        public decimal ActualQuantity { get; set; }  // Actual quantity counted
+        [Column(TypeName = "decimal(18, 2)")]
+        public decimal CostPrice { get; set; }  // Actual quantity counted
+        [Column(TypeName = "decimal(8, 1)")]
+        public decimal SystemQuantity { get; set; }  // Quantity from the system
+        [Column(TypeName = "decimal(18, 2)")]
+        public decimal Discrepancy { get; set; }    // The difference between system and actual quantity
         // Method to calculate discrepancy
+
         public void CalculateDiscrepancy()
         {
             Discrepancy = ActualQuantity - SystemQuantity;

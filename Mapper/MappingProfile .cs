@@ -41,6 +41,8 @@ namespace Pacifica.API.Mapper
             CreateMap<Category, CategoryDto>().ReverseMap();
             CreateMap<Category, UpdateCategoryDto>().ReverseMap();
             CreateMap<Category, CreateCategoryDto>().ReverseMap();
+            CreateMap<Category, SelectCategoryDTO>().ReverseMap();
+
 
             CreateMap<Branch, BranchDto>().ReverseMap();
             CreateMap<Branch, CreateBranchDto>().ReverseMap();
@@ -78,7 +80,7 @@ namespace Pacifica.API.Mapper
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status!.StatusName))
                 .ReverseMap();
 
-                
+
             CreateMap<StockIn, StockInDTO>().ReverseMap();
             CreateMap<StockIn, StockInCreateDTO>().ReverseMap();
             CreateMap<StockIn, StockInUpdateDTO>().ReverseMap();

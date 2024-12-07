@@ -42,8 +42,9 @@ namespace Pacifica.API.Services.BranchProductService
                 // Fetch the branch products
                 var branchProducts = await _context.BranchProducts
                     .Where(bp => bp.BranchId == branchId && bp.DeletedAt == null)
-                    .Include(bp => bp.Product)
-                        .ThenInclude(p => p!.Category)
+                    .Include(bp => bp.Product)  // Include the Product
+                        .ThenInclude(p => p!.Category)  // Include Category related to Product
+                    .Include(bp => bp.Product!.Supplier)  // Explicitly Include Supplier related to Product
                     .Include(bp => bp.Status)  // Include Status to avoid null reference issues
                     .ToListAsync();
 
@@ -65,7 +66,9 @@ namespace Pacifica.API.Services.BranchProductService
                     ProductId = bp.Product!.Id,
                     ProductName = bp.Product.ProductName,
                     CategoryId = bp.Product.Category!.Id,
-                    ProductCategory = bp.Product.Category.CategoryName,
+                    Category = bp.Product.Category.CategoryName,
+                    SupplierId = bp.Product.Supplier!.Id,  // Get SupplierId from Product
+                    Supplier = bp.Product.Supplier.SupplierName,  // Get SupplierName from Product
                     StatusId = bp.StatusId,
                     StatusName = bp.Status!.StatusName,
                     CostPrice = bp.CostPrice,
@@ -83,6 +86,7 @@ namespace Pacifica.API.Services.BranchProductService
                     Message = "Products retrieved successfully.",
                     Data = responseDtos
                 };
+
             }
             catch (Exception ex)
             {

@@ -200,11 +200,21 @@ namespace Pacifica.API.Data
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
+            // Configure Category entity
+            modelBuilder.Entity<Category>(entity =>
+            {
+                entity.Property(s => s.CreatedAt).HasDefaultValueSql("GETDATE()");
+                entity.Property(s => s.IsDeleted).HasDefaultValue(false);
+
+            });
+
+
             // Configure Supplier entity
             modelBuilder.Entity<Supplier>(entity =>
             {
                 entity.Property(s => s.CreatedAt).HasDefaultValueSql("GETDATE()");
                 entity.Property(s => s.IsDeleted).HasDefaultValue(false);
+
             });
 
             // Configure ProductAuditTrail

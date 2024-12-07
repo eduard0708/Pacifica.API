@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Pacifica.API.Data;
+using Pacifica.API.Dtos.Category;
 
 namespace Pacifica.API.Services.CategoryService
 {
@@ -40,9 +41,39 @@ namespace Pacifica.API.Services.CategoryService
             };
         }
 
+        public async Task<ApiResponse<IEnumerable<SelectCategoryDTO>>> GetSelectCategoriesAsync()
+        {
+            var categories = await _context.Categories
+                .Where(c => c.DeletedAt == null) // Ensure soft delete is respected
+                .Select(c => new SelectCategoryDTO
+                {
+                    Id = c.Id,
+                    CategoryName = c.CategoryName
+                })
+                .ToListAsync();
+
+            if (!categories.Any())
+            {
+                return new ApiResponse<IEnumerable<SelectCategoryDTO>>
+                {
+                    Success = false,
+                    Message = "No categories found.",
+                    Data = null
+                };
+            }
+
+            return new ApiResponse<IEnumerable<SelectCategoryDTO>>
+            {
+                Success = true,
+                Message = "Categories retrieved successfully.",
+                Data = categories
+            };
+        }
+
+
         public async Task<ApiResponse<IEnumerable<Category>>> GetCategoriesByPageAsync(int page, int pageSize, string sortField, int sortOrder)
         {
-           
+
             // Map sortField to an actual Expression<Func<Branch, object>> that EF Core can process
             var sortExpression = GetSortExpression(sortField);
 
