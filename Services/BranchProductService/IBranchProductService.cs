@@ -21,5 +21,7 @@ namespace Pacifica.API.Services.BranchProductService
         Task<ApiResponse<List<BranchProductAuditTrailsDto>>> GetBranchProductAuditTrailsAsync(int branchId, int productId);
         Task<ApiResponse<IEnumerable<BranchProductDto>>> GetAllDeletedBranchProductsAsync();
         Task<ApiResponse<List<int>>> RestoreDeletedBrachProductsAsync(RestoreDeletedBranchProductsParams restoreDeleted);
+        Task<ApiResponse<IEnumerable<BranchProductFilterWithCategorySupplierDTO>>> GetBranchProductsByCategoryAndSupplierAsync(int branchId, int categoryId, int supplierId);
+
     }
 }

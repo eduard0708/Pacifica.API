@@ -6,7 +6,7 @@ using Pacifica.API.Dtos.StockInReference;
 
 namespace Pacifica.API.Controllers
 {
-    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
+    //[ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
     public class StockInReferenceController : ControllerBase
@@ -27,6 +27,20 @@ namespace Pacifica.API.Controllers
             var response = await _StockInReferenceService.GetAllReferencesStockInAsync();
             var StockInReferenceDtos = _mapper.Map<IEnumerable<StockInReferenceDto>>(response.Data);
             return Ok(new ApiResponse<IEnumerable<StockInReferenceDto>>
+            {
+                Success = response.Success,
+                Message = response.Message,
+                Data = StockInReferenceDtos
+            });
+        }
+
+        
+        [HttpGet("select")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<SelectReferenceStockInDTO>>>> GetSelectStockInsAsync()
+        {
+            var response = await _StockInReferenceService.GetSelectStockInsAsync();
+            var StockInReferenceDtos = _mapper.Map<IEnumerable<SelectReferenceStockInDTO>>(response.Data);
+            return Ok(new ApiResponse<IEnumerable<SelectReferenceStockInDTO>>
             {
                 Success = response.Success,
                 Message = response.Message,

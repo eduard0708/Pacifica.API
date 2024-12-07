@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Pacifica.API.Dtos.StockInReference;
 using Pacifica.API.Models.Transaction;
 
 namespace Pacifica.API.Services.StockInReferenceService
@@ -35,6 +36,32 @@ namespace Pacifica.API.Services.StockInReferenceService
                 Success = true,
                 Message = "Stock-In references retrieved successfully.",
                 Data = StockInReferences
+            };
+        }
+
+        public async Task<ApiResponse<IEnumerable<SelectReferenceStockInDTO>>> GetSelectStockInsAsync()
+        {
+            var StockInReferences = await _context.StockInReferences
+                .Where(tr => tr.DeletedAt == null)
+                .ToListAsync();
+
+
+            if (!StockInReferences.Any())
+            {
+                return new ApiResponse<IEnumerable<SelectReferenceStockInDTO>>
+                {
+                    Success = false,
+                    Message = "No Stock-In references found.",
+                    Data = null
+                };
+            }
+            var selectReferenceStockIns = _mapper.Map<SelectReferenceStockInDTO[]>(StockInReferences);
+
+            return new ApiResponse<IEnumerable<SelectReferenceStockInDTO>>
+            {
+                Success = true,
+                Message = "Stock-In references retrieved successfully.",
+                Data = selectReferenceStockIns
             };
         }
 

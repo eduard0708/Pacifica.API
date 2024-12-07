@@ -777,8 +777,52 @@ namespace Pacifica.API.Services.BranchProductService
             }
         }
 
+        public async Task<ApiResponse<IEnumerable<BranchProductFilterWithCategorySupplierDTO>>> GetBranchProductsByCategoryAndSupplierAsync(int categoryId, int supplierId, int branchId)
+        {
+            var branchProducts = await _context.BranchProducts
+                .Include(bp => bp.Product)
+                .ThenInclude(p => p!.Category)
+                .Include(bp => bp.Product!.Supplier)
+                .Where(bp => bp.Product != null
+                             && bp.Product.CategoryId == categoryId
+                             && bp.Product.SupplierId == supplierId
+                             && bp.BranchId == branchId // Added branchId filter
+                             && bp.DeletedAt == null)
+                .Select(bp => new BranchProductFilterWithCategorySupplierDTO
+                {
+                    BranchId = bp.BranchId,
+                    ProductId = bp.ProductId,
+                    ProductName = bp.Product!.ProductName,
+                    SupplierId = bp.Product.SupplierId,
+                    SupplierName = bp.Product.Supplier!.SupplierName!,
+                    CategoryId = bp.Product.CategoryId,
+                    CategoryName = bp.Product.Category!.CategoryName!,
+                    SKU = bp.Product.SKU,
+                    StockQuantity = bp.StockQuantity
+                })
+                .ToListAsync();
+
+            if (!branchProducts.Any())
+            {
+                return new ApiResponse<IEnumerable<BranchProductFilterWithCategorySupplierDTO>>
+                {
+                    Success = false,
+                    Message = "No branch products found for the specified category, supplier, and branch.",
+                    Data = null
+                };
+            }
+
+            return new ApiResponse<IEnumerable<BranchProductFilterWithCategorySupplierDTO>>
+            {
+                Success = true,
+                Message = "Branch products retrieved successfully.",
+                Data = branchProducts
+            };
+        }
 
     }
 
 }
+
+
 

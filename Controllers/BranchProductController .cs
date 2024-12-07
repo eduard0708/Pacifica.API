@@ -5,7 +5,7 @@ using Pacifica.API.Services.BranchProductService;
 
 namespace Pacifica.API.Controllers
 {
-   // [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
+    // [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
     public class BranchProductController : ControllerBase
@@ -64,7 +64,7 @@ namespace Pacifica.API.Controllers
                 [FromQuery] int? page = 1,
                 [FromQuery] int? pageSize = 5,
                 [FromQuery] string sortField = "productName", // Default sort field
-                [FromQuery] int sortOrder = 1 )// Default sort order (1 = ascending, -1 = descending)
+                [FromQuery] int sortOrder = 1)// Default sort order (1 = ascending, -1 = descending)
         {
             // Validate required parameters
             if (!page.HasValue || !pageSize.HasValue)
@@ -238,7 +238,20 @@ namespace Pacifica.API.Controllers
 
             return Ok(response);
         }
+
+     [HttpGet("by-category-and-supplier")]
+    public async Task<ActionResult<ApiResponse<IEnumerable<BranchProductFilterWithCategorySupplierDTO>>>> GetBranchProductsByCategoryAndSupplier(
+        [FromQuery] int branchId, [FromQuery] int categoryId, [FromQuery] int supplierId)
+    {
+        var response = await _branchProductService.GetBranchProductsByCategoryAndSupplierAsync(branchId, categoryId, supplierId);
+
+        if (!response.Success)
+        {
+            return NotFound(response);
+        }
+
+        return Ok(response);
     }
 
+    }
 }
-

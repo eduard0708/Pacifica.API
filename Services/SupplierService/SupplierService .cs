@@ -96,6 +96,46 @@ namespace Pacifica.API.Services.SupplierService
             }
         }
 
+        public async Task<ApiResponse<IEnumerable<SelectSupplierDTO>>> GetSuppliersByCategory(int categoryId)
+        {
+            try
+            {
+                var suppliers = await _context.Products
+                    .Where(c => c.DeletedAt == null && c.CategoryId == categoryId) // Filter products by category and deletion status
+                    .Select(p => p.Supplier)  // Select the Supplier associated with each product
+                    .Distinct()
+                    .ToListAsync();
+
+                if (suppliers == null || !suppliers.Any())
+                {
+                    return new ApiResponse<IEnumerable<SelectSupplierDTO>>
+                    {
+                        Success = false,
+                        Message = "No suppliers found.",
+                        Data = null
+                    };
+                }
+
+                // Use AutoMapper to map the supplier list to SelectSupplierDTO
+                var supplierDtos = _mapper.Map<List<SelectSupplierDTO>>(suppliers);
+
+                return new ApiResponse<IEnumerable<SelectSupplierDTO>>
+                {
+                    Success = true,
+                    Message = "Suppliers found.",
+                    Data = supplierDtos
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<IEnumerable<SelectSupplierDTO>>
+                {
+                    Success = false,
+                    Message = "An error occurred while fetching suppliers.",
+                    Data = null
+                };
+            }
+        }
         public async Task<ApiResponse<IEnumerable<Supplier>>> GetSuppliersByPageAsync(int page, int pageSize, string sortField, int sortOrder)
         {
             // Map sortField to an actual Expression<Func<Branch, object>> that EF Core can process

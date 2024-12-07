@@ -131,9 +131,23 @@ namespace Pacifica.API.Controllers
             });
         }
 
+            // GET: supplier for seelction dropdown list
+        [HttpGet("suppler-by-category/{categoryId}")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<SelectSupplierDTO>>>> GetSuppliersByCategory(int categoryId)
+        {
+            var response = await _supplierService.GetSuppliersByCategory(categoryId);
+            if (!response.Success)
+            {
+                return NotFound(response);
+            }
 
-
-
+            return Ok(new ApiResponse<IEnumerable<SelectSupplierDTO>>
+            {
+                Success = response.Success,
+                Message = response.Message,
+                Data = response.Data
+            });
+        }
 
         // POST: api/Supplier
         [HttpPost]

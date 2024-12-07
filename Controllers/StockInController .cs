@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Pacifica.API.Dtos.StockIn;
+using Pacifica.API.Dtos.StockInReference;
 using Pacifica.API.Services.StockInService;
 
 namespace Pacifica.API.Controllers
@@ -28,6 +29,8 @@ namespace Pacifica.API.Controllers
 
             return NotFound(response);  // Returns 404 if no records found
         }
+
+
 
         // GET: api/StockIn/5
         [HttpGet("{id}")]
