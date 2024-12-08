@@ -126,7 +126,7 @@ namespace Pacifica.API.Services.SupplierService
                     Data = supplierDtos
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new ApiResponse<IEnumerable<SelectSupplierDTO>>
                 {
