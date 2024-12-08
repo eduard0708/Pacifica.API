@@ -239,19 +239,37 @@ namespace Pacifica.API.Controllers
             return Ok(response);
         }
 
-     [HttpGet("by-category-and-supplier")]
-    public async Task<ActionResult<ApiResponse<IEnumerable<BranchProductFilterWithCategorySupplierDTO>>>> GetBranchProductsByCategoryAndSupplier(
-        [FromQuery] int branchId, [FromQuery] int categoryId, [FromQuery] int supplierId)
-    {
-        var response = await _branchProductService.GetBranchProductsByCategoryAndSupplierAsync(branchId, categoryId, supplierId);
 
-        if (!response.Success)
+        [HttpGet("by-category-and-supplier")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<BranchProductForStockInDTO>>>> GetBranchProductsByCategoryAndSupplier(
+        [FromQuery] int branchId,
+        [FromQuery] int categoryId,
+        [FromQuery] int supplierId,
+        [FromQuery] string sku = null!) // SKU parameter is optional
         {
-            return NotFound(response);
-        }
+            // If SKU is provided, search only by SKU
+            if (!string.IsNullOrEmpty(sku))
+            {
+                var response = await _branchProductService.GetBranchProductsBySKUAsync(branchId, sku);
 
-        return Ok(response);
-    }
+                if (!response.Success)
+                {
+                    return NotFound(response);
+                }
+
+                return Ok(response);
+            }
+
+            // Otherwise, search by category and supplier
+            var responseByCategoryAndSupplier = await _branchProductService.GetBranchProductsByCategoryAndSupplierAsync(branchId, categoryId, supplierId);
+
+            if (!responseByCategoryAndSupplier.Success)
+            {
+                return NotFound(responseByCategoryAndSupplier);
+            }
+
+            return Ok(responseByCategoryAndSupplier);
+        }
 
     }
 }

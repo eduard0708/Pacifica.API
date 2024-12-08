@@ -19,8 +19,6 @@ using Pacifica.API.Services.EmployeeService;
 using Pacifica.API.Services.RoleService;
 using Pacifica.API.Services.TokenService;
 using Pacifica.API.Services.StatusService;
-using Pacifica.API;
-using System.ComponentModel.Design;
 using Pacifica.API.Services.StockInReferenceService;
 using Pacifica.API.Services.StockOutReferenceService;
 using Pacifica.API.Services.StockInService;

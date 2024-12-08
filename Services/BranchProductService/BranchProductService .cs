@@ -777,7 +777,7 @@ namespace Pacifica.API.Services.BranchProductService
             }
         }
 
-        public async Task<ApiResponse<IEnumerable<BranchProductFilterWithCategorySupplierDTO>>> GetBranchProductsByCategoryAndSupplierAsync(int categoryId, int supplierId, int branchId)
+        public async Task<ApiResponse<IEnumerable<BranchProductForStockInDTO>>> GetBranchProductsByCategoryAndSupplierAsync(int categoryId, int supplierId, int branchId)
         {
             var branchProducts = await _context.BranchProducts
                 .Include(bp => bp.Product)
@@ -788,7 +788,7 @@ namespace Pacifica.API.Services.BranchProductService
                              && bp.Product.SupplierId == supplierId
                              && bp.BranchId == branchId // Added branchId filter
                              && bp.DeletedAt == null)
-                .Select(bp => new BranchProductFilterWithCategorySupplierDTO
+                .Select(bp => new BranchProductForStockInDTO
                 {
                     BranchId = bp.BranchId,
                     ProductId = bp.ProductId,
@@ -804,7 +804,7 @@ namespace Pacifica.API.Services.BranchProductService
 
             if (!branchProducts.Any())
             {
-                return new ApiResponse<IEnumerable<BranchProductFilterWithCategorySupplierDTO>>
+                return new ApiResponse<IEnumerable<BranchProductForStockInDTO>>
                 {
                     Success = false,
                     Message = "No branch products found for the specified category, supplier, and branch.",
@@ -812,7 +812,7 @@ namespace Pacifica.API.Services.BranchProductService
                 };
             }
 
-            return new ApiResponse<IEnumerable<BranchProductFilterWithCategorySupplierDTO>>
+            return new ApiResponse<IEnumerable<BranchProductForStockInDTO>>
             {
                 Success = true,
                 Message = "Branch products retrieved successfully.",
@@ -820,6 +820,41 @@ namespace Pacifica.API.Services.BranchProductService
             };
         }
 
+        public async Task<ApiResponse<IEnumerable<BranchProductForStockInDTO>>> GetBranchProductsBySKUAsync(int branchId, string sku)
+        {
+            var products = await _context.BranchProducts
+                .Where(p => p.BranchId == branchId && p.Product!.SKU.Contains(sku)) 
+                .Select(bp => new BranchProductForStockInDTO
+                {
+                    BranchId = bp.BranchId,
+                    ProductId = bp.ProductId,
+                    ProductName = bp.Product!.ProductName,
+                    SupplierId = bp.Product.SupplierId,
+                    SupplierName = bp.Product.Supplier!.SupplierName!,
+                    CategoryId = bp.Product.CategoryId,
+                    CategoryName = bp.Product.Category!.CategoryName!,
+                    SKU = bp.Product.SKU,
+                    StockQuantity = bp.StockQuantity
+                })// Searching by SKU
+                .ToListAsync();
+
+            if (products == null || !products.Any())
+            {
+                return new ApiResponse<IEnumerable<BranchProductForStockInDTO>>
+                {
+                    Success = false,
+                    Message = "No products found with the specified SKU."
+                };
+            }
+
+            var productsDto = _mapper.Map<IEnumerable<BranchProductForStockInDTO>>(products); // Assuming you are using AutoMapper
+
+            return new ApiResponse<IEnumerable<BranchProductForStockInDTO>>
+            {
+                Success = true,
+                Data = productsDto
+            };
+        }
     }
 
 }

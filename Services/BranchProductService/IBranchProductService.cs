@@ -21,7 +21,10 @@ namespace Pacifica.API.Services.BranchProductService
         Task<ApiResponse<List<BranchProductAuditTrailsDto>>> GetBranchProductAuditTrailsAsync(int branchId, int productId);
         Task<ApiResponse<IEnumerable<BranchProductDto>>> GetAllDeletedBranchProductsAsync();
         Task<ApiResponse<List<int>>> RestoreDeletedBrachProductsAsync(RestoreDeletedBranchProductsParams restoreDeleted);
-        Task<ApiResponse<IEnumerable<BranchProductFilterWithCategorySupplierDTO>>> GetBranchProductsByCategoryAndSupplierAsync(int branchId, int categoryId, int supplierId);
+        Task<ApiResponse<IEnumerable<BranchProductForStockInDTO>>> GetBranchProductsByCategoryAndSupplierAsync(int branchId, int categoryId, int supplierId);
+
+        // New method for searching by SKU
+        Task<ApiResponse<IEnumerable<BranchProductForStockInDTO>>> GetBranchProductsBySKUAsync(int branchId, string sku);
 
     }
 }
