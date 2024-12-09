@@ -143,7 +143,7 @@ namespace Pacifica.API.Controllers
 
         // GET: api/StockIn/reference/{referenceNumber}
         [HttpGet("search")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<StockInDTO>>>> GetByDateRangeOrRefenceAsync(
+        public async Task<ActionResult<ApiResponse<IEnumerable<ViewStockInDTO>>>> GetByDateRangeOrRefenceAsync(
             [FromQuery] string? referenceNumber = null,  // Make referenceNumber optional
             [FromQuery] DateTime? dateCreatedStart = null,
             [FromQuery] DateTime? dateCreatedEnd = null,

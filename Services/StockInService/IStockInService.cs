@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Pacifica.API.Dtos.StockIn;
 
 namespace Pacifica.API.Services.StockInService
@@ -10,7 +7,7 @@ namespace Pacifica.API.Services.StockInService
         Task<ApiResponse<IEnumerable<StockInDTO>>> GetAllStockInsAsync();
         Task<ApiResponse<StockInDTO>> GetStockInByIdAsync(int id);
         Task<ApiResponse<IEnumerable<StockInDTO>>> GetByReferenceNumber(string referenceNumber); 
-        Task<ApiResponse<IEnumerable<StockInDTO>>> GetByDateRangeOrRefenceAsync(
+        Task<ApiResponse<IEnumerable<ViewStockInDTO>>> GetByDateRangeOrRefenceAsync(
             string referenceNumber, 
             DateTime? dateCreatedStart = null, 
             DateTime? dateCreatedEnd = null, 

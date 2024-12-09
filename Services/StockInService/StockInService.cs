@@ -441,12 +441,12 @@ namespace Pacifica.API.Services.StockInService
         }
 
         // Get StockIn by Reference Number with optional date filters
-        public async Task<ApiResponse<IEnumerable<StockInDTO>>> GetByDateRangeOrRefenceAsync(
-         string? referenceNumber,  // Make referenceNumber nullable
-         DateTime? dateCreatedStart = null,
-         DateTime? dateCreatedEnd = null,
-         DateTime? dateReportedStart = null,
-         DateTime? dateReportedEnd = null)
+        public async Task<ApiResponse<IEnumerable<ViewStockInDTO>>> GetByDateRangeOrRefenceAsync(
+                string? referenceNumber,  // Make referenceNumber nullable
+                DateTime? dateCreatedStart = null,
+                DateTime? dateCreatedEnd = null,
+                DateTime? dateReportedStart = null,
+                DateTime? dateReportedEnd = null)
         {
             var query = _context.StockIns.AsQueryable();
 
@@ -474,29 +474,51 @@ namespace Pacifica.API.Services.StockInService
                 query = query.Where(si => si.DeletedAt == null); // Only check for deletedAt
             }
 
-            var stockIns = await query.ToListAsync();
+            // Include related tables if needed (e.g., Product, Branch, Category)
+            var stockIns = await query
+                .Include(si => si.Product)       // Assuming StockIn has a navigation property to Product
+                .Include(si => si.Branch)        // Assuming StockIn has a navigation property to Branch
+                .Include(si => si.Product!.Category) // Assuming Product has a navigation property to Category
+                .Include(si => si.StockInReference)
+                .ToListAsync();
 
             if (stockIns == null || !stockIns.Any())
             {
-                return new ApiResponse<IEnumerable<StockInDTO>>
+                return new ApiResponse<IEnumerable<ViewStockInDTO>>
                 {
                     Success = false,
                     Message = "No StockIn records found with the given filters.",
                     Data = null
                 };
             }
+            // Manually map the StockIn entities to ViewStockInDTOs
+            var stockInDtos = stockIns.Select(si => new ViewStockInDTO
+            {
+                Id = si.Id,
+                ReferenceNumber = si.ReferenceNumber,
+                ProductId = si.ProductId,
+                ProductName = si.Product != null ? si.Product.ProductName : "Unknown",  // Handle null Product
+                BranchId = si.BranchId,
+                BranchName = si.Branch != null ? si.Branch.BranchName : "Unknown",    // Handle null Branch
+                DateReported = si.DateReported,
+                CostPrice = si.CostPrice,
+                RetailPrice = si.RetailPrice,
+                Quantity = si.Quantity,
+                StockInReferenceId = si.StockInReferenceId,
+                StockInReferenceName = si.StockInReference?.StockInReferenceName,
+                CategoryId = si.Product?.CategoryId ?? 0,  // Safely access CategoryId, provide default if null
+                CategoryName = si.Product?.Category?.CategoryName ?? "Unknown",  // Safely access Category Name, provide default if null
+                CreatedAt = si.CreatedAt,
+                CreatedBy = si.CreatedBy
+            }).ToList();
 
-            // Map the stock-in entities to DTOs
-            var stockInDtos = _mapper.Map<IEnumerable<StockInDTO>>(stockIns);
 
-            return new ApiResponse<IEnumerable<StockInDTO>>
+            return new ApiResponse<IEnumerable<ViewStockInDTO>>
             {
                 Success = true,
                 Message = "StockIn records retrieved successfully.",
                 Data = stockInDtos
             };
         }
-
-
     }
 }

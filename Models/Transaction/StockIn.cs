@@ -25,6 +25,9 @@ public class StockIn : AuditDetails
     [Range(18, 2)]
     public decimal CostPrice { get; set; }
 
+    [Range(18, 2)]
+    public decimal RetailPrice { get; set; }
+
     // Navigation properties
     public Product? Product { get; set; }
     public Branch? Branch { get; set; }

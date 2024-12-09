@@ -24,6 +24,7 @@ using Pacifica.API.Services.StockOutReferenceService;
 using Pacifica.API.Services.StockInService;
 using Pacifica.API.Services.StockOutService;
 using Pacifica.API.Services.InventoryService;
+using Pacifica.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
