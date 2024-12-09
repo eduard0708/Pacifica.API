@@ -2,10 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Pacifica.API.Dtos.StockOut;
 using Pacifica.API.Models.Transaction;
 using Pacifica.API.Models.GlobalAuditTrails;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Pacifica.API.Services.StockOutService
 {
@@ -74,7 +70,7 @@ namespace Pacifica.API.Services.StockOutService
         }
 
         // Create a new StockOut (single record)
-        public async Task<ApiResponse<StockOutDTO>> CreateStockOutAsync(StockOutCreateDTO stockOutDto)
+        public async Task<ApiResponse<StockOutDTO>> CreateStockOutAsync(CreateStockOutDTO stockOutDto)
         {
             var stockOut = _mapper.Map<StockOut>(stockOutDto);
 
@@ -104,7 +100,7 @@ namespace Pacifica.API.Services.StockOutService
         }
 
         // Create multiple StockOut records (bulk creation)
-        public async Task<ApiResponse<IEnumerable<StockOutDTO>>> CreateMultipleStockOutAsync(IEnumerable<StockOutCreateDTO> stockOutDtos)
+        public async Task<ApiResponse<IEnumerable<StockOutDTO>>> CreateMultipleStockOutAsync(IEnumerable<CreateStockOutDTO> stockOutDtos)
         {
             var stockOuts = _mapper.Map<IEnumerable<StockOut>>(stockOutDtos);
 
@@ -347,6 +343,91 @@ namespace Pacifica.API.Services.StockOutService
                 Success = true,
                 Message = "Deleted StockIn records retrieved successfully.",
                 Data = deletedStockOut
+            };
+        }
+
+        // Get StockIn by Reference Number with optional date filters
+        public async Task<ApiResponse<IEnumerable<ViewStockOutDTO>>> GetByDateRangeOrRefenceAsync(
+                string? referenceNumber,  // Make referenceNumber nullable
+                DateTime? dateCreatedStart = null,
+                DateTime? dateCreatedEnd = null,
+                DateTime? dateSoldStart = null,
+                DateTime? dateSoldEnd = null)
+        {
+            var query = _context.StockOuts.AsQueryable();
+
+            // Apply date filters if provided
+            if (dateCreatedStart.HasValue)
+                query = query.Where(si => si.CreatedAt >= dateCreatedStart.Value);
+
+            if (dateCreatedEnd.HasValue)
+                query = query.Where(si => si.CreatedAt <= dateCreatedEnd.Value);
+
+            if (dateSoldStart.HasValue)
+                query = query.Where(si => si.DateSold >= dateSoldStart.Value);
+
+
+
+            if (dateSoldEnd.HasValue)
+                query = query.Where(si => si.DateSold <= dateSoldEnd.Value);
+
+            // Apply the reference number filter if it's provided
+            if (!string.IsNullOrEmpty(referenceNumber))
+            {
+                query = query.Where(si => si.ReferenceNumber == referenceNumber && si.DeletedAt == null);
+            }
+            else
+            {
+                // If referenceNumber is not provided, consider records regardless of referenceNumber
+                query = query.Where(si => si.DeletedAt == null); // Only check for deletedAt
+            }
+
+            // Include related tables if needed (e.g., Product, Branch, Category)
+            var stockIns = await query
+                .Include(si => si.Product)       // Assuming StockIn has a navigation property to Product
+                .Include(si => si.Branch)        // Assuming StockIn has a navigation property to Branch
+                .Include(si => si.Product!.Category) // Assuming Product has a navigation property to Category
+                .Include(si => si.StockOutReference)
+                .Include(si => si.PaymentMethod)
+                .ToListAsync();
+
+            if (stockIns == null || !stockIns.Any())
+            {
+                return new ApiResponse<IEnumerable<ViewStockOutDTO>>
+                {
+                    Success = false,
+                    Message = "No StockIn records found with the given filters.",
+                    Data = null
+                };
+            }
+            // Manually map the StockIn entities to ViewStockInDTOs
+            var stockInDtos = stockIns.Select(si => new ViewStockOutDTO
+            {
+                Id = si.Id,
+                ReferenceNumber = si.ReferenceNumber,
+                ProductId = si.ProductId,
+                ProductName = si.Product != null ? si.Product.ProductName : "Unknown",  // Handle null Product
+                CategoryId = si.Product?.CategoryId ?? 0,  // Safely access CategoryId, provide default if null
+                CategoryName = si.Product?.Category?.CategoryName ?? "Unknown",  // Safely access Category Name, provide default if null
+                BranchId = si.BranchId,
+                BranchName = si.Branch != null ? si.Branch.BranchName : "Unknown",    // Handle null Branch
+                StockOutReferenceId = si.StockOutReferenceId,
+                StockOutReferenceName = si.StockOutReference?.StockOutReferenceName,
+                PaymentMethodId = si.PaymentMethodId,
+                PaymentMethodName = si.PaymentMethod?.PaymentMethodName,
+                DateSold = si.DateSold,
+                RetailPrice = si.RetailPrice,
+                Quantity = si.Quantity,
+                CreatedAt = si.CreatedAt,
+                CreatedBy = si.CreatedBy
+            }).ToList();
+
+
+            return new ApiResponse<IEnumerable<ViewStockOutDTO>>
+            {
+                Success = true,
+                Message = "StockIn records retrieved successfully.",
+                Data = stockInDtos
             };
         }
     }

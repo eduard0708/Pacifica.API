@@ -22,7 +22,7 @@ namespace Pacifica.API.Models.Transaction
         public int? ProductId { get; set; }
 
         [Required]
-        public int PaymentTypeId { get; set; }
+        public int PaymentMethodId { get; set; }
 
         [Required]
         public int StockOutReferenceId { get; set; }
@@ -34,8 +34,7 @@ namespace Pacifica.API.Models.Transaction
         public decimal RetailPrice { get; set; }
 
         [Required]
-
-        public DateTime? DateReported { get; set; }
+        public DateTime DateSold { get; set; }
 
         // Navigation properties
         public Product? Product { get; set; }

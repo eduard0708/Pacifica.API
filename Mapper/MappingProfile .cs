@@ -14,6 +14,7 @@ using Pacifica.API.Dtos.StockOut;
 using Pacifica.API.Dtos.StockOutReference;
 using Pacifica.API.Models.Inventory;
 using Pacifica.API.Dtos.Inventory;
+using Pacifica.API.Dtos.PaymentMethod;
 
 namespace Pacifica.API.Mapper
 {
@@ -91,22 +92,20 @@ namespace Pacifica.API.Mapper
                         CreateMap<StockIn, StockInDTO>().ReverseMap();
                         CreateMap<StockIn, StockInCreateDTO>().ReverseMap();
                         CreateMap<StockIn, StockInUpdateDTO>().ReverseMap();
-
-
-
                         CreateMap<StockIn, StockInDTO>().ReverseMap();
 
+                        CreateMap<PaymentMethod, PaymentMethodDto>().ReverseMap();
 
                         CreateMap<StockInReference, StockInReferenceDto>().ReverseMap();
                         CreateMap<StockInReference, CreateStockInReferenceDto>().ReverseMap();
                         CreateMap<StockInReference, UpdateStockInReferenceDto>().ReverseMap();
-                        CreateMap<StockInReference, SelectReferenceStockInDTO>().ReverseMap(); 
+                        CreateMap<StockInReference, SelectReferenceStockInDTO>().ReverseMap();
 
                         CreateMap<StockOut, StockOutDTO>().ReverseMap();
                         CreateMap<StockOutReference, StockOutReferenceDto>().ReverseMap();
                         CreateMap<StockOutReference, CreateStockOutReferenceDto>().ReverseMap();
                         CreateMap<StockOutReference, UpdateStockOutReferenceDto>().ReverseMap();
-
+                        CreateMap<StockOutReference, SelectReferenceStockOutDTO>().ReverseMap();
 
                         // Map ProductAuditTrail to ProductAuditTrailsDto
                         CreateMap<ProductAuditTrail, ProductAuditTrailsDto>()

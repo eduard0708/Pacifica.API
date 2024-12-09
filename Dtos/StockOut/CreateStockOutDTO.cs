@@ -1,15 +1,16 @@
 
 namespace Pacifica.API.Dtos.StockOut
 {
-    public class StockOutCreateDTO
+    public class CreateStockOutDTO
     {
         public string? ReferenceNumber { get; set; }
         public int ProductId { get; set; }
         public int BranchId { get; set; }
-        public DateTime DateReported { get; set; }
-        public int Quantity { get; set; }
-        public decimal CostPrice { get; set; }
+        public int PaymentMethodId { get; set; }
         public int StockOutReferenceId { get; set; }
+        public DateTime DateSold { get; set; }
+        public int Quantity { get; set; }
+        public decimal RetailPrice { get; set; }
         public string? CreatedBy { get; set; }
 
     }

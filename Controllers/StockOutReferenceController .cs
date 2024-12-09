@@ -5,7 +5,7 @@ using Pacifica.API.Dtos.StockOutReference;
 
 namespace Pacifica.API.Controllers
 {
-    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
+   // [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
     public class StockOutReferenceController : ControllerBase
@@ -32,6 +32,21 @@ namespace Pacifica.API.Controllers
                 Data = stockOutReferenceDtos
             });
         }
+
+
+        [HttpGet("select")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<SelectReferenceStockOutDTO>>>> GetSelectStockInsAsync()
+        {
+            var response = await _stockOutReferenceService.GetSelectStockOutsAsync();
+            var StockInReferenceDtos = _mapper.Map<IEnumerable<SelectReferenceStockOutDTO>>(response.Data);
+            return Ok(new ApiResponse<IEnumerable<SelectReferenceStockOutDTO>>
+            {
+                Success = response.Success,
+                Message = response.Message,
+                Data = StockInReferenceDtos
+            });
+        }
+
 
         // GET: api/StockOutReference/5
         [HttpGet("{id}")]

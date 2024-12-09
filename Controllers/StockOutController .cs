@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using Pacifica.API.Dtos.StockIn;
 using Pacifica.API.Dtos.StockOut;  // Change StockIn DTOs to StockOut DTOs
 using Pacifica.API.Models.Transaction;
 using Pacifica.API.Services.StockOutService;  // Change to StockOutService
 
 namespace Pacifica.API.Controllers
 {
-    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
+  //  [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
     public class StockOutController : ControllerBase  // Rename the controller to StockOutController
@@ -61,7 +62,7 @@ namespace Pacifica.API.Controllers
 
         // POST: api/StockOut
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<StockOutDTO>>> CreateStockOut(StockOutCreateDTO stockOutCreateDto)  // Change StockIn to StockOut
+        public async Task<ActionResult<ApiResponse<StockOutDTO>>> CreateStockOut(CreateStockOutDTO stockOutCreateDto)  // Change StockIn to StockOut
         {
             var response = await _stockOutService.CreateStockOutAsync(stockOutCreateDto);  // Call StockOutService method
 
@@ -75,7 +76,7 @@ namespace Pacifica.API.Controllers
 
         // POST: api/StockOut/multiple
         [HttpPost("multiple")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<StockOutDTO>>>> CreateMultipleStockOuts(IEnumerable<StockOutCreateDTO> stockOutCreateDtos)  // Change StockIn to StockOut
+        public async Task<ActionResult<ApiResponse<IEnumerable<StockOutDTO>>>> CreateMultipleStockOuts(IEnumerable<CreateStockOutDTO> stockOutCreateDtos)  // Change StockIn to StockOut
         {
             var response = await _stockOutService.CreateMultipleStockOutAsync(stockOutCreateDtos);  // Call StockOutService method
 
@@ -140,5 +141,31 @@ namespace Pacifica.API.Controllers
 
             return Ok(response);  // Return 200 with the list of deleted StockOut records
         }
+
+        [HttpGet("search")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<ViewStockOutDTO>>>> GetByDateRangeOrRefenceAsync(
+        [FromQuery] string? referenceNumber = null,  // Make referenceNumber optional
+        [FromQuery] DateTime? dateCreatedStart = null,
+        [FromQuery] DateTime? dateCreatedEnd = null,
+        [FromQuery] DateTime? dateSoldStart = null,
+        [FromQuery] DateTime? dateSoldeEnd = null)
+        {
+
+            var response = await _stockOutService.GetByDateRangeOrRefenceAsync(
+                referenceNumber!,
+                dateCreatedStart,
+                dateCreatedEnd,
+                dateSoldStart,
+                dateSoldeEnd
+            );
+
+            if (response.Success)
+            {
+                return Ok(response);  // Return 200 OK with data
+            }
+
+            return NotFound(response);  // Return 404 if no data found
+        }
     }
 }
+

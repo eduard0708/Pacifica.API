@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Pacifica.API.Dtos.StockOutReference;
 using Pacifica.API.Models.Transaction;
 
 namespace Pacifica.API.Services.StockOutReferenceService
@@ -37,6 +38,33 @@ namespace Pacifica.API.Services.StockOutReferenceService
                 Data = stockOutReferences
             };
         }
+
+   public async Task<ApiResponse<IEnumerable<SelectReferenceStockOutDTO>>> GetSelectStockOutsAsync()
+        {
+            var stockOutReferences = await _context.StockOutReferences
+                .Where(tr => tr.DeletedAt == null)
+                .ToListAsync();
+
+
+            if (!stockOutReferences.Any())
+            {
+                return new ApiResponse<IEnumerable<SelectReferenceStockOutDTO>>
+                {
+                    Success = false,
+                    Message = "No Stock-Out references found.",
+                    Data = null
+                };
+            }
+            var selectReferenceStockOuts = _mapper.Map<SelectReferenceStockOutDTO[]>(stockOutReferences);
+
+            return new ApiResponse<IEnumerable<SelectReferenceStockOutDTO>>
+            {
+                Success = true,
+                Message = "Stock-Out references retrieved successfully.",
+                Data = selectReferenceStockOuts
+            };
+        }
+
 
         public async Task<ApiResponse<StockOutReference>> GetReferencesStockOutByIdAsync(int id)
         {

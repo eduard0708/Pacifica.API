@@ -34,7 +34,6 @@ namespace Pacifica.API.Controllers
             });
         }
 
-        
         [HttpGet("select")]
         public async Task<ActionResult<ApiResponse<IEnumerable<SelectReferenceStockInDTO>>>> GetSelectStockInsAsync()
         {

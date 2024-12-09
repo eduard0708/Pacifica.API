@@ -10,16 +10,19 @@ public class StockIn : AuditDetails
     public string? ReferenceNumber { get; set; }
 
     [Required]
-    public int? ProductId { get; set; }
+    public int ProductId { get; set; }
 
     [Required]
-    public int? BranchId { get; set; }  // Nullable foreign key to Branch
+    public int BranchId { get; set; }  // Nullable foreign key to Branch
 
     [Required]
     public int StockInReferenceId { get; set; }
 
+    [Required]
+    public DateTime DateReceived { get; set; }
     public DateTime DateReported { get; set; }
 
+    [Required]
     public int Quantity { get; set; }
 
     [Range(18, 2)]

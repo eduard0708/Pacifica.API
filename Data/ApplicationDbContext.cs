@@ -41,8 +41,6 @@ namespace Pacifica.API.Data
         public DbSet<ProductAuditTrail> ProductAuditTrails { get; set; }
         public DbSet<StockInAuditTrail> StockInAuditTrails { get; set; }
         public DbSet<StockOutAuditTrail> StockOutAuditTrails { get; set; }
-
-
         public DbSet<WeeklyInventory> WeeklyInventories { get; set; }
 
 
@@ -298,9 +296,13 @@ namespace Pacifica.API.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Configure StockIn entity decimal properties
-            modelBuilder.Entity<StockIn>()
-                .Property(si => si.CostPrice)
-                .HasColumnType("decimal(18,2)"); // Specify precision and scale for CostPrice
+
+
+            modelBuilder.Entity<StockIn>(entity =>
+           {
+               entity.Property(e => e.CostPrice).HasColumnType("decimal(18,4)");
+               entity.Property(e => e.RetailPrice).HasColumnType("decimal(18,4)");
+           });
 
             // StockOut entity configuration
             modelBuilder.Entity<StockOut>()
@@ -322,6 +324,12 @@ namespace Pacifica.API.Data
                 .HasOne(so => so.StockOutReference)
                 .WithMany(b => b.StockOuts)
                 .HasForeignKey(so => so.StockOutReferenceId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<StockOut>()
+                .HasOne(so => so.PaymentMethod)
+                .WithMany(b => b.StockOuts)
+                .HasForeignKey(so => so.PaymentMethodId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Configure StockOut entity decimal properties
@@ -380,6 +388,7 @@ namespace Pacifica.API.Data
             modelBuilder.Entity<Employee>().HasQueryFilter(e => e.DeletedAt == null);
             modelBuilder.Entity<EmployeeBranch>().HasQueryFilter(eb => eb.DeletedAt == null);
             modelBuilder.Entity<EmployeeProfile>().HasQueryFilter(ep => ep.DeletedAt == null);
+            modelBuilder.Entity<PaymentMethod>().HasQueryFilter(ep => ep.DeletedAt == null);
             modelBuilder.Entity<ProductAuditTrail>().HasQueryFilter(b => b.Product != null && b.Product.DeletedAt == null);
             modelBuilder.Entity<BranchProductAuditTrail>().HasQueryFilter(b => b.BranchProduct != null && b.BranchProduct.DeletedAt == null);
             modelBuilder.Entity<StockIn>()
