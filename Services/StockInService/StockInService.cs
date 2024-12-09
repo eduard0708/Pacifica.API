@@ -440,17 +440,17 @@ namespace Pacifica.API.Services.StockInService
             };
         }
 
-   // Get StockIn by Reference Number with optional date filters
+        // Get StockIn by Reference Number with optional date filters
         public async Task<ApiResponse<IEnumerable<StockInDTO>>> GetByDateRangeOrRefenceAsync(
-            string referenceNumber,
-            DateTime? dateCreatedStart = null,
-            DateTime? dateCreatedEnd = null,
-            DateTime? dateReportedStart = null,
-            DateTime? dateReportedEnd = null)
+         string? referenceNumber,  // Make referenceNumber nullable
+         DateTime? dateCreatedStart = null,
+         DateTime? dateCreatedEnd = null,
+         DateTime? dateReportedStart = null,
+         DateTime? dateReportedEnd = null)
         {
             var query = _context.StockIns.AsQueryable();
 
-            // Apply filters if provided
+            // Apply date filters if provided
             if (dateCreatedStart.HasValue)
                 query = query.Where(si => si.CreatedAt >= dateCreatedStart.Value);
 
@@ -463,8 +463,16 @@ namespace Pacifica.API.Services.StockInService
             if (dateReportedEnd.HasValue)
                 query = query.Where(si => si.DateReported <= dateReportedEnd.Value);
 
-            // Apply the reference number filter
-            query = query.Where(si => si.ReferenceNumber == referenceNumber && si.DeletedAt == null);
+            // Apply the reference number filter if it's provided
+            if (!string.IsNullOrEmpty(referenceNumber))
+            {
+                query = query.Where(si => si.ReferenceNumber == referenceNumber && si.DeletedAt == null);
+            }
+            else
+            {
+                // If referenceNumber is not provided, consider records regardless of referenceNumber
+                query = query.Where(si => si.DeletedAt == null); // Only check for deletedAt
+            }
 
             var stockIns = await query.ToListAsync();
 
@@ -488,5 +496,7 @@ namespace Pacifica.API.Services.StockInService
                 Data = stockInDtos
             };
         }
+
+
     }
 }

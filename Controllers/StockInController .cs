@@ -142,16 +142,19 @@ namespace Pacifica.API.Controllers
         }
 
         // GET: api/StockIn/reference/{referenceNumber}
-        [HttpGet("search/{referenceNumber}")]
+        [HttpGet("search")]
         public async Task<ActionResult<ApiResponse<IEnumerable<StockInDTO>>>> GetByDateRangeOrRefenceAsync(
-            string referenceNumber,
+            [FromQuery] string? referenceNumber = null,  // Make referenceNumber optional
             [FromQuery] DateTime? dateCreatedStart = null,
             [FromQuery] DateTime? dateCreatedEnd = null,
             [FromQuery] DateTime? dateReportedStart = null,
             [FromQuery] DateTime? dateReportedEnd = null)
         {
+            // Debug log to check received parameters
+            Console.WriteLine($"referenceNumber: {referenceNumber}, dateCreatedStart: {dateCreatedStart}, dateCreatedEnd: {dateCreatedEnd}");
+
             var response = await _stockInService.GetByDateRangeOrRefenceAsync(
-                referenceNumber,
+                referenceNumber!,
                 dateCreatedStart,
                 dateCreatedEnd,
                 dateReportedStart,
@@ -165,7 +168,6 @@ namespace Pacifica.API.Controllers
 
             return NotFound(response);  // Return 404 if no data found
         }
-
 
     }
 }
