@@ -29,8 +29,6 @@ namespace Pacifica.API.Controllers
             return NotFound(response);  // Returns 404 if no records found
         }
 
-
-
         // GET: api/StockIn/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ApiResponse<StockInDTO>>> GetStockInById(int id)
@@ -45,11 +43,11 @@ namespace Pacifica.API.Controllers
             return NotFound(response);  // Returns 404 if stock in record is not found
         }
 
-        // GET: api/StockIn/reference/{referenceNumber}
+        // // GET: api/StockIn/reference/{referenceNumber}
         [HttpGet("reference/{referenceNumber}")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<StockInDTO>>>> GetStockInByReferenceNumber(string referenceNumber)
+        public async Task<ActionResult<ApiResponse<IEnumerable<StockInDTO>>>> GetByReferenceNumber(string referenceNumber)
         {
-            var response = await _stockInService.GetStockInByReferenceNumberAsync(referenceNumber);
+            var response = await _stockInService.GetByReferenceNumber(referenceNumber);
 
             if (response.Success)
             {
@@ -101,7 +99,6 @@ namespace Pacifica.API.Controllers
             return NotFound(response);  // Returns 404 if stock in record is not found
         }
 
-
         // DELETE: api/StockIn/5
         [HttpDelete]
         public async Task<ActionResult<ApiResponse<bool>>> DeleteStockIn([FromBody] StockInDeleteParams deleteParams)
@@ -143,5 +140,32 @@ namespace Pacifica.API.Controllers
 
             return Ok(response);  // Return 200 with the list of deleted StockIn records.
         }
+
+        // GET: api/StockIn/reference/{referenceNumber}
+        [HttpGet("search/{referenceNumber}")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<StockInDTO>>>> GetByDateRangeOrRefenceAsync(
+            string referenceNumber,
+            [FromQuery] DateTime? dateCreatedStart = null,
+            [FromQuery] DateTime? dateCreatedEnd = null,
+            [FromQuery] DateTime? dateReportedStart = null,
+            [FromQuery] DateTime? dateReportedEnd = null)
+        {
+            var response = await _stockInService.GetByDateRangeOrRefenceAsync(
+                referenceNumber,
+                dateCreatedStart,
+                dateCreatedEnd,
+                dateReportedStart,
+                dateReportedEnd
+            );
+
+            if (response.Success)
+            {
+                return Ok(response);  // Return 200 OK with data
+            }
+
+            return NotFound(response);  // Return 404 if no data found
+        }
+
+
     }
 }

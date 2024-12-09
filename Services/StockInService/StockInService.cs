@@ -214,7 +214,7 @@ namespace Pacifica.API.Services.StockInService
         }
 
         // Get StockIn by Reference Number
-        public async Task<ApiResponse<IEnumerable<StockInDTO>>> GetStockInByReferenceNumberAsync(string referenceNumber)
+        public async Task<ApiResponse<IEnumerable<StockInDTO>>> GetByReferenceNumber(string referenceNumber)
         {
             // Fetch all stock-in records with the given reference number
             var stockIns = await _context.StockIns
@@ -440,5 +440,53 @@ namespace Pacifica.API.Services.StockInService
             };
         }
 
+   // Get StockIn by Reference Number with optional date filters
+        public async Task<ApiResponse<IEnumerable<StockInDTO>>> GetByDateRangeOrRefenceAsync(
+            string referenceNumber,
+            DateTime? dateCreatedStart = null,
+            DateTime? dateCreatedEnd = null,
+            DateTime? dateReportedStart = null,
+            DateTime? dateReportedEnd = null)
+        {
+            var query = _context.StockIns.AsQueryable();
+
+            // Apply filters if provided
+            if (dateCreatedStart.HasValue)
+                query = query.Where(si => si.CreatedAt >= dateCreatedStart.Value);
+
+            if (dateCreatedEnd.HasValue)
+                query = query.Where(si => si.CreatedAt <= dateCreatedEnd.Value);
+
+            if (dateReportedStart.HasValue)
+                query = query.Where(si => si.DateReported >= dateReportedStart.Value);
+
+            if (dateReportedEnd.HasValue)
+                query = query.Where(si => si.DateReported <= dateReportedEnd.Value);
+
+            // Apply the reference number filter
+            query = query.Where(si => si.ReferenceNumber == referenceNumber && si.DeletedAt == null);
+
+            var stockIns = await query.ToListAsync();
+
+            if (stockIns == null || !stockIns.Any())
+            {
+                return new ApiResponse<IEnumerable<StockInDTO>>
+                {
+                    Success = false,
+                    Message = "No StockIn records found with the given filters.",
+                    Data = null
+                };
+            }
+
+            // Map the stock-in entities to DTOs
+            var stockInDtos = _mapper.Map<IEnumerable<StockInDTO>>(stockIns);
+
+            return new ApiResponse<IEnumerable<StockInDTO>>
+            {
+                Success = true,
+                Message = "StockIn records retrieved successfully.",
+                Data = stockInDtos
+            };
+        }
     }
 }
