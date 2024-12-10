@@ -417,6 +417,7 @@ namespace Pacifica.API.Services.StockOutService
                 PaymentMethodName = si.PaymentMethod?.PaymentMethodName,
                 DateSold = si.DateSold,
                 RetailPrice = si.RetailPrice,
+                SoldPrice = si.SoldPrice,
                 Quantity = si.Quantity,
                 CreatedAt = si.CreatedAt,
                 CreatedBy = si.CreatedBy

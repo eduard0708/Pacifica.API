@@ -17,6 +17,7 @@ namespace Pacifica.API.Dtos.StockOut
         public string? PaymentMethodName { get; set; }
         public DateTime DateSold { get; set; }
         public decimal RetailPrice { get; set; }
+        public decimal SoldPrice { get; set; }
         public int Quantity { get; set; }
         public DateTime CreatedAt { get; set; }
         public string? CreatedBy { get; set; }

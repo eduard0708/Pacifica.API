@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Pacifica.API.Dtos.StockIn;
 using Pacifica.API.Dtos.StockOut;  // Change StockIn DTOs to StockOut DTOs
 using Pacifica.API.Models.Transaction;
 using Pacifica.API.Services.StockOutService;  // Change to StockOutService
@@ -141,7 +140,7 @@ namespace Pacifica.API.Controllers
 
             return Ok(response);  // Return 200 with the list of deleted StockOut records
         }
-
+        
         [HttpGet("search")]
         public async Task<ActionResult<ApiResponse<IEnumerable<ViewStockOutDTO>>>> GetByDateRangeOrRefenceAsync(
         [FromQuery] string? referenceNumber = null,  // Make referenceNumber optional
