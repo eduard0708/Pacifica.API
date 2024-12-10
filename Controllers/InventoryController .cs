@@ -73,5 +73,26 @@ namespace Pacifica.API.Controllers
 
             return Ok(response);
         }
-    }
+   
+   
+        [HttpGet("view")]
+        public async Task<IActionResult> GetViewInventories([FromQuery] ViewInventoryParams filterParams)
+        {
+            var response = await _inventoryService.GetViewInventoriesAsync(filterParams);
+
+            if (!response.Success)
+            {
+                return BadRequest(new ApiResponse<ResponseViewInventoryDTO>
+                {
+                    Success = false,
+                    Message = response.Message,
+                    Data = null
+                });
+            }
+
+            return Ok(response);
+        }
+   
+   
+   }
 }

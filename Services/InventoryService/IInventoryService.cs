@@ -22,5 +22,8 @@ namespace Pacifica.API.Services.InventoryService
 
         // Calculate discrepancy (positive or negative)
         Task<ApiResponse<int>> CalculateDiscrepancyAsync(int systemQuantity, int actualQuantity);
+
+        Task<ApiResponse<IEnumerable<ResponseViewInventoryDTO>>> GetViewInventoriesAsync(ViewInventoryParams filterParams);
+
     }
 }

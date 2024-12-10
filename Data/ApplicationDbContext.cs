@@ -31,7 +31,6 @@ namespace Pacifica.API.Data
         public DbSet<EmployeeBranch> EmployeeBranches { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<StockInReference> StockInReferences { get; set; }
-
         public DbSet<StockOutReference> StockOutReferences { get; set; }
         public DbSet<StockOut> StockOuts { get; set; }
         public DbSet<StockIn> StockIns { get; set; }
@@ -44,22 +43,10 @@ namespace Pacifica.API.Data
         public DbSet<WeeklyInventory> WeeklyInventories { get; set; }
 
 
-
-
         // Configurations for model building
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            // // Automatically set 'Year' based on InventoryDate in the WeeklyInventory
-            // modelBuilder.Entity<WeeklyInventory>()
-            //     .Property(w => w.Year)
-            //     .HasDefaultValueSql("YEAR(GETDATE())");  // Default current year if not provided.
-
-            // // Configure Discrepancy calculation logic (EF won't do the calculation but can define the column behavior)
-            // modelBuilder.Entity<WeeklyInventory>()
-            //     .Property(w => w.Discrepancy)
-            //     .HasComputedColumnSql("[SystemQuantity] - [ActualQuantity]"); // This can create a computed column in the database
 
             // Configure Employee entity
             modelBuilder.Entity<Employee>(entity =>
@@ -272,115 +259,88 @@ namespace Pacifica.API.Data
                     .IsRequired(); // Make the relationship optional
             });
 
-            // Configure StockIn, StockOut, StockInReference, and StockOutReference entities
             // StockIn entity configuration
-            modelBuilder.Entity<StockIn>()
-                .HasKey(si => si.Id);
-
-            modelBuilder.Entity<StockIn>()
-                .HasOne(si => si.Product)
-                .WithMany(p => p.StockIns)
-                .HasForeignKey(si => si.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<StockIn>()
-                .HasOne(si => si.Branch)
-                .WithMany(b => b.StockIns)
-                .HasForeignKey(si => si.BranchId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<StockIn>()
-                .HasOne(si => si.StockInReference)
-                .WithMany(b => b.StockIns)
-                .HasForeignKey(si => si.StockInReferenceId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Configure StockIn entity decimal properties
-
-
             modelBuilder.Entity<StockIn>(entity =>
-           {
-               entity.Property(e => e.CostPrice).HasColumnType("decimal(18,4)");
-               entity.Property(e => e.RetailPrice).HasColumnType("decimal(18,4)");
-           });
+            {
+                // Primary Key
+                entity.HasKey(si => si.Id);
+
+                // Relationships
+                entity.HasOne(si => si.Product)
+                      .WithMany(p => p.StockIns)
+                      .HasForeignKey(si => si.ProductId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(si => si.Branch)
+                      .WithMany(b => b.StockIns)
+                      .HasForeignKey(si => si.BranchId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(si => si.StockInReference)
+                      .WithMany(b => b.StockIns)
+                      .HasForeignKey(si => si.StockInReferenceId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                // Configure decimal properties
+                entity.Property(e => e.CostPrice).HasColumnType("decimal(18,4)");
+                entity.Property(e => e.RetailPrice).HasColumnType("decimal(18,4)");
+            });
 
             // StockOut entity configuration
-            modelBuilder.Entity<StockOut>()
-                .HasKey(so => so.Id);
+            modelBuilder.Entity<StockOut>(entity =>
+            {
+                // Primary Key
+                entity.HasKey(so => so.Id);
 
-            modelBuilder.Entity<StockOut>()
-                .HasOne(so => so.Product)
-                .WithMany(p => p.StockOuts)
-                .HasForeignKey(so => so.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
+                // Relationships
+                entity.HasOne(so => so.Product)
+                      .WithMany(p => p.StockOuts)
+                      .HasForeignKey(so => so.ProductId)
+                      .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<StockOut>()
-                .HasOne(so => so.Branch)
-                .WithMany(b => b.StockOuts)
-                .HasForeignKey(so => so.BranchId)
-                .OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(so => so.Branch)
+                      .WithMany(b => b.StockOuts)
+                      .HasForeignKey(so => so.BranchId)
+                      .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<StockOut>()
-                .HasOne(so => so.StockOutReference)
-                .WithMany(b => b.StockOuts)
-                .HasForeignKey(so => so.StockOutReferenceId)
-                .OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(so => so.StockOutReference)
+                      .WithMany(b => b.StockOuts)
+                      .HasForeignKey(so => so.StockOutReferenceId)
+                      .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<StockOut>()
-                .HasOne(so => so.PaymentMethod)
-                .WithMany(b => b.StockOuts)
-                .HasForeignKey(so => so.PaymentMethodId)
-                .OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(so => so.PaymentMethod)
+                      .WithMany(b => b.StockOuts)
+                      .HasForeignKey(so => so.PaymentMethodId)
+                      .OnDelete(DeleteBehavior.Restrict);
 
-            // Configure StockOut entity decimal properties
-            modelBuilder.Entity<StockOut>()
-                .Property(so => so.RetailPrice)
-                .HasColumnType("decimal(18,2)"); // Specify precision and scale for RetailPrice
+                // Configure decimal properties
+                entity.Property(so => so.RetailPrice)
+                      .HasColumnType("decimal(18,2)"); // Specify precision and scale for RetailPrice
+            });
 
+            // Configure WeeklyInventory entity
+            modelBuilder.Entity<WeeklyInventory>(entity =>
+            {
+                // Configure composite foreign key relationship with BranchProduct
+                entity.HasOne(wi => wi.BranchProduct)
+                      .WithMany(bp => bp.WeeklyInventories)
+                      .HasForeignKey(wi => new { wi.BranchId, wi.ProductId }) // Composite FK
+                      .OnDelete(DeleteBehavior.Restrict);
 
-            // Configure BranchProduct to BeginningInventory relationship
-            modelBuilder.Entity<WeeklyInventory>()
-                .HasOne(bi => bi.BranchProduct)
-                .WithMany(bp => bp.WeeklyInventories)
-                .HasForeignKey(bi => new { bi.BranchId, bi.ProductId }) // Composite FK
-                .OnDelete(DeleteBehavior.Restrict);
+                // Configure decimal properties for WeeklyInventory
+                entity.Property(wi => wi.SystemQuantity)
+                      .HasColumnType("decimal(18, 2)");
 
-            modelBuilder.Entity<WeeklyInventory>()
-                .Property(w => w.SystemQuantity)
-                .HasColumnType("decimal(18, 2)");
+                entity.Property(wi => wi.ActualQuantity)
+                      .HasColumnType("decimal(18, 2)");
 
-            modelBuilder.Entity<WeeklyInventory>()
-                .Property(w => w.ActualQuantity)
-                .HasColumnType("decimal(18, 2)");
+                entity.Property(wi => wi.Discrepancy)
+                      .HasColumnType("decimal(18, 2)");
 
-            modelBuilder.Entity<WeeklyInventory>()
-                .Property(w => w.Discrepancy)
-                .HasColumnType("decimal(18, 2)");
-
-            // // Configure BranchProduct to MonthlyInventory relationship
-            // modelBuilder.Entity<MonthlyInventory>()
-            //     .HasOne(mi => mi.BranchProduct)
-            //     .WithMany(bp => bp.MonthlyInventories)
-            //     .HasForeignKey(mi => new { mi.BranchId, mi.ProductId }) // Composite FK
-            //     .OnDelete(DeleteBehavior.Restrict);
-
-            // // Configure BranchProduct to AuditTrail relationship
-            // modelBuilder.Entity<BranchProductInventoryAuditTrail>()
-            //     .HasOne(bait => bait.BranchProduct)
-            //     .WithMany(bp => bp.BranchProductInventoryAuditTrails)
-            //     .HasForeignKey(bait => new { bait.BranchId, bait.ProductId }) // Composite FK
-            //     .OnDelete(DeleteBehavior.Restrict);
-
-            // // Optionally, configure other properties like indexes or default values
-            // modelBuilder.Entity<BranchProductInventoryAuditTrail>()
-            //     .HasIndex(bait => new { bait.BranchId, bait.ProductId, bait.DateAdjusted })
-            //     .HasDatabaseName("IX_AuditTrail_BranchProduct_Date");
-
-            // modelBuilder.Entity<MonthlyInventory>()
-            //     .HasIndex(mi => new { mi.BranchId, mi.ProductId, mi.Date })
-            //     .HasDatabaseName("IX_MonthlyInventory_BranchProduct_Date");
-
-
+                // Set default values for CreatedAt and InventoryDate
+                entity.Property(wi => wi.CreatedAt)
+                      .HasDefaultValueSql("GETDATE()");       
+            });
 
             // Apply soft delete query filters
             modelBuilder.Entity<Branch>().HasQueryFilter(b => b.DeletedAt == null);
@@ -416,7 +376,6 @@ namespace Pacifica.API.Data
             // Ensure that global query filters on StockIn and Branch do not interfere with the audit trail
             modelBuilder.Entity<WeeklyInventory>()
                 .HasQueryFilter(si => si.DeletedAt == null || si.DeletedAt != null);  // Adjust depending on soft-delete behavior
-
 
         }
     }
