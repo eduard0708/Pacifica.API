@@ -16,7 +16,7 @@ namespace Pacifica.API.Models.Inventory
         public decimal ActualQuantity { get; set; }  // Actual quantity counted
         [Column(TypeName = "decimal(18, 2)")]
         public decimal CostPrice { get; set; }  // Actual quantity counted
-        [Column(TypeName = "decimal(8, 1)")]
+        [Column(TypeName = "decimal(8, 2)")]
         public decimal SystemQuantity { get; set; }  // Quantity from the system
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Discrepancy { get; set; }    // The difference between system and actual quantity
