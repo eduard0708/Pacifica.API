@@ -237,6 +237,7 @@ namespace Pacifica.API.Controllers
 
         // DELETE: api/Product
         [HttpDelete]
+
         public async Task<ActionResult<ApiResponse<object>>> DeleteProducts([FromBody] DeletedProductsParam productsDelete)
         {
             // Call the service to delete products
@@ -262,6 +263,8 @@ namespace Pacifica.API.Controllers
             });
         }
 
+        // GET: api/ get by category sku or productname
+        // FrontEndUse - Stock-In -
         [HttpGet("GetFilteredProducts")]
         public async Task<ActionResult<ApiResponse<IEnumerable<GetFilter_Products>>>> GetFilteredProducts([FromQuery] ProductFilterParams productFilter)
         {

@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace Pacifica.API.Dtos.BranchProduct
 {
     public class BranchProductForStockInDTO
@@ -15,6 +10,8 @@ namespace Pacifica.API.Dtos.BranchProduct
         public string CategoryName { get; set; } = string.Empty;
         public string ProductName { get; set; } = string.Empty;
         public string SKU { get; set; } = string.Empty;
-        public decimal StockQuantity { get; set; }
+        public decimal Quantity { get; set; }
+        public decimal CostPrice { get; set; }
+        public decimal RetailPrice { get; set; }
     }
 }

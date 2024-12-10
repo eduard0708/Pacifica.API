@@ -141,7 +141,7 @@ namespace Pacifica.API.Controllers
             return Ok(response);  // Return 200 with the list of deleted StockIn records.
         }
 
-        // GET: api/StockIn/reference/{referenceNumber}
+        // GET: for view stockin records.
         [HttpGet("search")]
         public async Task<ActionResult<ApiResponse<IEnumerable<ViewStockInDTO>>>> GetByDateRangeOrRefenceAsync(
             [FromQuery] string? referenceNumber = null,  // Make referenceNumber optional

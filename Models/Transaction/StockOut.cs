@@ -32,6 +32,9 @@ namespace Pacifica.API.Models.Transaction
 
         [Range(18, 2)]
         public decimal RetailPrice { get; set; }
+        
+        [Range(18, 2)]
+        public decimal SoldPrice { get; set; }
 
         [Required]
         public DateTime DateSold { get; set; }

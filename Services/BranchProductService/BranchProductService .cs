@@ -798,7 +798,9 @@ namespace Pacifica.API.Services.BranchProductService
                     CategoryId = bp.Product.CategoryId,
                     CategoryName = bp.Product.Category!.CategoryName!,
                     SKU = bp.Product.SKU,
-                    StockQuantity = bp.StockQuantity
+                    CostPrice = bp.CostPrice,
+                    RetailPrice = bp.RetailPrice,
+                    Quantity = bp.StockQuantity
                 })
                 .ToListAsync();
 
@@ -834,7 +836,9 @@ namespace Pacifica.API.Services.BranchProductService
                     CategoryId = bp.Product.CategoryId,
                     CategoryName = bp.Product.Category!.CategoryName!,
                     SKU = bp.Product.SKU,
-                    StockQuantity = bp.StockQuantity
+                    CostPrice = bp.CostPrice,
+                    RetailPrice = bp.RetailPrice,
+                    Quantity = bp.StockQuantity
                 })// Searching by SKU
                 .ToListAsync();
 

@@ -5,7 +5,8 @@ namespace Pacifica.API.Dtos.BranchProduct
     {
         public int Id { get; set; }
         public string? ProductName { get; set; }
-        public Product_CategoryDto Category { get; set; } = new Product_CategoryDto();
         public string? SKU { get; set; }
+        public Product_CategoryDto Category { get; set; } = new Product_CategoryDto();
+        
     }
 }

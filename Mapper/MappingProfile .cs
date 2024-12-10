@@ -102,6 +102,9 @@ namespace Pacifica.API.Mapper
                         CreateMap<StockInReference, SelectReferenceStockInDTO>().ReverseMap();
 
                         CreateMap<StockOut, StockOutDTO>().ReverseMap();
+                        CreateMap<StockOut, CreateStockOutDTO>().ReverseMap();
+
+
                         CreateMap<StockOutReference, StockOutReferenceDto>().ReverseMap();
                         CreateMap<StockOutReference, CreateStockOutReferenceDto>().ReverseMap();
                         CreateMap<StockOutReference, UpdateStockOutReferenceDto>().ReverseMap();
