@@ -11,7 +11,8 @@ namespace Pacifica.API.Dtos.Inventory
         public int SupplierId { get; set; }
         public string? SupplierName { get; set; }
         public string? SKU { get; set; }
-        public DateTime InventoryDate { get; set; }
+        public bool isComplete { get; set; }
+        public DateTime? InventoryDate { get; set; }
         public int Year { get; set; }
         public int Month { get; set; }
         public int Week { get; set; }
@@ -19,11 +20,11 @@ namespace Pacifica.API.Dtos.Inventory
         public decimal CostPrice { get; set; }
         public decimal SystemQuantity { get; set; }
         public decimal Discrepancy { get; set; }
-        public int WeekNumber { get; set; }
+        public int? WeekNumber { get; set; }
         public decimal SumDiscrepancyValue { get; set; }
         public string? Remarks { get; set; }
         public bool? IsDeleted { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
         public string? CreatedBy { get; set; }
     }
 }

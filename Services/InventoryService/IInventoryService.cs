@@ -25,5 +25,7 @@ namespace Pacifica.API.Services.InventoryService
 
         Task<ApiResponse<IEnumerable<ResponseViewInventoryDTO>>> GetViewInventoriesAsync(ViewInventoryParams filterParams);
 
+        Task<ApiResponse<IEnumerable<Wi_ResponseSearchBranchProduct>>> GetFilteredBranchProductAsync(WI_BranchProductSearchParams filterParams);
+
     }
 }

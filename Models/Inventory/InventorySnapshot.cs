@@ -12,7 +12,7 @@ namespace Pacifica.API.Models.Inventory
         public DateTime InventoryDate { get; set; }
         public int Year { get; set; }  // Date of the inventory
         public int Month { get; set; }  // Date of the inventory
-        public bool isComplete { get; set; } = true;
+        public bool IsCompleted { get; set; }
         
         [Column(TypeName = "decimal(18, 2)")]
         public decimal ActualQuantity { get; set; }  // Actual quantity counted

@@ -92,6 +92,24 @@ namespace Pacifica.API.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet("search-branchproduct")]
+        public async Task<IActionResult> GetFilteredBranchProduct([FromQuery] WI_BranchProductSearchParams filterParams)
+        {
+            var response = await _inventoryService.GetFilteredBranchProductAsync(filterParams);
+
+            if (!response.Success)
+            {
+                return BadRequest(new ApiResponse<ResponseViewInventoryDTO>
+                {
+                    Success = false,
+                    Message = response.Message,
+                    Data = null
+                });
+            }
+
+            return Ok(response);
+        }
    
    
    }
