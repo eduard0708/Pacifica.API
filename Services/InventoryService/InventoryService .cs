@@ -358,13 +358,120 @@ namespace Pacifica.API.Services.InventoryService
             }
         }
 
+
+        // public async Task<ApiResponse<IEnumerable<Wi_ResponseSearchBranchProduct>>> GetFilteredBranchProductAsync(WI_BranchProductSearchParams filterParams)
+        // {
+        //     try
+        //     {
+        //         // Start building the query for BranchProducts matching the BranchId
+        //         var branchProductsQuery = _context.BranchProducts
+        //             .Where(bp => bp.BranchId == filterParams.BranchId) // Always filter by BranchId
+        //             .Join(_context.Products,
+        //                 bp => bp.ProductId,
+        //                 p => p.Id,
+        //                 (bp, p) => new { BranchProduct = bp, Product = p })
+        //             .Join(_context.Categories,
+        //                 wpp => wpp.Product.CategoryId,
+        //                 c => c.Id,
+        //                 (wpp, c) => new { wpp.BranchProduct, wpp.Product, Category = c })
+        //             .Join(_context.Suppliers,
+        //                 wppc => wppc.Product.SupplierId,
+        //                 s => s.Id,
+        //                 (wppc, s) => new { wppc.BranchProduct, wppc.Product, wppc.Category, Supplier = s })
+        //             .Select(wppcs => new
+        //             {
+        //                 wppcs.BranchProduct.BranchId,
+        //                 wppcs.BranchProduct.ProductId,
+        //                 wppcs.Product.ProductName,
+        //                 wppcs.Product.SKU,
+        //                 wppcs.Category.CategoryName,
+        //                 wppcs.Supplier.SupplierName,
+        //                 wppcs.Product.CategoryId,
+        //                 wppcs.Product.SupplierId,
+        //                 wppcs.BranchProduct.StockQuantity // Include Quantity field
+
+        //             });
+
+        //         // Apply optional filters based on the parameters provided
+        //         if (!string.IsNullOrEmpty(filterParams.SKU))
+        //         {
+        //             branchProductsQuery = branchProductsQuery.Where(bp => bp.SKU.Contains(filterParams.SKU));
+        //         }
+
+        //         if (filterParams.SupplierId != 0)
+        //         {
+        //             branchProductsQuery = branchProductsQuery.Where(bp => bp.SupplierId == filterParams.SupplierId);
+        //         }
+
+        //         if (filterParams.CategoryId != 0)
+        //         {
+        //             branchProductsQuery = branchProductsQuery.Where(bp => bp.CategoryId == filterParams.CategoryId);
+        //         }
+
+        //         // Retrieve the filtered branch products
+        //         var filteredProducts = await branchProductsQuery
+        //             .Select(bp => new Wi_ResponseSearchBranchProduct
+        //             {
+        //                 BranchId = bp.BranchId,
+        //                 ProductId = bp.ProductId,
+        //                 ProductName = bp.ProductName,
+        //                 SKU = bp.SKU,
+        //                 CategoryName = bp.CategoryName,
+        //                 SupplierName = bp.SupplierName,
+        //                 CategoryId = bp.CategoryId,
+        //                 SupplierId = bp.SupplierId,
+        //                 StockQuantity = bp.StockQuantity
+        //             })
+        //             .ToListAsync();
+
+        //         // If no records are found, return a message indicating no matching data
+        //         if (filteredProducts == null || !filteredProducts.Any())
+        //         {
+        //             return new ApiResponse<IEnumerable<Wi_ResponseSearchBranchProduct>>
+        //             {
+        //                 Success = false,
+        //                 Message = "No matching products found.",
+        //                 Data = null
+        //             };
+        //         }
+
+        //         // Return the branch products as DTOs
+        //         return new ApiResponse<IEnumerable<Wi_ResponseSearchBranchProduct>>
+        //         {
+        //             Success = true,
+        //             Message = "Branch products retrieved successfully.",
+        //             Data = filteredProducts
+        //         };
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         // Handle any errors that might occur during the database operation
+        //         return new ApiResponse<IEnumerable<Wi_ResponseSearchBranchProduct>>
+        //         {
+        //             Success = false,
+        //             Message = $"An error occurred while retrieving the data: {ex.Message}",
+        //             Data = null
+        //         };
+        //     }
+        // }
+
         public async Task<ApiResponse<IEnumerable<Wi_ResponseSearchBranchProduct>>> GetFilteredBranchProductAsync(WI_BranchProductSearchParams filterParams)
         {
             try
             {
-                // Start building the query for BranchProducts matching the BranchId
+                // Fetch WeeklyInventories that match the filters
+                var weeklyInventoryMatches = await _context.WeeklyInventories
+                    .Where(wi =>
+                        wi.BranchId == filterParams.BranchId &&
+                        wi.Week == filterParams.Week &&
+                        wi.Month == filterParams.Month &&
+                        wi.Year == filterParams.Year)
+                    .Select(wi => new { wi.BranchId, wi.ProductId })
+                    .ToListAsync();
+
+                // Build the main query for BranchProducts
                 var branchProductsQuery = _context.BranchProducts
-                    .Where(bp => bp.BranchId == filterParams.BranchId) // Always filter by BranchId
+                    .Where(bp => bp.BranchId == filterParams.BranchId)
                     .Join(_context.Products,
                         bp => bp.ProductId,
                         p => p.Id,
@@ -377,61 +484,34 @@ namespace Pacifica.API.Services.InventoryService
                         wppc => wppc.Product.SupplierId,
                         s => s.Id,
                         (wppc, s) => new { wppc.BranchProduct, wppc.Product, wppc.Category, Supplier = s })
-                    .Select(wppcs => new
+                    // Apply filters
+                    .Where(bp =>
+                        (filterParams.CategoryId == null || bp.Product.CategoryId == filterParams.CategoryId) &&
+                        (filterParams.SupplierId == null || bp.Product.SupplierId == filterParams.SupplierId) &&
+                        (string.IsNullOrEmpty(filterParams.SKU) || bp.Product.SKU.Contains(filterParams.SKU)))
+                    .ToList() // Bring data into memory for client-side filtering
+                    .Where(bp =>
+                        !weeklyInventoryMatches.Any(wi =>
+                            wi.BranchId == bp.BranchProduct.BranchId &&
+                            wi.ProductId == bp.BranchProduct.ProductId)) // Client-side filtering for WeeklyInventory
+                    .Select(bp => new Wi_ResponseSearchBranchProduct
                     {
-                        wppcs.BranchProduct.BranchId,
-                        wppcs.BranchProduct.ProductId,
-                        wppcs.Product.ProductName,
-                        wppcs.Product.SKU,
-                        wppcs.Category.CategoryName,
-                        wppcs.Supplier.SupplierName,
-                        wppcs.Product.CategoryId,
-                        wppcs.Product.SupplierId
+                        BranchId = bp.BranchProduct.BranchId,
+                        ProductId = bp.BranchProduct.ProductId,
+                        ProductName = bp.Product.ProductName,
+                        SKU = bp.Product.SKU,
+                        CategoryName = bp.Category.CategoryName,
+                        SupplierName = bp.Supplier.SupplierName,
+                        CategoryId = bp.Product.CategoryId,
+                        SupplierId = bp.Product.SupplierId,
+                        StockQuantity = bp.BranchProduct.StockQuantity
                     });
 
-                // Apply optional filters based on the parameters provided
-                if (!string.IsNullOrEmpty(filterParams.SKU))
-                {
-                    branchProductsQuery = branchProductsQuery.Where(bp => bp.SKU.Contains(filterParams.SKU));
-                }
+                // Convert to list
+                var filteredProducts = branchProductsQuery.ToList();
 
-                if (filterParams.SupplierId.HasValue)
-                {
-                    branchProductsQuery = branchProductsQuery.Where(bp => bp.SupplierId == filterParams.SupplierId);
-                }
-
-                if (filterParams.CategoryId.HasValue)
-                {
-                    branchProductsQuery = branchProductsQuery.Where(bp => bp.CategoryId == filterParams.CategoryId);
-                }
-
-                // Filter out BranchProducts that exist in WeeklyInventory for the given week, month, and year
-                var filteredProducts = await branchProductsQuery
-                    .GroupJoin(_context.WeeklyInventories,
-                        bp => new { bp.BranchId, bp.ProductId },
-                        wi => new { wi.BranchId, wi.ProductId },
-                        (bp, weeklyInventories) => new { bp, WeeklyInventories = weeklyInventories })
-                    .Where(wppcs => !wppcs.WeeklyInventories.Any(wi =>
-                        wi.Week == filterParams.Week &&
-                        wi.Month == filterParams.Month &&
-                        wi.Year == filterParams.Year
-                    )) // Exclude products that are already in WeeklyInventory for the given week/month/year
-                    .Select(wppcs => new Wi_ResponseSearchBranchProduct
-                    {
-                        BranchId = wppcs.bp.BranchId,
-                        ProductId = wppcs.bp.ProductId,
-                        ProductName = wppcs.bp.ProductName,
-                        SKU = wppcs.bp.SKU,
-                        CategoryName = wppcs.bp.CategoryName,
-                        SupplierName = wppcs.bp.SupplierName,
-                        CategoryId = wppcs.bp.CategoryId,
-                        SupplierId = wppcs.bp.SupplierId,
-                        SystemQuantity = 0 // Default value since no WeeklyInventory filtering is applied
-                    })
-                    .ToListAsync();
-
-                // If no records are found, return a message indicating no matching data
-                if (filteredProducts == null || !filteredProducts.Any())
+                // Handle empty result
+                if (!filteredProducts.Any())
                 {
                     return new ApiResponse<IEnumerable<Wi_ResponseSearchBranchProduct>>
                     {
@@ -441,7 +521,7 @@ namespace Pacifica.API.Services.InventoryService
                     };
                 }
 
-                // Return the branch products as DTOs
+                // Return successful response
                 return new ApiResponse<IEnumerable<Wi_ResponseSearchBranchProduct>>
                 {
                     Success = true,
@@ -451,7 +531,7 @@ namespace Pacifica.API.Services.InventoryService
             }
             catch (Exception ex)
             {
-                // Handle any errors that might occur during the database operation
+                // Handle errors
                 return new ApiResponse<IEnumerable<Wi_ResponseSearchBranchProduct>>
                 {
                     Success = false,
