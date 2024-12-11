@@ -1,5 +1,6 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
+using static Pacifica.API.Helper.GlobalEnums;
 
 namespace Pacifica.API.Models.Inventory
 {
@@ -8,10 +9,11 @@ namespace Pacifica.API.Models.Inventory
         public int Id { get; set; }                // Unique ID for each inventory snapshot
         public int BranchId { get; set; }  // Reference to the specific branch-product
         public int ProductId { get; set; }  // Reference to the specific branch-product
-        public DateTime InventoryDate { get; set; } 
+        public DateTime InventoryDate { get; set; }
         public int Year { get; set; }  // Date of the inventory
         public int Month { get; set; }  // Date of the inventory
-
+        public bool isComplete { get; set; } = true;
+        
         [Column(TypeName = "decimal(18, 2)")]
         public decimal ActualQuantity { get; set; }  // Actual quantity counted
         [Column(TypeName = "decimal(18, 2)")]

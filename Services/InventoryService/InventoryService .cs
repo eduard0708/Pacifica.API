@@ -313,95 +313,92 @@ namespace Pacifica.API.Services.InventoryService
         //     }
         // }
 
-public async Task<ApiResponse<IEnumerable<ResponseViewInventoryDTO>>> GetViewInventoriesAsync(ViewInventoryParams filterParams)
-{
-    try
-    {
-        // Join WeeklyInventories with BranchProduct and then with Products, Category, and Supplier
-        var filteredInventories = await _context.WeeklyInventories
-            .Join(_context.BranchProducts,  // Join with BranchProduct to get the correct Product
-                wi => new { wi.BranchId, wi.ProductId },
-                bp => new { bp.BranchId, bp.ProductId },
-                (wi, bp) => new { WeeklyInventory = wi, BranchProduct = bp })
-            .Join(_context.Products,  // Join with Products to get Product data
-                wp => wp.BranchProduct.ProductId,
-                p => p.Id,
-                (wp, p) => new { wp.WeeklyInventory, wp.BranchProduct, Product = p })
-            .Join(_context.Categories,  // Join with Categories to get Category data
-                wpp => wpp.Product.CategoryId,
-                c => c.Id,
-                (wpp, c) => new { wpp.WeeklyInventory, wpp.Product, Category = c, wpp.BranchProduct })
-            .Join(_context.Suppliers,  // Join with Suppliers to get Supplier data
-                wppc => wppc.Product.SupplierId,
-                s => s.Id,
-                (wppc, s) => new { wppc.WeeklyInventory, wppc.Product, wppc.Category, Supplier = s, wppc.BranchProduct })
-            .Where(wppcs => wppcs.WeeklyInventory.BranchId == filterParams.BranchId
-                            && (!filterParams.CategoryId.HasValue || wppcs.Product.CategoryId == filterParams.CategoryId.Value)
-                            && (!filterParams.SupplierId.HasValue || wppcs.Product.SupplierId == filterParams.SupplierId.Value)
-                            && (string.IsNullOrEmpty(filterParams.SKU) || wppcs.Product.SKU == filterParams.SKU)
-                            && wppcs.WeeklyInventory.Week == filterParams.Week
-                            && wppcs.WeeklyInventory.Month == filterParams.Month
-                            && wppcs.WeeklyInventory.Year == filterParams.Year)
-            .Select(wppcs => new ResponseViewInventoryDTO
-            {
-                Id = wppcs.WeeklyInventory.Id,
-                BranchId = wppcs.WeeklyInventory.BranchId,
-                ProductId = wppcs.WeeklyInventory.ProductId,
-                ProductName = wppcs.Product.ProductName,  // Access ProductName from the Product entity
-                CategoryId = wppcs.Product.CategoryId,
-                CategoryName = wppcs.Category.CategoryName, // Access CategoryName from the Category entity
-                SupplierId = wppcs.Product.SupplierId,
-                SupplierName = wppcs.Supplier.SupplierName, // Access SupplierName from the Supplier entity
-                SKU = wppcs.Product.SKU, // Access SKU from the Product entity
-                InventoryDate = wppcs.WeeklyInventory.InventoryDate,
-                Year = wppcs.WeeklyInventory.Year,
-                Month = wppcs.WeeklyInventory.Month,
-                Week = wppcs.WeeklyInventory.Week,
-                ActualQuantity = wppcs.WeeklyInventory.ActualQuantity,
-                CostPrice = wppcs.WeeklyInventory.CostPrice,
-                SystemQuantity = wppcs.WeeklyInventory.SystemQuantity,
-                Discrepancy = wppcs.WeeklyInventory.Discrepancy,
-                WeekNumber = wppcs.WeeklyInventory.WeekNumber,
-                SumDiscrepancyValue = wppcs.WeeklyInventory.SumDiscrepancyValue,
-                Remarks = wppcs.WeeklyInventory.Remarks,
-                IsDeleted = wppcs.WeeklyInventory.IsDeleted,
-                CreatedAt = wppcs.WeeklyInventory.CreatedAt,
-                CreatedBy = wppcs.WeeklyInventory.CreatedBy
-            })
-            .ToListAsync();
-
-        // If no records are found, return a message indicating no matching data
-        if (filteredInventories == null || !filteredInventories.Any())
+        public async Task<ApiResponse<IEnumerable<ResponseViewInventoryDTO>>> GetViewInventoriesAsync(ViewInventoryParams filterParams)
         {
-            return new ApiResponse<IEnumerable<ResponseViewInventoryDTO>>
+            try
             {
-                Success = false,
-                Message = "No matching inventories found.",
-                Data = null
-            };
+                // Join WeeklyInventories with BranchProduct and then with Products, Category, and Supplier
+                var filteredInventories = await _context.WeeklyInventories
+                    .Join(_context.BranchProducts,  // Join with BranchProduct to get the correct Product
+                        wi => new { wi.BranchId, wi.ProductId },
+                        bp => new { bp.BranchId, bp.ProductId },
+                        (wi, bp) => new { WeeklyInventory = wi, BranchProduct = bp })
+                    .Join(_context.Products,  // Join with Products to get Product data
+                        wp => wp.BranchProduct.ProductId,
+                        p => p.Id,
+                        (wp, p) => new { wp.WeeklyInventory, wp.BranchProduct, Product = p })
+                    .Join(_context.Categories,  // Join with Categories to get Category data
+                        wpp => wpp.Product.CategoryId,
+                        c => c.Id,
+                        (wpp, c) => new { wpp.WeeklyInventory, wpp.Product, Category = c, wpp.BranchProduct })
+                    .Join(_context.Suppliers,  // Join with Suppliers to get Supplier data
+                        wppc => wppc.Product.SupplierId,
+                        s => s.Id,
+                        (wppc, s) => new { wppc.WeeklyInventory, wppc.Product, wppc.Category, Supplier = s, wppc.BranchProduct })
+                    .Where(wppcs => wppcs.WeeklyInventory.BranchId == filterParams.BranchId
+                                    && (!filterParams.CategoryId.HasValue || wppcs.Product.CategoryId == filterParams.CategoryId.Value)
+                                    && (!filterParams.SupplierId.HasValue || wppcs.Product.SupplierId == filterParams.SupplierId.Value)
+                                    && (string.IsNullOrEmpty(filterParams.SKU) || wppcs.Product.SKU == filterParams.SKU)
+                                    && wppcs.WeeklyInventory.Week == filterParams.Week
+                                    && wppcs.WeeklyInventory.Month == filterParams.Month
+                                    && wppcs.WeeklyInventory.Year == filterParams.Year)
+                    .Select(wppcs => new ResponseViewInventoryDTO
+                    {
+                        Id = wppcs.WeeklyInventory.Id,
+                        BranchId = wppcs.WeeklyInventory.BranchId,
+                        ProductId = wppcs.WeeklyInventory.ProductId,
+                        ProductName = wppcs.Product.ProductName,  // Access ProductName from the Product entity
+                        CategoryId = wppcs.Product.CategoryId,
+                        CategoryName = wppcs.Category.CategoryName, // Access CategoryName from the Category entity
+                        SupplierId = wppcs.Product.SupplierId,
+                        SupplierName = wppcs.Supplier.SupplierName, // Access SupplierName from the Supplier entity
+                        SKU = wppcs.Product.SKU, // Access SKU from the Product entity
+                        InventoryDate = wppcs.WeeklyInventory.InventoryDate,
+                        Year = wppcs.WeeklyInventory.Year,
+                        Month = wppcs.WeeklyInventory.Month,
+                        Week = wppcs.WeeklyInventory.Week,
+                        ActualQuantity = wppcs.WeeklyInventory.ActualQuantity,
+                        CostPrice = wppcs.WeeklyInventory.CostPrice,
+                        SystemQuantity = wppcs.WeeklyInventory.SystemQuantity,
+                        Discrepancy = wppcs.WeeklyInventory.Discrepancy,
+                        WeekNumber = wppcs.WeeklyInventory.WeekNumber,
+                        SumDiscrepancyValue = wppcs.WeeklyInventory.SumDiscrepancyValue,
+                        Remarks = wppcs.WeeklyInventory.Remarks,
+                        IsDeleted = wppcs.WeeklyInventory.IsDeleted,
+                        CreatedAt = wppcs.WeeklyInventory.CreatedAt,
+                        CreatedBy = wppcs.WeeklyInventory.CreatedBy
+                    })
+                    .ToListAsync();
+
+                // If no records are found, return a message indicating no matching data
+                if (filteredInventories == null || !filteredInventories.Any())
+                {
+                    return new ApiResponse<IEnumerable<ResponseViewInventoryDTO>>
+                    {
+                        Success = false,
+                        Message = "No matching inventories found.",
+                        Data = null
+                    };
+                }
+
+                // Return the filtered inventories as DTOs
+                return new ApiResponse<IEnumerable<ResponseViewInventoryDTO>>
+                {
+                    Success = true,
+                    Message = "Filtered inventories retrieved successfully.",
+                    Data = filteredInventories
+                };
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors that might occur during the database operation
+                return new ApiResponse<IEnumerable<ResponseViewInventoryDTO>>
+                {
+                    Success = false,
+                    Message = $"An error occurred while retrieving the data: {ex.Message}",
+                    Data = null
+                };
+            }
         }
-
-        // Return the filtered inventories as DTOs
-        return new ApiResponse<IEnumerable<ResponseViewInventoryDTO>>
-        {
-            Success = true,
-            Message = "Filtered inventories retrieved successfully.",
-            Data = filteredInventories
-        };
-    }
-    catch (Exception ex)
-    {
-        // Handle any errors that might occur during the database operation
-        return new ApiResponse<IEnumerable<ResponseViewInventoryDTO>>
-        {
-            Success = false,
-            Message = $"An error occurred while retrieving the data: {ex.Message}",
-            Data = null
-        };
-    }
-}
-
-
-
     }
 }
