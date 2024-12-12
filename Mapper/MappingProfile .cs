@@ -131,8 +131,8 @@ namespace Pacifica.API.Mapper
                                 .ForMember(dest => dest.ActionDate, opt => opt.MapFrom(src => src.ActionDate)).ReverseMap();
 
 
-                        CreateMap<WeeklyInventory, CreateWeeklyInventoryDTO>().ReverseMap();
-                        CreateMap<WeeklyInventory, ResponseWeeklyInventoryDTO>()
+                        CreateMap<Inventory, CreateInventoryDTO>().ReverseMap();
+                        CreateMap<Inventory, ResponseInventoryDTO>()
                                 .ForMember(dest => dest.InventoryDate, opt => opt.MapFrom(src => src.InventoryDate))
                                 .ReverseMap();
 

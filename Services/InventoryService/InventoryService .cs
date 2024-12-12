@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Pacifica.API.Dtos.Inventory;
 using Pacifica.API.Models.Inventory;
-using Pacifica.API.Helper;
-using System.Collections.Specialized;  // Assuming this is where ApiResponse is defined
+using static Pacifica.API.Helper.GlobalEnums;
 
 namespace Pacifica.API.Services.InventoryService
 {
@@ -18,15 +17,15 @@ namespace Pacifica.API.Services.InventoryService
         }
 
         // Get a list of all weekly inventories
-        public async Task<ApiResponse<IEnumerable<ResponseWeeklyInventoryDTO>>> GetWeeklyInventoriesAsync(int branchId, DateTime startDate, DateTime endDate)
+        public async Task<ApiResponse<IEnumerable<ResponseInventoryDTO>>> GetInventoriesAsync(int branchId, DateTime startDate, DateTime endDate)
         {
-            var inventories = await _context.WeeklyInventories
+            var inventories = await _context.Inventories
                 .Where(i => i.BranchId == branchId && i.InventoryDate >= startDate && i.InventoryDate <= endDate)
                 .ToListAsync();
 
             if (!inventories.Any())
             {
-                return new ApiResponse<IEnumerable<ResponseWeeklyInventoryDTO>>
+                return new ApiResponse<IEnumerable<ResponseInventoryDTO>>
                 {
                     Success = false,
                     Message = "No inventories found for the specified date range.",
@@ -34,18 +33,18 @@ namespace Pacifica.API.Services.InventoryService
                 };
             }
 
-            return new ApiResponse<IEnumerable<ResponseWeeklyInventoryDTO>>
+            return new ApiResponse<IEnumerable<ResponseInventoryDTO>>
             {
                 Success = true,
                 Message = "Weekly inventories retrieved successfully.",
-                Data = _mapper.Map<IEnumerable<ResponseWeeklyInventoryDTO>>(inventories)
+                Data = _mapper.Map<IEnumerable<ResponseInventoryDTO>>(inventories)
             };
         }
 
         // Create a new weekly inventory
-        public async Task<ApiResponse<ResponseWeeklyInventoryDTO>> CreateWeeklyInventoryAsync(CreateWeeklyInventoryDTO inventoryDto)
+        public async Task<ApiResponse<ResponseInventoryDTO>> CreateInventoryAsync(CreateInventoryDTO inventoryDto)
         {
-            var inventory = _mapper.Map<WeeklyInventory>(inventoryDto);
+            var inventory = _mapper.Map<Inventory>(inventoryDto);
 
             // Automatically set the Year based on the InventoryDate
             inventory.Year = inventory.InventoryDate.Year;
@@ -56,7 +55,7 @@ namespace Pacifica.API.Services.InventoryService
             // inventory.IsComplete = 1;
 
             // Check if a Weekly Inventory with the same ProductId, BranchId, Month, and WeekNumber already exists
-            var existingInventory = await _context.WeeklyInventories
+            var existingInventory = await _context.Inventories
                 .FirstOrDefaultAsync(i => i.ProductId == inventory.ProductId
                                           && i.BranchId == inventory.BranchId
                                           && i.Month == inventory.Month
@@ -66,7 +65,7 @@ namespace Pacifica.API.Services.InventoryService
 
             if (existingInventory != null)
             {
-                return new ApiResponse<ResponseWeeklyInventoryDTO>
+                return new ApiResponse<ResponseInventoryDTO>
                 {
                     Success = false,
                     Message = "Weekly inventory for this product in the specified week and month already exists.",
@@ -94,26 +93,26 @@ namespace Pacifica.API.Services.InventoryService
 
             // Add the new inventory to the database
 
-            _context.WeeklyInventories.Add(inventory);
+            _context.Inventories.Add(inventory);
             await _context.SaveChangesAsync();
 
-            return new ApiResponse<ResponseWeeklyInventoryDTO>
+            return new ApiResponse<ResponseInventoryDTO>
             {
                 Success = true,
                 Message = "Weekly inventory created successfully.",
-                Data = _mapper.Map<ResponseWeeklyInventoryDTO>(inventory)
+                Data = _mapper.Map<ResponseInventoryDTO>(inventory)
             };
         }
 
         // Get a specific weekly inventory by ID
-        public async Task<ApiResponse<ResponseWeeklyInventoryDTO>> GetWeeklyInventoryByIdAsync(int id)
+        public async Task<ApiResponse<ResponseInventoryDTO>> GetInventoryByIdAsync(int id)
         {
-            var inventory = await _context.WeeklyInventories
+            var inventory = await _context.Inventories
                 .FirstOrDefaultAsync(i => i.Id == id);
 
             if (inventory == null)
             {
-                return new ApiResponse<ResponseWeeklyInventoryDTO>
+                return new ApiResponse<ResponseInventoryDTO>
                 {
                     Success = false,
                     Message = "Inventory not found.",
@@ -121,23 +120,23 @@ namespace Pacifica.API.Services.InventoryService
                 };
             }
 
-            return new ApiResponse<ResponseWeeklyInventoryDTO>
+            return new ApiResponse<ResponseInventoryDTO>
             {
                 Success = true,
                 Message = "Inventory retrieved successfully.",
-                Data = _mapper.Map<ResponseWeeklyInventoryDTO>(inventory)
+                Data = _mapper.Map<ResponseInventoryDTO>(inventory)
             };
         }
 
         // Update an existing weekly inventory
-        public async Task<ApiResponse<ResponseWeeklyInventoryDTO>> UpdateWeeklyInventoryAsync(int id, UpdateWeeklyInventoryDTO inventoryDto)
+        public async Task<ApiResponse<ResponseInventoryDTO>> UpdateInventoryAsync(int id, UpdateInventoryDTO inventoryDto)
         {
-            var inventory = await _context.WeeklyInventories
+            var inventory = await _context.Inventories
                 .FirstOrDefaultAsync(i => i.Id == id);
 
             if (inventory == null)
             {
-                return new ApiResponse<ResponseWeeklyInventoryDTO>
+                return new ApiResponse<ResponseInventoryDTO>
                 {
                     Success = false,
                     Message = "Inventory not found.",
@@ -157,11 +156,11 @@ namespace Pacifica.API.Services.InventoryService
 
             await _context.SaveChangesAsync();
 
-            return new ApiResponse<ResponseWeeklyInventoryDTO>
+            return new ApiResponse<ResponseInventoryDTO>
             {
                 Success = true,
                 Message = "Weekly inventory updated successfully.",
-                Data = _mapper.Map<ResponseWeeklyInventoryDTO>(inventory)
+                Data = _mapper.Map<ResponseInventoryDTO>(inventory)
             };
         }
 
@@ -178,53 +177,7 @@ namespace Pacifica.API.Services.InventoryService
             });
         }
 
-
-        // Get Weekly Inventories filtered by BranchId, ProductId, Month, and WeekNumber
-        // public async Task<ApiResponse<IEnumerable<ResponseWeeklyInventoryDTO>>> GetFilteredWeeklyInventoriesAsync(FilterWeeklyInventoryParams filterParams)
-        // {
-        //     try
-        //     {
-        //         // Query the WeeklyInventories table with the provided filters
-        //         var filteredInventories = await _context.WeeklyInventories
-        //             .Where(i => i.BranchId == filterParams.BranchId
-        //                     && i.ProductId == filterParams.ProductId
-        //                     && i.Month == filterParams.Month
-        //                     && i.Week == filterParams.Week)
-        //             .ToListAsync();
-
-        //         // If no records are found, return a message indicating no matching data
-        //         if (filteredInventories == null || !filteredInventories.Any())
-        //         {
-        //             return new ApiResponse<IEnumerable<ResponseWeeklyInventoryDTO>>
-        //             {
-        //                 Success = false,
-        //                 Message = "No matching weekly inventories found.",
-        //                 Data = null
-        //             };
-        //         }
-
-        //         // Map the filtered list to the DTOs and return it
-        //         var response = _mapper.Map<IEnumerable<ResponseWeeklyInventoryDTO>>(filteredInventories);
-        //         return new ApiResponse<IEnumerable<ResponseWeeklyInventoryDTO>>
-        //         {
-        //             Success = true,
-        //             Message = "Filtered weekly inventories retrieved successfully.",
-        //             Data = response
-        //         };
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         // Handle any errors that might occur during the database operation
-        //         return new ApiResponse<IEnumerable<ResponseWeeklyInventoryDTO>>
-        //         {
-        //             Success = false,
-        //             Message = $"An error occurred while retrieving the data: {ex.Message}",
-        //             Data = null
-        //         };
-        //     }
-        // }
-
-        public async Task<ApiResponse<IEnumerable<ResponseWeeklyInventoryDTO>>> GetFilteredWeeklyInventoriesAsync(FilterWeeklyInventoryParams filterParams)
+        public async Task<ApiResponse<IEnumerable<ResponseInventoryDTO>>> GetFilteredInventoriesAsync(FilterInventoryParams filterParams)
         {
             try
             {
@@ -241,7 +194,7 @@ namespace Pacifica.API.Services.InventoryService
                 // If no records are found, return a message indicating no matching data
                 if (filteredInventories == null || !filteredInventories.Any())
                 {
-                    return new ApiResponse<IEnumerable<ResponseWeeklyInventoryDTO>>
+                    return new ApiResponse<IEnumerable<ResponseInventoryDTO>>
                     {
                         Success = false,
                         Message = "No matching weekly inventories found.",
@@ -250,8 +203,8 @@ namespace Pacifica.API.Services.InventoryService
                 }
 
                 // Map the filtered list to the DTOs and return it
-                var response = _mapper.Map<IEnumerable<ResponseWeeklyInventoryDTO>>(filteredInventories);
-                return new ApiResponse<IEnumerable<ResponseWeeklyInventoryDTO>>
+                var response = _mapper.Map<IEnumerable<ResponseInventoryDTO>>(filteredInventories);
+                return new ApiResponse<IEnumerable<ResponseInventoryDTO>>
                 {
                     Success = true,
                     Message = "Filtered weekly inventories retrieved successfully.",
@@ -261,7 +214,7 @@ namespace Pacifica.API.Services.InventoryService
             catch (Exception ex)
             {
                 // Handle any errors that might occur during the database operation
-                return new ApiResponse<IEnumerable<ResponseWeeklyInventoryDTO>>
+                return new ApiResponse<IEnumerable<ResponseInventoryDTO>>
                 {
                     Success = false,
                     Message = $"An error occurred while retrieving the data: {ex.Message}",
@@ -358,109 +311,12 @@ namespace Pacifica.API.Services.InventoryService
             }
         }
 
-
-        // public async Task<ApiResponse<IEnumerable<Wi_ResponseSearchBranchProduct>>> GetFilteredBranchProductAsync(WI_BranchProductSearchParams filterParams)
-        // {
-        //     try
-        //     {
-        //         // Start building the query for BranchProducts matching the BranchId
-        //         var branchProductsQuery = _context.BranchProducts
-        //             .Where(bp => bp.BranchId == filterParams.BranchId) // Always filter by BranchId
-        //             .Join(_context.Products,
-        //                 bp => bp.ProductId,
-        //                 p => p.Id,
-        //                 (bp, p) => new { BranchProduct = bp, Product = p })
-        //             .Join(_context.Categories,
-        //                 wpp => wpp.Product.CategoryId,
-        //                 c => c.Id,
-        //                 (wpp, c) => new { wpp.BranchProduct, wpp.Product, Category = c })
-        //             .Join(_context.Suppliers,
-        //                 wppc => wppc.Product.SupplierId,
-        //                 s => s.Id,
-        //                 (wppc, s) => new { wppc.BranchProduct, wppc.Product, wppc.Category, Supplier = s })
-        //             .Select(wppcs => new
-        //             {
-        //                 wppcs.BranchProduct.BranchId,
-        //                 wppcs.BranchProduct.ProductId,
-        //                 wppcs.Product.ProductName,
-        //                 wppcs.Product.SKU,
-        //                 wppcs.Category.CategoryName,
-        //                 wppcs.Supplier.SupplierName,
-        //                 wppcs.Product.CategoryId,
-        //                 wppcs.Product.SupplierId,
-        //                 wppcs.BranchProduct.StockQuantity // Include Quantity field
-
-        //             });
-
-        //         // Apply optional filters based on the parameters provided
-        //         if (!string.IsNullOrEmpty(filterParams.SKU))
-        //         {
-        //             branchProductsQuery = branchProductsQuery.Where(bp => bp.SKU.Contains(filterParams.SKU));
-        //         }
-
-        //         if (filterParams.SupplierId != 0)
-        //         {
-        //             branchProductsQuery = branchProductsQuery.Where(bp => bp.SupplierId == filterParams.SupplierId);
-        //         }
-
-        //         if (filterParams.CategoryId != 0)
-        //         {
-        //             branchProductsQuery = branchProductsQuery.Where(bp => bp.CategoryId == filterParams.CategoryId);
-        //         }
-
-        //         // Retrieve the filtered branch products
-        //         var filteredProducts = await branchProductsQuery
-        //             .Select(bp => new Wi_ResponseSearchBranchProduct
-        //             {
-        //                 BranchId = bp.BranchId,
-        //                 ProductId = bp.ProductId,
-        //                 ProductName = bp.ProductName,
-        //                 SKU = bp.SKU,
-        //                 CategoryName = bp.CategoryName,
-        //                 SupplierName = bp.SupplierName,
-        //                 CategoryId = bp.CategoryId,
-        //                 SupplierId = bp.SupplierId,
-        //                 StockQuantity = bp.StockQuantity
-        //             })
-        //             .ToListAsync();
-
-        //         // If no records are found, return a message indicating no matching data
-        //         if (filteredProducts == null || !filteredProducts.Any())
-        //         {
-        //             return new ApiResponse<IEnumerable<Wi_ResponseSearchBranchProduct>>
-        //             {
-        //                 Success = false,
-        //                 Message = "No matching products found.",
-        //                 Data = null
-        //             };
-        //         }
-
-        //         // Return the branch products as DTOs
-        //         return new ApiResponse<IEnumerable<Wi_ResponseSearchBranchProduct>>
-        //         {
-        //             Success = true,
-        //             Message = "Branch products retrieved successfully.",
-        //             Data = filteredProducts
-        //         };
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         // Handle any errors that might occur during the database operation
-        //         return new ApiResponse<IEnumerable<Wi_ResponseSearchBranchProduct>>
-        //         {
-        //             Success = false,
-        //             Message = $"An error occurred while retrieving the data: {ex.Message}",
-        //             Data = null
-        //         };
-        //     }
-        // }
-
-        public async Task<ApiResponse<IEnumerable<Wi_ResponseSearchBranchProduct>>> GetFilteredBranchProductAsync(WI_BranchProductSearchParams filterParams)
+        public async Task<ApiResponse<IEnumerable<WI_ResponseSearchBranchProduct>>> GetFilteredBranchProductAsync(WI_BranchProductSearchParams filterParams)
         {
             try
             {
                 // Fetch WeeklyInventories that match the filters
-                var weeklyInventoryMatches = await _context.WeeklyInventories
+                var weeklyInventoryMatches = await _context.Inventories
                     .Where(wi =>
                         wi.BranchId == filterParams.BranchId &&
                         wi.Week == filterParams.Week &&
@@ -494,7 +350,7 @@ namespace Pacifica.API.Services.InventoryService
                         !weeklyInventoryMatches.Any(wi =>
                             wi.BranchId == bp.BranchProduct.BranchId &&
                             wi.ProductId == bp.BranchProduct.ProductId)) // Client-side filtering for WeeklyInventory
-                    .Select(bp => new Wi_ResponseSearchBranchProduct
+                    .Select(bp => new WI_ResponseSearchBranchProduct
                     {
                         BranchId = bp.BranchProduct.BranchId,
                         ProductId = bp.BranchProduct.ProductId,
@@ -513,7 +369,7 @@ namespace Pacifica.API.Services.InventoryService
                 // Handle empty result
                 if (!filteredProducts.Any())
                 {
-                    return new ApiResponse<IEnumerable<Wi_ResponseSearchBranchProduct>>
+                    return new ApiResponse<IEnumerable<WI_ResponseSearchBranchProduct>>
                     {
                         Success = false,
                         Message = "No matching products found.",
@@ -522,7 +378,7 @@ namespace Pacifica.API.Services.InventoryService
                 }
 
                 // Return successful response
-                return new ApiResponse<IEnumerable<Wi_ResponseSearchBranchProduct>>
+                return new ApiResponse<IEnumerable<WI_ResponseSearchBranchProduct>>
                 {
                     Success = true,
                     Message = "Branch products retrieved successfully.",
@@ -532,7 +388,7 @@ namespace Pacifica.API.Services.InventoryService
             catch (Exception ex)
             {
                 // Handle errors
-                return new ApiResponse<IEnumerable<Wi_ResponseSearchBranchProduct>>
+                return new ApiResponse<IEnumerable<WI_ResponseSearchBranchProduct>>
                 {
                     Success = false,
                     Message = $"An error occurred while retrieving the data: {ex.Message}",
@@ -541,5 +397,7 @@ namespace Pacifica.API.Services.InventoryService
             }
         }
 
+   
+   
     }
 }

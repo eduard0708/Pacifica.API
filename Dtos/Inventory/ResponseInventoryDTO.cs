@@ -1,7 +1,7 @@
 
 namespace Pacifica.API.Dtos.Inventory
 {
-    public class ResponseWeeklyInventoryDTO : BaseInventoryDTO
+    public class ResponseInventoryDTO : BaseInventoryDTO
     {
         public int Id { get; set; }
         public int Year { get; set; }

@@ -1,7 +1,9 @@
+using static Pacifica.API.Helper.GlobalEnums;
+
 namespace Pacifica.API.Dtos.Inventory
 {
-    public class WI_ResponseSearchBranchProduct
-    {       
+    public class ResponseNormalizeProduct
+    {
         public int BranchId { get; set; }
         public int ProductId { get; set; }
         public string? ProductName { get; set; }
@@ -10,6 +12,8 @@ namespace Pacifica.API.Dtos.Inventory
         public int SupplierId { get; set; }
         public string? SupplierName { get; set; }
         public string? SKU { get; set; }
-        public decimal StockQuantity { get; set; }
+        public decimal Discrepancy { get; set; } 
+        public decimal SumDiscrepancyValue { get; set; } 
+        
     }
 }

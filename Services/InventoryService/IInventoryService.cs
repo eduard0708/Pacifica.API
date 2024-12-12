@@ -6,26 +6,26 @@ namespace Pacifica.API.Services.InventoryService
     public interface IInventoryService
     {
         // Create a new Weekly Inventory
-        Task<ApiResponse<ResponseWeeklyInventoryDTO>> CreateWeeklyInventoryAsync(CreateWeeklyInventoryDTO inventoryDto);
+        Task<ApiResponse<ResponseInventoryDTO>> CreateInventoryAsync(CreateInventoryDTO inventoryDto);
 
         // Update an existing Weekly Inventory
-        Task<ApiResponse<ResponseWeeklyInventoryDTO>> UpdateWeeklyInventoryAsync(int id, UpdateWeeklyInventoryDTO inventoryDto);
+        Task<ApiResponse<ResponseInventoryDTO>> UpdateInventoryAsync(int id, UpdateInventoryDTO inventoryDto);
 
         // Get Weekly Inventories for a branch in a date range
-        Task<ApiResponse<IEnumerable<ResponseWeeklyInventoryDTO>>> GetWeeklyInventoriesAsync(int branchId, DateTime startDate, DateTime endDate);
+        Task<ApiResponse<IEnumerable<ResponseInventoryDTO>>> GetInventoriesAsync(int branchId, DateTime startDate, DateTime endDate);
 
         // Get Weekly Inventories filtered by BranchId, ProductId, Month, and WeekNumber
-        Task<ApiResponse<IEnumerable<ResponseWeeklyInventoryDTO>>> GetFilteredWeeklyInventoriesAsync(FilterWeeklyInventoryParams filterParams);
+        Task<ApiResponse<IEnumerable<ResponseInventoryDTO>>> GetFilteredInventoriesAsync(FilterInventoryParams filterParams);
 
         // Get a specific Weekly Inventory by ID
-        Task<ApiResponse<ResponseWeeklyInventoryDTO>> GetWeeklyInventoryByIdAsync(int id);
+        Task<ApiResponse<ResponseInventoryDTO>> GetInventoryByIdAsync(int id);
 
         // Calculate discrepancy (positive or negative)
         Task<ApiResponse<int>> CalculateDiscrepancyAsync(int systemQuantity, int actualQuantity);
 
         Task<ApiResponse<IEnumerable<ResponseViewInventoryDTO>>> GetViewInventoriesAsync(ViewInventoryParams filterParams);
 
-        Task<ApiResponse<IEnumerable<Wi_ResponseSearchBranchProduct>>> GetFilteredBranchProductAsync(WI_BranchProductSearchParams filterParams);
+        Task<ApiResponse<IEnumerable<WI_ResponseSearchBranchProduct>>> GetFilteredBranchProductAsync(WI_BranchProductSearchParams filterParams);
 
     }
 }

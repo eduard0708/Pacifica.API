@@ -10,7 +10,8 @@ namespace Pacifica.API.Dtos.InventoryNormalization
         [Required]
         [Range(0, double.MaxValue, ErrorMessage = "Adjusted Quantity must be a positive number.")]
         public decimal AdjustedQuantity { get; set; }
-
+        public decimal DescripancyValue { get; set; }
+        
         [Required]
         public DateTime NormalizationDate { get; set; }
         public string? Remarks { get; set; }

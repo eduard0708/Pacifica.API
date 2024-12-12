@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Pacifica.API.Dtos.InventoryNormalization;
-using Pacifica.API.Models.Inventory;
-
 using Pacifica.API.Services.InventoryNormalizationService;
+using Pacifica.API.Models.Inventory;
 
 namespace Pacifica.API.Controllers
 {
@@ -10,61 +9,94 @@ namespace Pacifica.API.Controllers
     [ApiController]
     public class InventoryNormalizationController : ControllerBase
     {
-        private readonly IInventoryNormalizationService _service;
+        private readonly IInventoryNormalizationService _inventoryNormalizationService;
 
-        public InventoryNormalizationController(IInventoryNormalizationService service)
+        // Constructor injection of the service
+        public InventoryNormalizationController(IInventoryNormalizationService inventoryNormalizationService)
         {
-            _service = service;
+            _inventoryNormalizationService = inventoryNormalizationService;
         }
 
+        // GET: api/InventoryNormalization
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<IEnumerable<InventoryNormalization>>> GetAll()
         {
-            var normalizations = await _service.GetAllAsync();
+            var normalizations = await _inventoryNormalizationService.GetAllAsync();
             return Ok(normalizations);
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
+        // GET: api/InventoryNormalization/{id}
+        [HttpGet("{id}")]
+        public async Task<ActionResult<InventoryNormalization>> GetById(int id)
         {
-            var normalization = await _service.GetByIdAsync(id);
+            var normalization = await _inventoryNormalizationService.GetByIdAsync(id);
             if (normalization == null)
+            {
                 return NotFound();
-            
+            }
             return Ok(normalization);
         }
 
+        // POST: api/InventoryNormalization
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] InventoryNormalizationDto dto)
+        public async Task<ActionResult<InventoryNormalization>> Create(InventoryNormalizationDto dto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            if (dto == null)
+            {
+                return BadRequest("Invalid data.");
+            }
 
-            var createdNormalization = await _service.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = createdNormalization.Id }, createdNormalization);
+            var normalization = await _inventoryNormalizationService.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = normalization.Id }, normalization);
         }
 
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, [FromBody] InventoryNormalizationDto dto)
+        // PUT: api/InventoryNormalization/{id}
+        [HttpPut("{id}")]
+        public async Task<ActionResult<InventoryNormalization>> Update(int id, InventoryNormalizationDto dto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var updatedNormalization = await _service.UpdateAsync(id, dto);
+            var updatedNormalization = await _inventoryNormalizationService.UpdateAsync(id, dto);
             if (updatedNormalization == null)
+            {
                 return NotFound();
-
+            }
             return Ok(updatedNormalization);
         }
 
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        // DELETE: api/InventoryNormalization/{id}
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(int id)
         {
-            var deleted = await _service.DeleteAsync(id);
-            if (!deleted)
+            var result = await _inventoryNormalizationService.DeleteAsync(id);
+            if (!result)
+            {
                 return NotFound();
-
+            }
             return NoContent();
         }
+
+        // GET api/inventory/filteredBranchProducts
+        [HttpGet("normalize")]
+        public async Task<IActionResult> GetFilteredBranchProductWithDiscrepancyAsync([FromQuery] InventoryNormalizeParams filterParams)
+        {
+            // Validate filter parameters
+            if (filterParams == null)
+            {
+                return BadRequest("Filter parameters are required.");
+            }
+
+            // Call the service method to get filtered products with discrepancies
+            var response = await _inventoryNormalizationService.GetFilteredBranchProductWithDiscrepancyAsync(filterParams);
+
+            // Check the response status
+            if (response.Success)
+            {
+                return Ok(response); // Return the data if successful
+            }
+
+            // Return error response if no products are found or there's an error
+            return NotFound(new { message = response.Message });
+        }
+
+
     }
 }

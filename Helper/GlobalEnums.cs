@@ -13,8 +13,8 @@ namespace Pacifica.API.Helper
         {
             Weekly = 1,
             Monthly = 2,
-            SixMonthly = 3,
-            Yearly = 4
+            MidYear = 3,
+            YearEnd = 4
         }
     }
 }

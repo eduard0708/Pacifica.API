@@ -11,6 +11,8 @@ namespace Pacifica.API.Models.Inventory
         public DateTime InventoryDate { get; set; }
         public int Year { get; set; }  // Date of the inventory
         public int Month { get; set; }  // Date of the inventory
+        public int Week { get; set; }  // Date of the inventory
+
         public InventoryType Type { get; set; }
         public bool IsCompleted { get; set; }
 

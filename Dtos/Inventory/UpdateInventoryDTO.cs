@@ -1,7 +1,7 @@
 
 namespace Pacifica.API.Dtos.Inventory
 {
-    public class UpdateWeeklyInventoryDTO : BaseInventoryDTO
+    public class UpdateInventoryDTO : BaseInventoryDTO
     {
         public int SystemQuantity { get; set; }
         public string? UpdatedBy { get; set; }

@@ -18,13 +18,13 @@ namespace Pacifica.API.Controllers
 
         // Endpoint to create Weekly Inventory
         [HttpPost("weekly")]
-        public async Task<IActionResult> CreateWeeklyInventory([FromBody] CreateWeeklyInventoryDTO inventoryDto)
+        public async Task<IActionResult> CreateInventory([FromBody] CreateInventoryDTO inventoryDto)
         {
-            var response = await _inventoryService.CreateWeeklyInventoryAsync(inventoryDto);
+            var response = await _inventoryService.CreateInventoryAsync(inventoryDto);
 
             if (!response.Success)
             {
-                return BadRequest(new ApiResponse<ResponseWeeklyInventoryDTO>
+                return BadRequest(new ApiResponse<ResponseInventoryDTO>
                 {
                     Success = false,
                     Message = response.Message,
@@ -33,18 +33,18 @@ namespace Pacifica.API.Controllers
             }
 
             // Returning the created inventory with a 201 status code
-            return CreatedAtAction(nameof(GetWeeklyInventoryById), new { id = response.Data!.Id }, response);
+            return CreatedAtAction(nameof(GetInventoryById), new { id = response.Data!.Id }, response);
         }
 
         // Get Weekly Inventory by ID
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetWeeklyInventoryById(int id)
+        public async Task<IActionResult> GetInventoryById(int id)
         {
-            var response = await _inventoryService.GetWeeklyInventoryByIdAsync(id);
+            var response = await _inventoryService.GetInventoryByIdAsync(id);
 
             if (!response.Success)
             {
-                return NotFound(new ApiResponse<ResponseWeeklyInventoryDTO>
+                return NotFound(new ApiResponse<ResponseInventoryDTO>
                 {
                     Success = false,
                     Message = response.Message,
@@ -57,13 +57,13 @@ namespace Pacifica.API.Controllers
 
         // Get Filtered Weekly Inventories
         [HttpGet("filtered")]
-        public async Task<IActionResult> GetFilteredWeeklyInventoriesAsync([FromQuery] FilterWeeklyInventoryParams filterParams)
+        public async Task<IActionResult> GetFilteredInventoriesAsync([FromQuery] FilterInventoryParams filterParams)
         {
-            var response = await _inventoryService.GetFilteredWeeklyInventoriesAsync(filterParams);
+            var response = await _inventoryService.GetFilteredInventoriesAsync(filterParams);
 
             if (!response.Success)
             {
-                return BadRequest(new ApiResponse<IEnumerable<ResponseWeeklyInventoryDTO>>
+                return BadRequest(new ApiResponse<IEnumerable<ResponseInventoryDTO>>
                 {
                     Success = false,
                     Message = response.Message,
@@ -73,8 +73,7 @@ namespace Pacifica.API.Controllers
 
             return Ok(response);
         }
-   
-   
+
         [HttpGet("view")]
         public async Task<IActionResult> GetViewInventories([FromQuery] ViewInventoryParams filterParams)
         {
@@ -110,7 +109,10 @@ namespace Pacifica.API.Controllers
 
             return Ok(response);
         }
+
    
    
-   }
+    }
+
 }
+
