@@ -15,6 +15,7 @@ using Pacifica.API.Dtos.StockOutReference;
 using Pacifica.API.Models.Inventory;
 using Pacifica.API.Dtos.Inventory;
 using Pacifica.API.Dtos.PaymentMethod;
+using Pacifica.API.Dtos.InventoryNormalization;
 
 namespace Pacifica.API.Mapper
 {
@@ -134,6 +135,9 @@ namespace Pacifica.API.Mapper
                         CreateMap<WeeklyInventory, ResponseWeeklyInventoryDTO>()
                                 .ForMember(dest => dest.InventoryDate, opt => opt.MapFrom(src => src.InventoryDate))
                                 .ReverseMap();
+
+                        CreateMap<InventoryNormalization, InventoryNormalizationDto>().ReverseMap();
+
                 }
         }
 }

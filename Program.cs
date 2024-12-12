@@ -26,6 +26,7 @@ using Pacifica.API.Services.StockOutService;
 using Pacifica.API.Services.InventoryService;
 using Pacifica.API;
 using Pacifica.API.Services.PaymentMethodService;
+using Pacifica.API.Models.Inventory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -85,8 +86,7 @@ builder.Services.AddScoped<IStockInService, StockInService>();
 builder.Services.AddScoped<IBranchProductService, BranchProductService>();
 builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
-
-
+builder.Services.AddScoped<InventoryNormalization, InventoryNormalization>();
 
 builder.Services.AddScoped<ProductAuditTrailHelper>();
 

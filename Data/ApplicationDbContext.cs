@@ -41,6 +41,9 @@ namespace Pacifica.API.Data
         public DbSet<StockInAuditTrail> StockInAuditTrails { get; set; }
         public DbSet<StockOutAuditTrail> StockOutAuditTrails { get; set; }
         public DbSet<WeeklyInventory> WeeklyInventories { get; set; }
+        public DbSet<Inventory> Inventories { get; set; }
+        public DbSet<InventoryNormalization> InventoryNormalizations { get; set; }
+
 
 
         // Configurations for model building
@@ -193,6 +196,24 @@ namespace Pacifica.API.Data
 
             });
 
+            // InventoryNormalization entity configuration
+            modelBuilder.Entity<InventoryNormalization>(entity =>
+            {
+                entity.HasKey(n => n.Id);
+                entity.Property(s => s.CreatedAt).HasDefaultValueSql("GETDATE()");
+                entity.Property(s => s.IsDeleted).HasDefaultValue(false);
+                entity.ToTable("InventoryNormalizations");
+
+                entity.Property(n => n.AdjustedQuantity)
+                      .HasColumnType("decimal(18, 2)");
+
+                // Foreign key configuration (optional; inferred by default)
+                entity.HasOne(n => n.Inventory)
+                      .WithMany(i => i.Normalizations)
+                      .HasForeignKey(n => n.InventoryId)
+                      .OnDelete(DeleteBehavior.Restrict); // Ensure cascade delete
+            });
+
 
             // Configure Supplier entity
             modelBuilder.Entity<Supplier>(entity =>
@@ -339,8 +360,46 @@ namespace Pacifica.API.Data
 
                 // Set default values for CreatedAt and InventoryDate
                 entity.Property(wi => wi.CreatedAt)
-                      .HasDefaultValueSql("GETDATE()");       
+                      .HasDefaultValueSql("GETDATE()");
             });
+
+            // Inventory entity configuration
+            modelBuilder.Entity<Inventory>(entity =>
+            {
+                entity.ToTable("Inventories");
+                entity.HasKey(i => i.Id);
+
+                // Configure composite foreign key relationship with BranchProduct
+                entity.HasOne(wi => wi.BranchProduct)
+                      .WithMany(bp => bp.Inventories)
+                      .HasForeignKey(wi => new { wi.BranchId, wi.ProductId }) // Composite FK
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.Property(i => i.ActualQuantity)
+                      .HasColumnType("decimal(18, 2)");
+
+                entity.Property(i => i.CostPrice)
+                      .HasColumnType("decimal(18, 2)");
+
+                entity.Property(i => i.SystemQuantity)
+                      .HasColumnType("decimal(8, 2)");
+
+                entity.Property(i => i.Discrepancy)
+                      .HasColumnType("decimal(18, 2)");
+
+                entity.Property(i => i.SumDiscrepancyValue)
+                      .HasColumnType("decimal(18, 2)");
+
+                // Define one-to-many relationship with InventoryNormalization
+                entity.HasMany(i => i.Normalizations)
+                      .WithOne(n => n.Inventory)
+                      .HasForeignKey(n => n.InventoryId)
+                      .OnDelete(DeleteBehavior.Restrict); // Cascade delete normalizations when inventory is deleted
+            });
+
+
+
+
 
             // Apply soft delete query filters
             modelBuilder.Entity<Branch>().HasQueryFilter(b => b.DeletedAt == null);

@@ -40,7 +40,7 @@ public class BranchProduct : AuditDetails
     // Minimum stock level for the product
     [Required]  // Ensures MinStockLevel is provided
     public int MinStockLevel { get; set; }
-    
+
     public bool IsWeekly { get; set; } = false;// Indicates whether the product is a weekly inventory item
 
     public Branch? Branch { get; set; }
@@ -48,6 +48,5 @@ public class BranchProduct : AuditDetails
 
     public ICollection<BranchProductAuditTrail>? BranchProductAuditTrails { get; set; }
     public ICollection<WeeklyInventory>? WeeklyInventories { get; set; }
-
-
+    public ICollection<Inventory>? Inventories { get; set; }
 }
