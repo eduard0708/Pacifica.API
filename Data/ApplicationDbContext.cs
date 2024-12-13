@@ -387,7 +387,7 @@ namespace Pacifica.API.Data
                 entity.Property(i => i.Discrepancy)
                       .HasColumnType("decimal(18, 2)");
 
-                entity.Property(i => i.SumDiscrepancyValue)
+                entity.Property(i => i.DiscrepancyValue)
                       .HasColumnType("decimal(18, 2)");
 
                 // Define one-to-many relationship with InventoryNormalization

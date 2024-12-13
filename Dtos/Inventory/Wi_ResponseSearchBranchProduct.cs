@@ -9,6 +9,7 @@ namespace Pacifica.API.Dtos.Inventory
         public string? CategoryName { get; set; }
         public int SupplierId { get; set; }
         public string? SupplierName { get; set; }
+        public decimal CostPrice { get; set; }
         public string? SKU { get; set; }
         public decimal StockQuantity { get; set; }
     }

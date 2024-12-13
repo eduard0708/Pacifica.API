@@ -38,8 +38,8 @@ namespace Pacifica.API.Controllers
         }
 
         // POST: api/InventoryNormalization
-        [HttpPost]
-        public async Task<ActionResult<InventoryNormalization>> Create(InventoryNormalizationDto dto)
+        [HttpPost("create")]
+        public async Task<ActionResult<InventoryNormalization>> Create(CreateInventoryNormalizationDto dto)
         {
             if (dto == null)
             {

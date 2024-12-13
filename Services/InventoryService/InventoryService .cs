@@ -42,26 +42,67 @@ namespace Pacifica.API.Services.InventoryService
         }
 
         // Create a new weekly inventory
+        // public async Task<ApiResponse<ResponseInventoryDTO>> CreateInventoryAsync(CreateInventoryDTO inventoryDto)
+        // {
+        //     var inventory = _mapper.Map<Inventory>(inventoryDto);
+
+        //     // Check if a Weekly Inventory with the same ProductId, BranchId, Month, and WeekNumber already exists
+        //     var existingInventory = await _context.Inventories
+        //         .FirstOrDefaultAsync(i => i.ProductId == inventory.ProductId
+        //                                   && i.BranchId == inventory.BranchId
+        //                                   && i.Month == inventory.Month
+        //                                   && i.Week == inventory.Week
+        //                                   && i.Year == inventory.Year);
+
+
+        //     if (existingInventory != null)
+        //     {
+        //         return new ApiResponse<ResponseInventoryDTO>
+        //         {
+        //             Success = false,
+        //             Message = "Weekly inventory for this product in the specified week and month already exists.",
+        //             Data = null
+        //         };
+        //     }
+
+        //     // Get the system quantity and Cost from the BranchProducts table
+        //     var branchProduct = await _context.BranchProducts
+        //        .Where(bp => bp.ProductId == inventory.ProductId)
+        //        .Select(bp => new { bp.StockQuantity, bp.CostPrice })
+        //        .FirstOrDefaultAsync();
+
+
+        //     if (branchProduct != null)
+        //     {
+        //         inventory.SystemQuantity = branchProduct.StockQuantity;
+        //         inventory.CostPrice = branchProduct.CostPrice;
+        //         inventory.IsCompleted = true;
+        //     }
+
+        //     // Add the new inventory to the database
+
+        //     _context.Inventories.Add(inventory);
+        //     await _context.SaveChangesAsync();
+
+        //     return new ApiResponse<ResponseInventoryDTO>
+        //     {
+        //         Success = true,
+        //         Message = "Weekly inventory created successfully.",
+        //         Data = _mapper.Map<ResponseInventoryDTO>(inventory)
+        //     };
+        // }
+
         public async Task<ApiResponse<ResponseInventoryDTO>> CreateInventoryAsync(CreateInventoryDTO inventoryDto)
         {
             var inventory = _mapper.Map<Inventory>(inventoryDto);
-
-            // Automatically set the Year based on the InventoryDate
-            inventory.Year = inventory.InventoryDate.Year;
-            inventory.Month = inventory.InventoryDate.Month;
-            inventory.Week = inventory.WeekNumber;
-
-            // Explicitly set the IsComplete to 1 (or true)
-            // inventory.IsComplete = 1;
 
             // Check if a Weekly Inventory with the same ProductId, BranchId, Month, and WeekNumber already exists
             var existingInventory = await _context.Inventories
                 .FirstOrDefaultAsync(i => i.ProductId == inventory.ProductId
                                           && i.BranchId == inventory.BranchId
                                           && i.Month == inventory.Month
-                                          && i.Week == inventory.Week);
-
-
+                                          && i.Week == inventory.Week
+                                          && i.Year == inventory.Year);
 
             if (existingInventory != null)
             {
@@ -75,24 +116,23 @@ namespace Pacifica.API.Services.InventoryService
 
             // Get the system quantity and Cost from the BranchProducts table
             var branchProduct = await _context.BranchProducts
-               .Where(bp => bp.ProductId == inventory.ProductId)
-               .Select(bp => new { bp.StockQuantity, bp.CostPrice })
-               .FirstOrDefaultAsync();
-
+                .FirstOrDefaultAsync(bp => bp.ProductId == inventory.ProductId && bp.BranchId == inventory.BranchId);
 
             if (branchProduct != null)
             {
                 inventory.SystemQuantity = branchProduct.StockQuantity;
                 inventory.CostPrice = branchProduct.CostPrice;
-                // Explicitly set the IsComplete to 1 (or true)
                 inventory.IsCompleted = true;
+
+                // If the week is 4, update the BranchProduct quantity
+                if (inventory.Week == 4)
+                {
+                    branchProduct.StockQuantity = inventoryDto.ActualQuantity;
+                    _context.BranchProducts.Update(branchProduct);
+                }
             }
 
-            inventory.CalculateDiscrepancy();  // This will calculate the discrepancy using SystemQuantity - ActualQuantity
-            inventory.SumDiscrepancyValue = Math.Abs(inventory.Discrepancy) * inventory.CostPrice;
-
             // Add the new inventory to the database
-
             _context.Inventories.Add(inventory);
             await _context.SaveChangesAsync();
 
@@ -103,6 +143,7 @@ namespace Pacifica.API.Services.InventoryService
                 Data = _mapper.Map<ResponseInventoryDTO>(inventory)
             };
         }
+
 
         // Get a specific weekly inventory by ID
         public async Task<ApiResponse<ResponseInventoryDTO>> GetInventoryByIdAsync(int id)
@@ -148,11 +189,11 @@ namespace Pacifica.API.Services.InventoryService
             inventory.InventoryDate = inventoryDto.InventoryDate;
             inventory.ActualQuantity = inventoryDto.ActualQuantity;
             inventory.SystemQuantity = inventoryDto.SystemQuantity;
-            // inventory.Month = inventoryDto.Month;
-            // inventory.Year = inventoryDto.Year;
-
-            // Automatically recalculate discrepancy
-            inventory.CalculateDiscrepancy();  // Recalculate the discrepancy
+            inventory.Discrepancy = inventoryDto.Discrepancy;
+            inventory.DiscrepancyValue = inventoryDto.DiscrepancyValue;
+            inventory.Week = inventoryDto.Week;
+            inventory.Month = inventoryDto.Month;
+            inventory.Year = inventoryDto.Year;
 
             await _context.SaveChangesAsync();
 
@@ -360,7 +401,8 @@ namespace Pacifica.API.Services.InventoryService
                         SupplierName = bp.Supplier.SupplierName,
                         CategoryId = bp.Product.CategoryId,
                         SupplierId = bp.Product.SupplierId,
-                        StockQuantity = bp.BranchProduct.StockQuantity
+                        StockQuantity = bp.BranchProduct.StockQuantity,
+                        CostPrice = bp.BranchProduct.CostPrice,
                     });
 
                 // Convert to list
@@ -397,7 +439,7 @@ namespace Pacifica.API.Services.InventoryService
             }
         }
 
-   
-   
+
+
     }
 }

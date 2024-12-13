@@ -29,13 +29,17 @@ namespace Pacifica.API.Services.InventoryNormalizationService
                                  .FirstOrDefaultAsync(n => n.Id == id);
         }
 
-        public async Task<InventoryNormalization> CreateAsync(InventoryNormalizationDto dto)
+        public async Task<InventoryNormalization> CreateAsync(CreateInventoryNormalizationDto dto)
         {
             var normalization = new InventoryNormalization
             {
                 InventoryId = dto.InventoryId,
-                AdjustedQuantity = dto.AdjustedQuantity,
-                NormalizationDate = dto.NormalizationDate
+                AdjustedQuantity = dto.ActualQuantity - dto.SystemQuantity, // Difference between Actual and System
+                NormalizationDate = dto.NormalizationDate,
+                SystemQuantity = dto.SystemQuantity,
+                ActualQuantity = dto.ActualQuantity,
+                CostPrice = dto.CostPrice,
+                DiscrepancyValue = (dto.ActualQuantity - dto.SystemQuantity) * dto.CostPrice // AdjustedQuantity * CostPrice
             };
 
             _context.InventoryNormalizations.Add(normalization);
@@ -82,7 +86,7 @@ namespace Pacifica.API.Services.InventoryNormalizationService
                         wi.BranchId == filterParams.BranchId &&
                         wi.Month == filterParams.Month &&
                         wi.Year == filterParams.Year)
-                    .Select(wi => new { wi.BranchId, wi.ProductId, wi.Discrepancy, wi.SumDiscrepancyValue })
+                    .Select(wi => new { wi.BranchId, wi.ProductId, wi.Discrepancy, wi.DiscrepancyValue })
                     .ToListAsync();
 
                 // Build the main query for BranchProducts
@@ -129,7 +133,7 @@ namespace Pacifica.API.Services.InventoryNormalizationService
                         SumDiscrepancyValue = weeklyInventoryMatches
                             .FirstOrDefault(wi =>
                                 wi.BranchId == bp.BranchProduct.BranchId &&
-                                wi.ProductId == bp.BranchProduct.ProductId)?.SumDiscrepancyValue ?? 0
+                                wi.ProductId == bp.BranchProduct.ProductId)?.DiscrepancyValue ?? 0
                     });
 
                 // Convert to list
