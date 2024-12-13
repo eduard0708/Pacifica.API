@@ -16,12 +16,11 @@ namespace Pacifica.API.Dtos.Inventory
         public int Year { get; set; }
         public int Month { get; set; }
         public int Week { get; set; }
-        public decimal ActualQuantity { get; set; }
         public decimal CostPrice { get; set; }
+        public decimal ActualQuantity { get; set; }
         public decimal SystemQuantity { get; set; }
         public decimal Discrepancy { get; set; }
-        public int? WeekNumber { get; set; }
-        public decimal SumDiscrepancyValue { get; set; }
+        public decimal DiscrepancyValue { get; set; }
         public string? Remarks { get; set; }
         public bool? IsDeleted { get; set; }
         public DateTime? CreatedAt { get; set; }

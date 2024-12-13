@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Pacifica.API.Dtos.Inventory;
 using Pacifica.API.Dtos.InventoryNormalization;
 using Pacifica.API.Models.Inventory;
@@ -76,105 +78,166 @@ namespace Pacifica.API.Services.InventoryNormalizationService
             return true;
         }
 
+        //  public async Task<ApiResponse<IEnumerable<ResponseNormalizeProduct>>> GetFilteredBranchProductWithDiscrepancyAsync(InventoryNormalizeParams filterParams)
+        // // {
+        // //     try
+        // //     { 
+        // //       var inventoryNormalizationData = await _context.InventoryNormalizations
+        // //             .Where(ind => ind.Inventory != null &&
+        // //                         ind.Inventory.BranchId == filterParams.BranchId &&
+        // //                         ind.Inventory.Month == filterParams.Month &&
+        // //                         ind.Inventory.Year == filterParams.Year)
+        // //             .Include(ind => ind.Inventory) // Include Inventory
+        // //             .ThenInclude(inventory => inventory!.BranchProduct) // Include BranchProduct details from Inventory
+        // //             .ThenInclude(branchProduct => branchProduct!.Product) // Include Product details from BranchProduct
+        // //             .ThenInclude(product => product!.Category) // Include Category from Product
+        // //             .Include(ind => ind.Inventory!.BranchProduct!.Product!.Supplier) // Include Supplier directly from Product
+        // //             .Where(ind => ind.Inventory!.BranchProduct != null &&
+        // //                         (filterParams.CategoryId == null || ind.Inventory.BranchProduct.Product!.CategoryId == filterParams.CategoryId) &&
+        // //                         (filterParams.SupplierId == null || ind.Inventory.BranchProduct.Product!.SupplierId == filterParams.SupplierId) &&
+        // //                         (filterParams.SKU == null || ind.Inventory.BranchProduct.Product!.SKU == filterParams.SKU)) // Filtering by Category, Supplier, or SKU
+        // //             .Select(ind => new ResponseNormalizeProduct
+        // //             {
+        // //                 BranchId = ind.Inventory!.BranchId,
+        // //                 ProductId = ind.Inventory.BranchProduct!.ProductId,
+        // //                 ProductName = ind.Inventory.BranchProduct.Product!.ProductName,
+        // //                 SKU = ind.Inventory.BranchProduct.Product.SKU,
+        // //                 CategoryId = ind.Inventory.BranchProduct.Product!.CategoryId,
+        // //                 CategoryName = ind.Inventory.BranchProduct.Product.Category!.CategoryName, // Category Name from Product
+        // //                 SupplierId = ind.Inventory.BranchProduct.Product.SupplierId,
+        // //                 SupplierName = ind.Inventory.BranchProduct.Product.Supplier!.SupplierName, // Supplier Name from Product
+        // //                 Discrepancy = ind.Inventory.Discrepancy,  // Assuming Discrepancy is in Inventory
+        // //                 DiscrepancyValue = ind.Inventory.DiscrepancyValue // Assuming DiscrepancyValue is in Inventory
+        // //             })
+        // //             .ToListAsync();
+
+
+        // //         // Handle empty result
+        // //         if (!inventoryNormalizationData.Any())
+        // //         {
+        // //             return new ApiResponse<IEnumerable<ResponseNormalizeProduct>>
+        // //             {
+        // //                 Success = false,
+        // //                 Message = "No matching products found with non-zero discrepancies.",
+        // //                 Data = null
+        // //             };
+        // //         }
+
+        // //         // Return successful response
+        // //         return new ApiResponse<IEnumerable<ResponseNormalizeProduct>>
+        // //         {
+        // //             Success = true,
+        // //             Message = "Branch products retrieved successfully.",
+        // //             Data = inventoryNormalizationData
+        // //         };
+        // //     }
+        // //     catch (Exception ex)
+        // //     {
+        // //         // Handle errors
+        // //         return new ApiResponse<IEnumerable<ResponseNormalizeProduct>>
+        // //         {
+        // //             Success = false,
+        // //             Message = $"An error occurred while retrieving the data: {ex.Message}",
+        // //             Data = null
+        // //         };
+        // //     }
+        // // }
+
+        // public async Task<ApiResponse<ResponseNormalizeProduct>> GetFilteredBranchProductWithDiscrepancyAsync(InventoryNormalizeParams filterParams)
+        // {
+        //     try
+        //     {
+        //         var inventoryNormalizationData = await _context.InventoryNormalizations
+        //             .Where(ind => ind.Inventory != null &&
+        //                         ind.Inventory.BranchId == filterParams.BranchId &&
+        //                         ind.Inventory.Month == filterParams.Month &&
+        //                         ind.Inventory.Year == filterParams.Year)
+        //             .Include(ind => ind.Inventory) // Include Inventory
+        //                 .ThenInclude(inventory => inventory!.BranchProduct) // Include BranchProduct details from Inventory
+        //                 .ThenInclude(branchProduct => branchProduct!.Product) // Include Product details from BranchProduct
+        //                 .ThenInclude(product => product!.Category) // Include Category from Product
+        //             .Include(ind => ind.Inventory!.BranchProduct!.Product!.Supplier) // Include Supplier directly from Product
+        //             .Where(ind => ind.Inventory!.BranchProduct != null &&
+        //                         (filterParams.CategoryId == null || ind.Inventory.BranchProduct.Product!.CategoryId == filterParams.CategoryId) &&
+        //                         (filterParams.SupplierId == null || ind.Inventory.BranchProduct.Product!.SupplierId == filterParams.SupplierId) &&
+        //                         (filterParams.SKU == null || ind.Inventory.BranchProduct.Product!.SKU == filterParams.SKU)) // Filtering by Category, Supplier, or SKU
+        //             .Select(ind => new ResponseNormalizeProduct
+        //             {
+        //                 BranchId = ind.Inventory!.BranchId,
+        //                 ProductId = ind.Inventory.BranchProduct!.ProductId,
+        //                 ProductName = ind.Inventory.BranchProduct.Product!.ProductName,
+        //                 SKU = ind.Inventory.BranchProduct.Product.SKU,
+        //                 CategoryId = ind.Inventory.BranchProduct.Product!.CategoryId,
+        //                 CategoryName = ind.Inventory.BranchProduct.Product.Category!.CategoryName, // Category Name from Product
+        //                 SupplierId = ind.Inventory.BranchProduct.Product.SupplierId,
+        //                 SupplierName = ind.Inventory.BranchProduct.Product.Supplier!.SupplierName, // Supplier Name from Product
+        //                 Discrepancy = ind.Inventory.Discrepancy,  // Assuming Discrepancy is in Inventory
+        //                 DiscrepancyValue = ind.Inventory.DiscrepancyValue // Assuming DiscrepancyValue is in Inventory
+        //             })
+        //             .FirstOrDefaultAsync(); // Get the first matching result or null
+
+        //         if (inventoryNormalizationData == null)
+        //         {
+        //             return new ApiResponse<ResponseNormalizeProduct> { Success = false, Message = "No product found for the provided SKU." };
+        //         }
+
+        //         return new ApiResponse<ResponseNormalizeProduct> { Success = true, Data = inventoryNormalizationData };
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         // Log the exception and return a meaningful error response
+        //         return new ApiResponse<ResponseNormalizeProduct> { Success = false, Message = "An error occurred while retrieving the data." };
+        //     }
+        // }
         public async Task<ApiResponse<IEnumerable<ResponseNormalizeProduct>>> GetFilteredBranchProductWithDiscrepancyAsync(InventoryNormalizeParams filterParams)
         {
             try
             {
-                // Fetch WeeklyInventories that match the filters
-                var weeklyInventoryMatches = await _context.Inventories
-                    .Where(wi =>
-                        wi.BranchId == filterParams.BranchId &&
-                        wi.Month == filterParams.Month &&
-                        wi.Year == filterParams.Year)
-                    .Select(wi => new { wi.BranchId, wi.ProductId, wi.Discrepancy, wi.DiscrepancyValue })
-                    .ToListAsync();
+                var query = _context.InventoryNormalizations
+                    .Where(ind => ind.Inventory != null &&
+                                ind.Inventory.BranchId == filterParams.BranchId &&
+                                ind.Inventory.Month == filterParams.Month &&
+                                ind.Inventory.Year == filterParams.Year)
+                    .Include(ind => ind.Inventory) // Include Inventory
+                        .ThenInclude(inventory => inventory!.BranchProduct) // Include BranchProduct details from Inventory
+                        .ThenInclude(branchProduct => branchProduct!.Product) // Include Product details from BranchProduct
+                        .ThenInclude(product => product!.Category) // Include Category from Product
+                    .Include(ind => ind.Inventory!.BranchProduct!.Product!.Supplier) // Include Supplier directly from Product
+                    .Where(ind => ind.Inventory!.BranchProduct != null &&
+                                (filterParams.CategoryId == null || ind.Inventory.BranchProduct.Product!.CategoryId == filterParams.CategoryId) &&
+                                (filterParams.SupplierId == null || ind.Inventory.BranchProduct.Product!.SupplierId == filterParams.SupplierId));
 
-                // Build the main query for BranchProducts
-                var branchProductsQuery = _context.BranchProducts
-                    .Where(bp => bp.BranchId == filterParams.BranchId)
-                    .Join(_context.Products,
-                        bp => bp.ProductId,
-                        p => p.Id,
-                        (bp, p) => new { BranchProduct = bp, Product = p })
-                    .Join(_context.Categories,
-                        wpp => wpp.Product.CategoryId,
-                        c => c.Id,
-                        (wpp, c) => new { wpp.BranchProduct, wpp.Product, Category = c })
-                    .Join(_context.Suppliers,
-                        wppc => wppc.Product.SupplierId,
-                        s => s.Id,
-                        (wppc, s) => new { wppc.BranchProduct, wppc.Product, wppc.Category, Supplier = s })
-                    // Apply filters
-                    .Where(bp =>
-                        (filterParams.CategoryId == null || bp.Product.CategoryId == filterParams.CategoryId) &&
-                        (filterParams.SupplierId == null || bp.Product.SupplierId == filterParams.SupplierId) &&
-                        (string.IsNullOrEmpty(filterParams.SKU) || bp.Product.SKU.Contains(filterParams.SKU)))
-                    .ToList() // Bring data into memory for client-side filtering
-                    .Where(bp =>
-                        weeklyInventoryMatches.Any(wi =>
-                            wi.BranchId == bp.BranchProduct.BranchId &&
-                            wi.ProductId == bp.BranchProduct.ProductId &&
-                            wi.Discrepancy != 0)) // Client-side filtering for WeeklyInventory and non-zero discrepancy
-                    .Select(bp => new ResponseNormalizeProduct
-                    {
-                        BranchId = bp.BranchProduct.BranchId,
-                        ProductId = bp.BranchProduct.ProductId,
-                        ProductName = bp.Product.ProductName,
-                        SKU = bp.Product.SKU,
-                        CategoryName = bp.Category.CategoryName,
-                        SupplierName = bp.Supplier.SupplierName,
-                        CategoryId = bp.Product.CategoryId,
-                        SupplierId = bp.Product.SupplierId,
-                        // Discrepancy comes from the weeklyInventoryMatches
-                        Discrepancy = weeklyInventoryMatches.FirstOrDefault(wi =>
-                            wi.BranchId == bp.BranchProduct.BranchId &&
-                            wi.ProductId == bp.BranchProduct.ProductId)?.Discrepancy ?? 0,
-                        // Assign SumDiscrepancyValue directly from the Inventory table
-                        SumDiscrepancyValue = weeklyInventoryMatches
-                            .FirstOrDefault(wi =>
-                                wi.BranchId == bp.BranchProduct.BranchId &&
-                                wi.ProductId == bp.BranchProduct.ProductId)?.DiscrepancyValue ?? 0
-                    });
-
-                // Convert to list
-                var filteredProducts = branchProductsQuery.ToList();
-
-                // Handle empty result
-                if (!filteredProducts.Any())
+                // Apply SKU filter conditionally
+                if (!string.IsNullOrEmpty(filterParams.SKU))
                 {
-                    return new ApiResponse<IEnumerable<ResponseNormalizeProduct>>
-                    {
-                        Success = false,
-                        Message = "No matching products found with non-zero discrepancies.",
-                        Data = null
-                    };
+                    query = query.Where(ind => ind.Inventory!.BranchProduct!.Product!.SKU == filterParams.SKU);
                 }
 
-                // Return successful response
-                return new ApiResponse<IEnumerable<ResponseNormalizeProduct>>
-                {
-                    Success = true,
-                    Message = "Branch products retrieved successfully.",
-                    Data = filteredProducts
-                };
+                var inventoryNormalizationData = await query
+                    .Select(ind => new ResponseNormalizeProduct
+                    {
+                        BranchId = ind.Inventory!.BranchId,
+                        ProductId = ind.Inventory.BranchProduct!.ProductId,
+                        ProductName = ind.Inventory.BranchProduct.Product!.ProductName,
+                        SKU = ind.Inventory.BranchProduct.Product.SKU,
+                        CategoryId = ind.Inventory.BranchProduct.Product!.CategoryId,
+                        CategoryName = ind.Inventory.BranchProduct.Product.Category!.CategoryName, // Category Name from Product
+                        SupplierId = ind.Inventory.BranchProduct.Product.SupplierId,
+                        SupplierName = ind.Inventory.BranchProduct.Product.Supplier!.SupplierName, // Supplier Name from Product
+                        Discrepancy = ind.Inventory.Discrepancy,  // Assuming Discrepancy is in Inventory
+                        DiscrepancyValue = ind.Inventory.DiscrepancyValue // Assuming DiscrepancyValue is in Inventory
+                    })
+                    .ToListAsync();
+
+                return new ApiResponse<IEnumerable<ResponseNormalizeProduct>> { Success = true, Data = inventoryNormalizationData };
             }
             catch (Exception ex)
             {
-                // Handle errors
-                return new ApiResponse<IEnumerable<ResponseNormalizeProduct>>
-                {
-                    Success = false,
-                    Message = $"An error occurred while retrieving the data: {ex.Message}",
-                    Data = null
-                };
+                // Log the exception and return a meaningful error response
+                return new ApiResponse<IEnumerable<ResponseNormalizeProduct>> { Success = false, Message = "An error occurred while retrieving the data." };
             }
         }
 
 
-
     }
 }
-
-
-
-

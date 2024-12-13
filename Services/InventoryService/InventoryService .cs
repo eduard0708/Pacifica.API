@@ -144,7 +144,6 @@ namespace Pacifica.API.Services.InventoryService
             };
         }
 
-
         // Get a specific weekly inventory by ID
         public async Task<ApiResponse<ResponseInventoryDTO>> GetInventoryByIdAsync(int id)
         {
@@ -269,7 +268,7 @@ namespace Pacifica.API.Services.InventoryService
             try
             {
                 // Join WeeklyInventories with BranchProduct and then with Products, Category, and Supplier
-                var filteredInventories = await _context.WeeklyInventories
+                var filteredInventories = await _context.Inventories
                     .Join(_context.BranchProducts,  // Join with BranchProduct to get the correct Product
                         wi => new { wi.BranchId, wi.ProductId },
                         bp => new { bp.BranchId, bp.ProductId },
@@ -312,8 +311,7 @@ namespace Pacifica.API.Services.InventoryService
                         CostPrice = wppcs.WeeklyInventory.CostPrice,
                         SystemQuantity = wppcs.WeeklyInventory.SystemQuantity,
                         Discrepancy = wppcs.WeeklyInventory.Discrepancy,
-                        WeekNumber = wppcs.WeeklyInventory.WeekNumber,
-                        SumDiscrepancyValue = wppcs.WeeklyInventory.SumDiscrepancyValue,
+                        DiscrepancyValue = wppcs.WeeklyInventory.DiscrepancyValue,
                         Remarks = wppcs.WeeklyInventory.Remarks,
                         IsDeleted = wppcs.WeeklyInventory.IsDeleted,
                         CreatedAt = wppcs.WeeklyInventory.CreatedAt,
@@ -438,8 +436,6 @@ namespace Pacifica.API.Services.InventoryService
                 };
             }
         }
-
-
 
     }
 }

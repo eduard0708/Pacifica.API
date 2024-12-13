@@ -13,7 +13,7 @@ namespace Pacifica.API.Dtos.Inventory
         public string? SupplierName { get; set; }
         public string? SKU { get; set; }
         public decimal Discrepancy { get; set; } 
-        public decimal SumDiscrepancyValue { get; set; } 
+        public decimal DiscrepancyValue { get; set; } 
         
     }
 }
