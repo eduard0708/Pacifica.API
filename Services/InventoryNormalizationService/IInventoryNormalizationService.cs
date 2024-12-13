@@ -13,7 +13,7 @@ namespace Pacifica.API.Services.InventoryNormalizationService
         Task<InventoryNormalization> CreateAsync(CreateInventoryNormalizationDto dto);
         Task<InventoryNormalization?> UpdateAsync(int id, InventoryNormalizationDto dto);
         Task<bool> DeleteAsync(int id);
-        Task<ApiResponse<IEnumerable<ResponseNormalizeProduct>>> GetFilteredBranchProductWithDiscrepancyAsync(InventoryNormalizeParams filterParams);
+        Task<ApiResponse<IEnumerable<ResponseNormalizeProduct>>> ViewNormalizationAsyc(InventoryNormalizeParams filterParams);
 
     }
 }

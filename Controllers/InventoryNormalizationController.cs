@@ -75,8 +75,8 @@ namespace Pacifica.API.Controllers
         }
 
         // GET api/inventory/filteredBranchProducts
-        [HttpGet("normalize")]
-        public async Task<IActionResult> GetFilteredBranchProductWithDiscrepancyAsync([FromQuery] InventoryNormalizeParams filterParams)
+        [HttpGet("view")]
+        public async Task<IActionResult> ViewNormalization([FromQuery] InventoryNormalizeParams filterParams)
         {
             // Validate filter parameters
             if (filterParams == null)
@@ -85,7 +85,7 @@ namespace Pacifica.API.Controllers
             }
 
             // Call the service method to get filtered products with discrepancies
-            var response = await _inventoryNormalizationService.GetFilteredBranchProductWithDiscrepancyAsync(filterParams);
+            var response = await _inventoryNormalizationService.ViewNormalizationAsyc(filterParams);
 
             // Check the response status
             if (response.Success)
