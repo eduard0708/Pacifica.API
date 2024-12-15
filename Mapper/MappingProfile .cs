@@ -140,9 +140,13 @@ namespace Pacifica.API.Mapper
 
                         CreateMap<InventoryNormalization, InventoryNormalizationDto>().ReverseMap();
 
-                        
+
                         CreateMap<Department, DepartmentDto>().ReverseMap();
                         CreateMap<Position, PositionDto>().ReverseMap();
+
+                        // Map RegisterDto to Employee
+                        CreateMap<RegisterDto, Employee>().ReverseMap();
+                          
 
 
                 }

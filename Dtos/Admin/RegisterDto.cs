@@ -15,10 +15,10 @@ namespace Pacifica.API.Dtos.Admin
         [MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")]
         public string? Password { get; set; }
 
-        [StringLength(100, ErrorMessage = "Position cannot exceed 100 characters.")]
-        public string? Position { get; set; }
+        // [StringLength(100, ErrorMessage = "Position cannot exceed 100 characters.")]
+        // public string? Position { get; set; }
 
-        [StringLength(100, ErrorMessage = "Department cannot exceed 100 characters.")]
-        public string? Department { get; set; }
+        // [StringLength(100, ErrorMessage = "Department cannot exceed 100 characters.")]
+        // public string? Department { get; set; }
     }
 }

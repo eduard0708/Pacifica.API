@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Pacifica.API.Models
 {
-    public class Employee : IdentityUser
+    public class Employee : IdentityUser 
     {
         // EmployeeId must be the key', 
         [Key]
@@ -16,12 +16,12 @@ namespace Pacifica.API.Models
         public int? EmployeeProfileId { get; set; }
         public virtual EmployeeProfile? EmployeeProfile { get; set; }
 
-        public int DepartmentId { get; set; }
+        public int? DepartmentId { get; set; }
 
         [StringLength(100)] // Set max length for Department
         public virtual Department? Department { get; set; }
 
-        public int PositionId { get; set; }
+        public int? PositionId { get; set; }
         [StringLength(100)] // Set max length for Department
         public virtual Position? Position { get; set; }
 
