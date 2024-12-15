@@ -16,6 +16,8 @@ using Pacifica.API.Models.Inventory;
 using Pacifica.API.Dtos.Inventory;
 using Pacifica.API.Dtos.PaymentMethod;
 using Pacifica.API.Dtos.InventoryNormalization;
+using Pacifica.API.Models.EmployeManagement;
+using Pacifica.API.Dtos.UserManagement;
 
 namespace Pacifica.API.Mapper
 {
@@ -137,6 +139,11 @@ namespace Pacifica.API.Mapper
                                 .ReverseMap();
 
                         CreateMap<InventoryNormalization, InventoryNormalizationDto>().ReverseMap();
+
+                        
+                        CreateMap<Department, DepartmentDto>().ReverseMap();
+                        CreateMap<Position, PositionDto>().ReverseMap();
+
 
                 }
         }

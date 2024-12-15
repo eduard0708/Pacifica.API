@@ -28,6 +28,8 @@ using Pacifica.API.Services.InventoryNormalizationService;
 using Pacifica.API;
 using Pacifica.API.Services.PaymentMethodService;
 using Pacifica.API.Models.Inventory;
+using Pacifica.API.Models.EmployeManagement;
+using Pacifica.API.Services.EmployeeManagementService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,6 +90,9 @@ builder.Services.AddScoped<IBranchProductService, BranchProductService>();
 builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
 builder.Services.AddScoped<IInventoryNormalizationService, InventoryNormalizationService>();
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IPositionService, PositionService>();
+
 
 
 builder.Services.AddScoped<ProductAuditTrailHelper>();
