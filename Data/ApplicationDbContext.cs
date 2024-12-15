@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Pacifica.API.Models.EmployeManagement;
 using Pacifica.API.Models.GlobalAuditTrails;
 using Pacifica.API.Models.Inventory;
 using Pacifica.API.Models.Transaction;
@@ -25,6 +26,10 @@ namespace Pacifica.API.Data
         public DbSet<EmployeeProfile> EmployeeProfiles { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Branch> Branches { get; set; }
+        public DbSet<Position> Positions { get; set; }
+
+        public DbSet<Department> Departments { get; set; }
+
         public DbSet<BranchProduct> BranchProducts { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
@@ -397,8 +402,60 @@ namespace Pacifica.API.Data
                       .OnDelete(DeleteBehavior.Restrict); // Cascade delete normalizations when inventory is deleted
             });
 
+            // Configure Department entity
+            modelBuilder.Entity<Department>(entity =>
+            {
+                // Configure Index for Department Name to ensure it's unique
+                entity.HasIndex(d => d.Name)
+                      .IsUnique();
+
+                // Configure optional properties or other settings
+                entity.Property(d => d.Name)
+                      .HasMaxLength(255) // Assuming you want a maximum length for the name
+                      .IsRequired(); // Mark it as required
+
+                // Set default value for CreatedAt
+                entity.Property(d => d.DeletedAt)
+                      .HasDefaultValue(null); // Default to null unless marked deleted
+            });
+
+            // Configure Position entity
+            modelBuilder.Entity<Position>(entity =>
+            {
+                // Configure Index for Position Name to ensure it's unique
+                entity.HasIndex(p => p.Name)
+                      .IsUnique();
+
+                // Configure optional properties or other settings
+                entity.Property(p => p.Name)
+                      .HasMaxLength(255) // Assuming you want a maximum length for the name
+                      .IsRequired(); // Mark it as required
+
+                // Set default value for CreatedAt
+                entity.Property(p => p.DeletedAt)
+                      .HasDefaultValue(null); // Default to null unless marked deleted
+            });
+
+            // Configure Department-Employee relationship (1-to-many)
+            modelBuilder.Entity<Department>(entity =>
+            {
+                entity.HasMany(d => d.Employees)
+                    .WithOne(e => e.Department)
+                    .HasForeignKey(e => e.DepartmentId)
+                    .OnDelete(DeleteBehavior.Restrict); // Prevent deletion of Department if Employee exists
+
+            });
+
+            // Configure Department-Employee relationship (1-to-many)
+            modelBuilder.Entity<Position>(entity =>
+            {
+                entity.HasMany(d => d.Employees)
+                    .WithOne(e => e.Position)
+                    .HasForeignKey(e => e.PositionId)
+                   .OnDelete(DeleteBehavior.Restrict); // Prevent deletion of Position if Employee exists
 
 
+            });
 
 
             // Apply soft delete query filters

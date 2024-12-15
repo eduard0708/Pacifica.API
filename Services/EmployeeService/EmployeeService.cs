@@ -31,18 +31,52 @@ namespace Pacifica.API.Services.EmployeeService
 
         public async Task<ApiResponse<EmployeeDto>> GetEmployeeByIdAsync(string employeeId)
         {
-            var employee = await _userManager.FindByIdAsync(employeeId);
-            if (employee == null) return new ApiResponse<EmployeeDto> { Success = false, Message = "Employee not found" };
+            // Fetch the employee by ID and include related entities (Roles, Department, Position)
+            var employee = await _userManager.Users
+                .Include(e => e.Roles)   // Include the roles for the employee
+                .Include(e => e.Department) // Assuming Department is related to Employee
+                .Include(e => e.Position)  // Assuming Position is related to Employee
+                .FirstOrDefaultAsync(e => e.Id == employeeId);
 
-            return new ApiResponse<EmployeeDto> { Success = true, Data = _mapper.Map<EmployeeDto>(employee) };
+            if (employee == null)
+            {
+                return new ApiResponse<EmployeeDto>
+                {
+                    Success = false,
+                    Message = "Employee not found"
+                };
+            }
+
+            // Map the employee to EmployeeDto using AutoMapper
+            var employeeDto = _mapper.Map<EmployeeDto>(employee);
+
+            return new ApiResponse<EmployeeDto>
+            {
+                Success = true,
+                Data = employeeDto
+            };
         }
-
+        
         public async Task<ApiResponse<List<EmployeeDto>>> GetAllEmployeesAsync()
         {
-            var employees = await _userManager.Users.ToListAsync();
-            return new ApiResponse<List<EmployeeDto>> { Success = true, Data = _mapper.Map<List<EmployeeDto>>(employees) };
-        }
+            // Get all employees with roles, department, and position
+            var employees = await _userManager.Users
+                .Include(e => e.Roles) // Include the roles for each employee
+                .Include(e => e.Department) // Assuming Department is an entity linked to Employee
+                .Include(e => e.Position) // Assuming Position is an entity linked to Employee
+                .ToListAsync();
 
+            // Map the Employee entities to EmployeeDto
+            var employeeDtos = _mapper.Map<List<EmployeeDto>>(employees);
+
+            // Return the response with the mapped employee data
+            return new ApiResponse<List<EmployeeDto>>
+            {
+                Success = true,
+                Data = employeeDtos
+            };
+        }
+       
         public async Task<ApiResponse<EmployeeDto>> UpdateEmployeeAsync(string employeeId, RegisterDto registerDto)
         {
             var employee = await _userManager.FindByIdAsync(employeeId);
@@ -58,6 +92,8 @@ namespace Pacifica.API.Services.EmployeeService
 
             return new ApiResponse<EmployeeDto> { Success = false, Message = "Error updating employee" };
         }
+
+
     }
 
 }

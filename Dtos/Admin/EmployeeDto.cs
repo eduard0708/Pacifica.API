@@ -2,10 +2,12 @@ namespace Pacifica.API.Dtos.Admin
 {
     public class EmployeeDto
     {
-        public string Id { get; set; } = string.Empty;
-        public string EmployeeId { get; set; } = string.Empty;
-        public string? Position { get; set; }
-        public string? Department { get; set; }
-        public bool IsActive { get; set; } = true;
+        public Guid Id { get; set; }  // Change to Guid to match Employee.Id
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? Email { get; set; }
+        public List<string>? Roles { get; set; }
+        public List<string>? Department { get; set; }
+        public List<string>? Positions { get; set; }
     }
 }

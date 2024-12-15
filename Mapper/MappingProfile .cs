@@ -16,6 +16,8 @@ using Pacifica.API.Models.Inventory;
 using Pacifica.API.Dtos.Inventory;
 using Pacifica.API.Dtos.PaymentMethod;
 using Pacifica.API.Dtos.InventoryNormalization;
+using Pacifica.API.Models.EmployeManagement;
+using Pacifica.API.Dtos.UserManagement;
 
 namespace Pacifica.API.Mapper
 {
@@ -137,6 +139,20 @@ namespace Pacifica.API.Mapper
                                 .ReverseMap();
 
                         CreateMap<InventoryNormalization, InventoryNormalizationDto>().ReverseMap();
+
+
+                        CreateMap<Department, DepartmentDto>().ReverseMap();
+                        CreateMap<Position, PositionDto>().ReverseMap();
+
+
+                        CreateMap<Employee, EmployeeDto>()
+                                   .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.ToString()))  // Convert Guid to string
+                                   .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.EmployeeProfile != null ? src.EmployeeProfile.FirstName : null))  // Explicit null check
+                                   .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.EmployeeProfile != null ? src.EmployeeProfile.LastName : null))  // Explicit null check
+                                   .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department != null ? new List<string> { src.Department.Name! } : new List<string>()))
+                                 .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.Roles != null ? src.Roles.Select(role => role.Name!).ToList() : new List<string>()))  // Map roles to List<string>
+                                   .ForMember(dest => dest.Positions, opt => opt.MapFrom(src => src.Position != null ? new List<string> { src.Position.Name! } : new List<string>())); // Null check for Position
+
 
                 }
         }

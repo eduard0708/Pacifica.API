@@ -12,8 +12,8 @@ using Pacifica.API.Data;
 namespace Pacifica.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241211042028_UpdateWeeklyInventory")]
-    partial class UpdateWeeklyInventory
+    [Migration("20241215090126_MakePositionAndDepartmentNullable")]
+    partial class MakePositionAndDepartmentNullable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -403,6 +403,102 @@ namespace Pacifica.API.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("Pacifica.API.Models.EmployeManagement.Department", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(1500)
+                        .HasColumnType("nvarchar(1500)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Departments");
+                });
+
+            modelBuilder.Entity("Pacifica.API.Models.EmployeManagement.Position", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(1500)
+                        .HasColumnType("nvarchar(1500)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Positions");
+                });
+
             modelBuilder.Entity("Pacifica.API.Models.Employee", b =>
                 {
                     b.Property<string>("EmployeeId")
@@ -428,9 +524,8 @@ namespace Pacifica.API.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Department")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -473,9 +568,8 @@ namespace Pacifica.API.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Position")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<int?>("PositionId")
+                        .HasColumnType("int");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -496,6 +590,8 @@ namespace Pacifica.API.Migrations
 
                     b.HasKey("EmployeeId");
 
+                    b.HasIndex("DepartmentId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -503,6 +599,8 @@ namespace Pacifica.API.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("PositionId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -800,6 +898,154 @@ namespace Pacifica.API.Migrations
                     b.ToTable("StockOuAuditTrails", (string)null);
                 });
 
+            modelBuilder.Entity("Pacifica.API.Models.Inventory.Inventory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("ActualQuantity")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("CostPrice")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("Discrepancy")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("DiscrepancyValue")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<DateTime>("InventoryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(1500)
+                        .HasColumnType("nvarchar(1500)");
+
+                    b.Property<decimal>("SystemQuantity")
+                        .HasColumnType("decimal(8, 2)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Week")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchId", "ProductId");
+
+                    b.ToTable("Inventories", (string)null);
+                });
+
+            modelBuilder.Entity("Pacifica.API.Models.Inventory.InventoryNormalization", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("ActualQuantity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("AdjustedQuantity")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("CostPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("DiscrepancyValue")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("InventoryId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime>("NormalizationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(1500)
+                        .HasColumnType("nvarchar(1500)");
+
+                    b.Property<decimal>("SystemQuantity")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InventoryId");
+
+                    b.ToTable("InventoryNormalizations", (string)null);
+                });
+
             modelBuilder.Entity("Pacifica.API.Models.Inventory.WeeklyInventory", b =>
                 {
                     b.Property<int>("Id")
@@ -838,6 +1084,9 @@ namespace Pacifica.API.Migrations
                     b.Property<DateTime>("InventoryDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -869,9 +1118,6 @@ namespace Pacifica.API.Migrations
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
-
-                    b.Property<bool>("isComplete")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -1416,6 +1662,23 @@ namespace Pacifica.API.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Pacifica.API.Models.Employee", b =>
+                {
+                    b.HasOne("Pacifica.API.Models.EmployeManagement.Department", "Department")
+                        .WithMany("Employees")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Pacifica.API.Models.EmployeManagement.Position", "Position")
+                        .WithMany("Employees")
+                        .HasForeignKey("PositionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Department");
+
+                    b.Navigation("Position");
+                });
+
             modelBuilder.Entity("Pacifica.API.Models.EmployeeBranch", b =>
                 {
                     b.HasOne("Pacifica.API.Models.Branch", "Branch")
@@ -1494,6 +1757,28 @@ namespace Pacifica.API.Migrations
                         .IsRequired();
 
                     b.Navigation("StockOut");
+                });
+
+            modelBuilder.Entity("Pacifica.API.Models.Inventory.Inventory", b =>
+                {
+                    b.HasOne("BranchProduct", "BranchProduct")
+                        .WithMany("Inventories")
+                        .HasForeignKey("BranchId", "ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BranchProduct");
+                });
+
+            modelBuilder.Entity("Pacifica.API.Models.Inventory.InventoryNormalization", b =>
+                {
+                    b.HasOne("Pacifica.API.Models.Inventory.Inventory", "Inventory")
+                        .WithMany("Normalizations")
+                        .HasForeignKey("InventoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Inventory");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Inventory.WeeklyInventory", b =>
@@ -1592,6 +1877,8 @@ namespace Pacifica.API.Migrations
                 {
                     b.Navigation("BranchProductAuditTrails");
 
+                    b.Navigation("Inventories");
+
                     b.Navigation("WeeklyInventories");
                 });
 
@@ -1616,6 +1903,16 @@ namespace Pacifica.API.Migrations
                     b.Navigation("Products");
                 });
 
+            modelBuilder.Entity("Pacifica.API.Models.EmployeManagement.Department", b =>
+                {
+                    b.Navigation("Employees");
+                });
+
+            modelBuilder.Entity("Pacifica.API.Models.EmployeManagement.Position", b =>
+                {
+                    b.Navigation("Employees");
+                });
+
             modelBuilder.Entity("Pacifica.API.Models.Employee", b =>
                 {
                     b.Navigation("EmployeeBranches");
@@ -1623,6 +1920,11 @@ namespace Pacifica.API.Migrations
                     b.Navigation("EmployeeProfile");
 
                     b.Navigation("Roles");
+                });
+
+            modelBuilder.Entity("Pacifica.API.Models.Inventory.Inventory", b =>
+                {
+                    b.Navigation("Normalizations");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Product", b =>

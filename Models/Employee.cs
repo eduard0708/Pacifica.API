@@ -1,25 +1,30 @@
 using Microsoft.AspNetCore.Identity;
+using Pacifica.API.Models.EmployeManagement;
 using System.ComponentModel.DataAnnotations;
 
 namespace Pacifica.API.Models
 {
-    public class Employee : IdentityUser
+    public class Employee : IdentityUser 
     {
         // EmployeeId must be the key', 
         [Key]
         [Required]
         [StringLength(128)]  // Maximum length for EmployeeId, set by your system design
-        public string  EmployeeId { get; set; } = string.Empty;
-
-        [StringLength(100)] // Set max length for Position
-        public string? Position { get; set; }
-
-        [StringLength(100)] // Set max length for Department
-        public string? Department { get; set; }
+        public string EmployeeId { get; set; } = string.Empty;
 
         // One-to-One relationship with EmployeeProfile
         public int? EmployeeProfileId { get; set; }
         public virtual EmployeeProfile? EmployeeProfile { get; set; }
+
+        public int? DepartmentId { get; set; }
+
+        [StringLength(100)] // Set max length for Department
+        public virtual Department? Department { get; set; }
+
+        public int? PositionId { get; set; }
+        [StringLength(100)] // Set max length for Department
+        public virtual Position? Position { get; set; }
+
 
         // Optional roles, if needed in this model (IdentityUser already includes role management)
         public virtual ICollection<IdentityRole>? Roles { get; set; }
