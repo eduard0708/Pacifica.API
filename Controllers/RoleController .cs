@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Pacifica.API.Dtos.User;
 using Pacifica.API.Services.RoleService;
 
 namespace Pacifica.API.Controllers
@@ -16,7 +17,7 @@ namespace Pacifica.API.Controllers
 
         // Get all roles
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<List<string>>>> GetAllRoles()
+        public async Task<ActionResult<ApiResponse<List<RoleDto>>>> GetAllRoles()
         {
             try
             {

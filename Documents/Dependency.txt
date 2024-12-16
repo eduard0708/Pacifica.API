@@ -21,3 +21,6 @@ dotnet add package Microsoft.Extensions.Logging
 
 
 mkdir Data, Models, Interfaces, Dtos, Sevices, Helpers, Mapper
+
+Install the necessary NuGet packages for parsing Excel files:
+dotnet add package EPPlus

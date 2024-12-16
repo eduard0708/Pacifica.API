@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Pacifica.API.Dtos.User;
 
 namespace Pacifica.API.Services.RoleService
 {
@@ -15,10 +16,14 @@ namespace Pacifica.API.Services.RoleService
         }
 
         // Get all roles
-        public async Task<ApiResponse<List<string>>> GetAllRolesAsync()
+        // Define a DTO or anonymous object to hold the role's id and name
+        public async Task<ApiResponse<List<RoleDto>>> GetAllRolesAsync()
         {
-            var roles = await _roleManager.Roles.Select(r => r.Name).ToListAsync();
-            return new ApiResponse<List<string>> { Success = true, Data = roles! };
+            var roles = await _roleManager.Roles
+                .Select(r => new RoleDto { Id = r.Id, Name = r.Name })
+                .ToListAsync();
+
+            return new ApiResponse<List<RoleDto>> { Success = true, Data = roles! };
         }
 
         // Create a new role

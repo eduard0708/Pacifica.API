@@ -115,13 +115,13 @@ namespace Pacifica.API.Data
             // Configure EmployeeBranch entity
             modelBuilder.Entity<EmployeeBranch>(entity =>
             {
-                entity.HasKey(e => new { e.Id, e.BranchId });
+                entity.HasKey(e => new { e.EmployeeId, e.BranchId });
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
                 entity.Property(e => e.IsActive).HasDefaultValue(true);
 
                 entity.HasOne(e => e.Employee)
                     .WithMany(emp => emp.EmployeeBranches)
-                    .HasForeignKey(e => e.Id);
+                    .HasForeignKey(e => e.EmployeeId);
 
                 entity.HasOne(e => e.Branch)
                     .WithMany(br => br.EmployeeBranches)
