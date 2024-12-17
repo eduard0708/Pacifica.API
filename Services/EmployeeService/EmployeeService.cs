@@ -18,42 +18,32 @@ namespace Pacifica.API.Services.EmployeeService
             _context = context;
         }
 
-        // public async Task<ApiResponse<EmployeeDto>> CreateEmployeeAsync(RegisterDto registerDto)
-        // {
-        //     var employee = _mapper.Map<Employee>(registerDto);
-        //     var result = await _userManager.CreateAsync(employee, registerDto.Password!);
-
-        //     if (result.Succeeded)
-        //     {
-        //         return new ApiResponse<EmployeeDto> { Success = true, Message = "Employee created successfully", Data = _mapper.Map<EmployeeDto>(employee) };
-        //     }
-
-        //     return new ApiResponse<EmployeeDto> { Success = false, Message = "Error creating employee" };
-        // }
-
         public async Task<ApiResponse<EmployeeDto>> CreateEmployeeAsync(RegisterDto registerDto)
         {
+            // Map the RegisterDto to Employee
             var employee = _mapper.Map<Employee>(registerDto);
 
-            // Handle Department and Position relationships
+            // Handle Department relationship
             if (registerDto.DepartmentId != null)
             {
                 var department = await _context.Departments.FindAsync(registerDto.DepartmentId);
                 if (department != null)
                 {
-                    employee.Department = department;
+                    employee.Department = department;  // Set the navigation property, not just the Id
                 }
             }
 
+            // Handle Position relationship
             if (registerDto.PositionId.HasValue)
             {
                 var position = await _context.Positions.FindAsync(registerDto.PositionId);
                 if (position != null)
                 {
-                    employee.Position = position;
+                    employee.Position = position;  // Set the navigation property, not just the Id
                 }
             }
 
+            // Create the employee using the UserManager
             var result = await _userManager.CreateAsync(employee, registerDto.Password!);
 
             if (result.Succeeded)
@@ -63,7 +53,6 @@ namespace Pacifica.API.Services.EmployeeService
 
             return new ApiResponse<EmployeeDto> { Success = false, Message = "Error creating employee" };
         }
-
 
         public async Task<ApiResponse<EmployeeDto>> GetEmployeeByIdAsync(string employeeId)
         {

@@ -24,7 +24,6 @@ namespace Pacifica.API.Data
         // DbSets for entities
         public DbSet<Employee> Employees { get; set; }
         public DbSet<EmployeeProfile> EmployeeProfiles { get; set; }
-        public DbSet<Address> Addresses { get; set; }
         public DbSet<Branch> Branches { get; set; }
         public DbSet<Position> Positions { get; set; }
 
@@ -56,47 +55,143 @@ namespace Pacifica.API.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // // Configure Employee entity
+            // modelBuilder.Entity<Employee>(entity =>
+            // {
+            //     entity.HasKey(e => e.EmployeeId);
+            //     entity.Property(e => e.EmployeeId).IsRequired().HasMaxLength(128);
+            //     entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
+            //     entity.Property(e => e.IsActive).HasDefaultValue(true);
+             
+            // });
+
             // Configure Employee entity
-            modelBuilder.Entity<Employee>(entity =>
-            {
-                entity.HasKey(e => e.EmployeeId);
-                entity.Property(e => e.EmployeeId).IsRequired().HasMaxLength(128);
-                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
-                entity.Property(e => e.IsActive).HasDefaultValue(true);
+        modelBuilder.Entity<Employee>(entity =>
+        {
+            entity.HasKey(e => e.EmployeeId);
 
-                entity.HasOne(e => e.EmployeeProfile)
-                    .WithOne(ep => ep.Employee)
-                    .HasForeignKey<Employee>(e => e.EmployeeProfileId);
-            });
+            // Properties
+            entity.Property(e => e.EmployeeId)
+                  .IsRequired()
+                  .HasMaxLength(128);
 
-            // Configure Address entity
-            modelBuilder.Entity<Address>(entity =>
-            {
-                entity.HasKey(a => a.Id);
-                entity.Property(a => a.CreatedAt).HasDefaultValueSql("GETDATE()");
-                entity.Property(a => a.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.FirstName)
+                  .IsRequired()
+                  .HasMaxLength(100);
 
-                entity.HasOne(a => a.EmployeeProfile)
-                    .WithOne(ep => ep.Address)
-                    .HasForeignKey<Address>(a => a.EmployeeProfileId);
-            });
+            entity.Property(e => e.MiddleName)
+                  .HasMaxLength(100);
 
-            // Configure EmployeeProfile entity
-            modelBuilder.Entity<EmployeeProfile>(entity =>
-            {
-                entity.HasKey(ep => ep.Id);
-                entity.Property(ep => ep.CreatedAt).HasDefaultValueSql("GETDATE()");
-                entity.Property(ep => ep.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.LastName)
+                  .IsRequired()
+                  .HasMaxLength(100);
 
-                entity.HasOne(ep => ep.Employee)
-                    .WithOne(e => e.EmployeeProfile)
-                    .HasForeignKey<EmployeeProfile>(ep => ep.EmployeeId);
+            entity.Property(e => e.DateOfBirth)
+                  .IsRequired(false);
 
-                entity.HasOne(ep => ep.Address)
-                    .WithOne(a => a.EmployeeProfile)
-                    .HasForeignKey<EmployeeProfile>(ep => ep.AddressId);
-            });
+            entity.Property(e => e.DateOfHire)
+                  .IsRequired(false);
 
+            entity.Property(e => e.Gender)
+                  .HasMaxLength(20);
+
+            entity.Property(e => e.EmploymentStatus)
+                  .HasMaxLength(50);
+
+            entity.Property(e => e.IsActive)
+                  .IsRequired()
+                  .HasDefaultValue(true);
+
+            entity.Property(e => e.Remarks)
+                  .HasMaxLength(1500);
+
+            entity.Property(e => e.IsDeleted)
+                  .IsRequired()
+                  .HasDefaultValue(false);
+
+            entity.Property(e => e.CreatedAt)
+                  .IsRequired()
+                  .HasDefaultValueSql("GETDATE()");
+
+            entity.Property(e => e.CreatedBy)
+                  .HasMaxLength(100);
+
+            entity.Property(e => e.UpdatedAt)
+                  .IsRequired(false);
+
+            entity.Property(e => e.UpdatedBy)
+                  .HasMaxLength(100);
+
+            entity.Property(e => e.DeletedAt)
+                  .IsRequired(false);
+
+            entity.Property(e => e.DeletedBy)
+                  .HasMaxLength(100);
+
+            // Configure the one-to-one relationship with EmployeeProfile
+            entity.HasOne(e => e.EmployeeProfile)
+                  .WithOne(ep => ep.Employee)
+                  .HasForeignKey<EmployeeProfile>(ep => ep.EmployeeId)
+                  .OnDelete(DeleteBehavior.Cascade);  // If Employee is deleted, delete EmployeeProfile as well
+        });
+
+     // Configure EmployeeProfile entity
+        modelBuilder.Entity<EmployeeProfile>(entity =>
+        {
+            entity.HasKey(ep => ep.Id);
+
+            // Properties
+            entity.Property(ep => ep.EmployeeId)
+                  .IsRequired()
+                  .HasMaxLength(128);
+
+            entity.Property(ep => ep.Region)
+                  .HasMaxLength(100);
+
+            entity.Property(ep => ep.Province)
+                  .HasMaxLength(100);
+
+            entity.Property(ep => ep.CityOrMunicipality)
+                  .HasMaxLength(100);
+
+            entity.Property(ep => ep.Barangay)
+                  .HasMaxLength(100);
+
+            entity.Property(ep => ep.StreetAddress)
+                  .HasMaxLength(255);
+
+            entity.Property(ep => ep.PostalCode)
+                  .HasMaxLength(10);
+
+            entity.Property(ep => ep.Country)
+                  .HasMaxLength(50)
+                  .HasDefaultValue("Philippines");
+
+            entity.Property(ep => ep.CreatedAt)
+                  .IsRequired()
+                  .HasDefaultValueSql("GETDATE()");
+
+            entity.Property(ep => ep.CreatedBy)
+                  .HasMaxLength(100);
+
+            entity.Property(ep => ep.UpdatedAt)
+                  .IsRequired(false);
+
+            entity.Property(ep => ep.DeletedAt)
+                  .IsRequired(false);
+
+            entity.Property(ep => ep.UpdatedBy)
+                  .HasMaxLength(100);
+
+            entity.Property(ep => ep.DeletedBy)
+                  .HasMaxLength(100);
+
+            // Configure the relationship with Employee
+            entity.HasOne(ep => ep.Employee)
+                  .WithOne(e => e.EmployeeProfile)
+                  .HasForeignKey<EmployeeProfile>(ep => ep.EmployeeId);
+        });
+    
             // Configure Branch entity
             modelBuilder.Entity<Branch>(entity =>
             {

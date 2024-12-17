@@ -146,14 +146,19 @@ namespace Pacifica.API.Mapper
 
 
                         CreateMap<Employee, EmployeeDto>()
-                                   .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.ToString()))  // Convert Guid to string
-                                   .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.EmployeeProfile != null ? src.EmployeeProfile.FirstName : null))  // Explicit null check
-                                   .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.EmployeeProfile != null ? src.EmployeeProfile.LastName : null))  // Explicit null check
-                                   .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department != null ? new List<string> { src.Department.Name! } : new List<string>()))
-                                 .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.Roles != null ? src.Roles.Select(role => role.Name!).ToList() : new List<string>()))  // Map roles to List<string>
-                                   .ForMember(dest => dest.Positions, opt => opt.MapFrom(src => src.Position != null ? new List<string> { src.Position.Name! } : new List<string>())); // Null check for Position
+                            // Map EmployeeId correctly from Employee to EmployeeDto
+                            .ForMember(dest => dest.EmployeeId, opt => opt.MapFrom(src => src.EmployeeId))
+                            // Convert Guid to string for Id if EmployeeId is a Guid type
+                            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.ToString()))  // Convert Guid to string
 
+                            // Mapping for Department
+                            .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department != null ? new List<string> { src.Department.Name! } : new List<string>()))
 
+                            // Mapping for Roles
+                            .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.Roles != null ? src.Roles.Select(role => role.Name!).ToList() : new List<string>()))
+
+                            // Mapping for Position
+                            .ForMember(dest => dest.Positions, opt => opt.MapFrom(src => src.Position != null ? new List<string> { src.Position.Name! } : new List<string>())); // Null check for Position
                 }
         }
 }
