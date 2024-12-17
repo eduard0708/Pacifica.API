@@ -143,8 +143,8 @@ namespace Pacifica.API.Mapper
 
                         CreateMap<Department, DepartmentDto>().ReverseMap();
                         CreateMap<Position, PositionDto>().ReverseMap();
-
-
+                        // Map Employee to GetEmployeeDto
+                       
                         CreateMap<Employee, EmployeeDto>()
                             // Map EmployeeId correctly from Employee to EmployeeDto
                             .ForMember(dest => dest.EmployeeId, opt => opt.MapFrom(src => src.EmployeeId))

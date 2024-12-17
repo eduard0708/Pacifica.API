@@ -2,8 +2,8 @@ namespace Pacifica.API.Dtos.Admin
 {
     public class EmployeeDto
     {
-        public Guid Id { get; set; }  // Change to Guid to match Employee.Id
-        public int EmployeeId { get; set; }  
+        public string? Id { get; set; }  // Change to Guid to match Employee.Id
+        public string? EmployeeId { get; set; }  
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? Email { get; set; }

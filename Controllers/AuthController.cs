@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Pacifica.API.Dtos.Admin;
 using Pacifica.API.Helper;
 using Pacifica.API.Services.AuthService;
+using Pacifica.API.Services.EmployeeService;
 
 namespace Pacifica.API.Controllers
 {
@@ -11,10 +12,11 @@ namespace Pacifica.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-
-        public AuthController(IAuthService authService)
+        private readonly IEmployeeService _employeeService;
+        public AuthController(IAuthService authService, IEmployeeService employeeService)
         {
             _authService = authService;
+            _employeeService = employeeService;
         }
 
         [HttpPost("login")]
@@ -24,11 +26,22 @@ namespace Pacifica.API.Controllers
             return Ok(response);
         }
 
+        // [HttpPost("register")]
+        // public async Task<ActionResult<ApiResponse<string>>> Register(RegisterDto registerDto)
+        // {
+        //     var response = await _authService.RegisterAsync(registerDto);
+        //     return Ok(response);
+
+            
+        // }
+
         [HttpPost("register")]
-        public async Task<ActionResult<ApiResponse<string>>> Register(RegisterDto registerDto)
+        public async Task<ApiResponse<EmployeeDto>> CreateEmployeeAsync([FromBody] RegisterDto registerDto)
         {
-            var response = await _authService.RegisterAsync(registerDto);
-            return Ok(response);
+            // Call the service to handle employee creation
+            var response = await _employeeService.CreateEmployeeAsync(registerDto);
+
+            return response; // Return the response from the service
         }
     }
 }
