@@ -6,6 +6,6 @@ namespace Pacifica.API.Services.AuthService
     public interface IAuthService
     {
         Task<ApiResponse<object>> LoginAsync(LoginDto loginDto);
-        Task<ApiResponse<string>> RegisterAsync(RegisterDto registerDto);
+        // Task<ApiResponse<string>> RegisterAsync(RegisterDto registerDto);
     }
 }

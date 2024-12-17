@@ -29,40 +29,41 @@ namespace Pacifica.API.Services.EmployeeService
                 FirstName = registerDto.FirstName,
                 LastName = registerDto.LastName,
                 Email = registerDto.Email,
-                UserName = registerDto.Email,  // Assuming you want to use the email as the username for Identity
+                UserName = registerDto.Email,
+                PositionId = registerDto.PositionId,
+                DepartmentId = registerDto.DepartmentId,
                 IsActive = true,  // Set the default value for IsActive
                 IsDeleted = false, // Set the default value for IsDeleted
-                CreatedAt = DateTime.UtcNow, // Set the current time as CreatedAt
                 CreatedBy = "System" // You can customize this, depending on who creates the employee
             };
 
-            // Handle Department relationship
-            if (registerDto.DepartmentId != null)
-            {
-                var department = await _context.Departments.FindAsync(registerDto.DepartmentId);
-                if (department != null)
-                {
-                    employee.Department = department;  // Set the navigation property, not just the Id
-                }
-                else
-                {
-                    return new ApiResponse<EmployeeDto> { Success = false, Message = "Department not found" };
-                }
-            }
+            // // Handle Department relationship
+            // if (registerDto.DepartmentId != null)
+            // {
+            //     var department = await _context.Departments.FindAsync(registerDto.DepartmentId);
+            //     if (department != null)
+            //     {
+            //         employee.Department = department;  // Set the navigation property, not just the Id
+            //     }
+            //     else
+            //     {
+            //         return new ApiResponse<EmployeeDto> { Success = false, Message = "Department not found" };
+            //     }
+            // }
 
-            // Handle Position relationship
-            if (registerDto.PositionId.HasValue)
-            {
-                var position = await _context.Positions.FindAsync(registerDto.PositionId);
-                if (position != null)
-                {
-                    employee.Position = position;  // Set the navigation property, not just the Id
-                }
-                else
-                {
-                    return new ApiResponse<EmployeeDto> { Success = false, Message = "Position not found" };
-                }
-            }
+            // // Handle Position relationship
+            // if (registerDto.PositionId.HasValue)
+            // {
+            //     var position = await _context.Positions.FindAsync(registerDto.PositionId);
+            //     if (position != null)
+            //     {
+            //         employee.Position = position;  // Set the navigation property, not just the Id
+            //     }
+            //     else
+            //     {
+            //         return new ApiResponse<EmployeeDto> { Success = false, Message = "Position not found" };
+            //     }
+            // }
 
             // Create the employee using the UserManager (for handling Identity)
             var result = await _userManager.CreateAsync(employee, registerDto.Password!);
@@ -79,7 +80,7 @@ namespace Pacifica.API.Services.EmployeeService
                     LastName = employee.LastName,
                     Email = employee.Email,
                     Department = employee.Department?.Name,  // Assuming you want the department name
-                    Positions = employee.Position?.Name
+                    Position = employee.Position?.Name
                 };
 
                 return new ApiResponse<EmployeeDto>
@@ -161,21 +162,47 @@ namespace Pacifica.API.Services.EmployeeService
         //     };
         // }
 
-        public async Task<ApiResponse<EmployeeDto>> UpdateEmployeeAsync(string employeeId, RegisterDto registerDto)
+        public async Task<ApiResponse<EmployeeDto>> UpdateEmployeeAsync(string employeeId, UpdateEmployeeDto updateDto)
         {
+            // Find the employee by their Id
             var employee = await _userManager.FindByIdAsync(employeeId);
             if (employee == null) return new ApiResponse<EmployeeDto> { Success = false, Message = "Employee not found" };
 
-            employee = _mapper.Map(registerDto, employee);
+            // Perform manual mapping from UpdateEmployeeDto to Employee
+            employee.FirstName = updateDto.FirstName ?? employee.FirstName;  // If null, keep existing value
+            employee.LastName = updateDto.LastName ?? employee.LastName;
+            employee.Email = updateDto.Email ?? employee.Email;
+            employee.PasswordHash = string.IsNullOrEmpty(updateDto.Password) ? employee.PasswordHash : _userManager.PasswordHasher.HashPassword(employee, updateDto.Password); // Hash password if provided
+            employee.DepartmentId = updateDto.DepartmentId ?? employee.DepartmentId;
+            employee.PositionId = updateDto.PositionId ?? employee.PositionId;
+
+            // Here you would map any other properties you need to update.
+
+            // Update employee in the database
             var result = await _userManager.UpdateAsync(employee);
 
+            // Return the response based on the result of the update operation
             if (result.Succeeded)
             {
-                return new ApiResponse<EmployeeDto> { Success = true, Data = _mapper.Map<EmployeeDto>(employee) };
+                return new ApiResponse<EmployeeDto>
+                {
+                    Success = true,
+                    Data = new EmployeeDto
+                    {
+                        EmployeeId = employee.EmployeeId,
+                        FirstName = employee.FirstName,
+                        LastName = employee.LastName,
+                        Email = employee.Email,
+                        Department = employee.Department!.Name,
+                        Position = employee.Position!.Name,
+                        // Map any other fields you need to return in the response
+                    }
+                };
             }
 
             return new ApiResponse<EmployeeDto> { Success = false, Message = "Error updating employee" };
         }
+
 
         public async Task<ApiResponse<List<GetEmployeeDto>>> GetAllEmployeesAsync()
         {
@@ -191,6 +218,7 @@ namespace Pacifica.API.Services.EmployeeService
             var employeeDtos = employees.Select(employee => new GetEmployeeDto
             {
                 Id = employee.Id,
+                EmployeeId = employee.EmployeeId,
                 FirstName = employee.FirstName,
                 LastName = employee.LastName,
                 Email = employee.Email,
@@ -200,7 +228,7 @@ namespace Pacifica.API.Services.EmployeeService
                 Roles = employee.Roles?.Select(role => new RoleDto
                 {
                     Id = role.Id,
-                    RoleName = role.Name
+                    Name = role.Name
                 }).ToList() ?? new List<RoleDto>(),  // If Roles is null, return an empty list
                                                      // Map Branches to BranchDto list
                 Branches = employee.EmployeeBranches?.Select(branch => new BranchDto

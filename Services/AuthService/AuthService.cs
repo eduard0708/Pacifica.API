@@ -59,36 +59,36 @@ namespace Pacifica.API.Services.AuthService
                     : new ApiResponse<object> { Success = false, Message = "Invalid login attempt" };
         }
         
-        public async Task<ApiResponse<string>> RegisterAsync(RegisterDto registerDto)
-        {
-            var employee = _mapper.Map<Employee>(registerDto);
-            // Set the Username field explicitly to the EmployeeId
-            employee.UserName = registerDto.EmployeeId;
+        // public async Task<ApiResponse<string>> RegisterAsync(RegisterDto registerDto)
+        // {
+        //     var employee = _mapper.Map<Employee>(registerDto);
+        //     // Set the Username field explicitly to the EmployeeId
+        //     employee.UserName = registerDto.EmployeeId;
 
-            var result = await _userManager.CreateAsync(employee, registerDto.Password!);
+        //     var result = await _userManager.CreateAsync(employee, registerDto.Password!);
 
 
-            if (result.Succeeded)
-            {
-                return new ApiResponse<string>
-                {
-                    Success = true,
-                    Message = "Employee registered successfully",
-                    Data = "TokenPlaceholder"
-                };
-            }
-            else
-            {
-                // Collect error messages from IdentityResult
-                var errorMessage = string.Join("; ", result.Errors.Select(e => e.Description));
+        //     if (result.Succeeded)
+        //     {
+        //         return new ApiResponse<string>
+        //         {
+        //             Success = true,
+        //             Message = "Employee registered successfully",
+        //             Data = "TokenPlaceholder"
+        //         };
+        //     }
+        //     else
+        //     {
+        //         // Collect error messages from IdentityResult
+        //         var errorMessage = string.Join("; ", result.Errors.Select(e => e.Description));
 
-                return new ApiResponse<string>
-                {
-                    Success = false,
-                    Message = $"Error registering employee: {errorMessage}"
-                };
-            }
-        }
+        //         return new ApiResponse<string>
+        //         {
+        //             Success = false,
+        //             Message = $"Error registering employee: {errorMessage}"
+        //         };
+        //     }
+        // }
 
     }
 

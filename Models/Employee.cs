@@ -38,11 +38,9 @@ namespace Pacifica.API.Models
 
         // Department and Position (referencing other entities)
         public int? DepartmentId { get; set; }
-        [StringLength(100)]
         public virtual Department? Department { get; set; }
 
         public int? PositionId { get; set; }
-        [StringLength(100)]
         public virtual Position? Position { get; set; }
 
         // Roles, branches, and other employee-related properties

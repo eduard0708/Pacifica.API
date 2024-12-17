@@ -8,6 +8,6 @@ namespace Pacifica.API.Dtos.Role
     public class RoleDto
     {
         public string? Id { get; set; }   // Role Id
-        public string? RoleName { get; set; } // Role Name
+        public string? Name { get; set; } // Role Name
     }
 }

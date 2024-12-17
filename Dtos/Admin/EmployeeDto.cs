@@ -9,6 +9,6 @@ namespace Pacifica.API.Dtos.Admin
         public string? Email { get; set; }
         public List<string>? Roles { get; set; }
         public string? Department { get; set; }
-        public string? Positions { get; set; }
+        public string? Position { get; set; }
     }
 }

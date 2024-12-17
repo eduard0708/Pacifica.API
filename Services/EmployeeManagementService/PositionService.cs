@@ -19,7 +19,7 @@ namespace Pacifica.API.Services.EmployeeManagementService
         public async Task<ApiResponse<IEnumerable<Position>>> GetAllAsync()
         {
             var positions = await _context.Positions
-                .Include(p => p.Employees) // Optional: include Employees if needed
+                // .Include(p => p.Employees) // Optional: include Employees if needed
                 .ToListAsync();
 
             return new ApiResponse<IEnumerable<Position>>

@@ -31,9 +31,9 @@ namespace Pacifica.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<ApiResponse<EmployeeDto>>> UpdateEmployee(string id, RegisterDto registerDto)
+        public async Task<ActionResult<ApiResponse<EmployeeDto>>> UpdateEmployee(string id, UpdateEmployeeDto updateDto)
         {
-            var response = await _employeeService.UpdateEmployeeAsync(id, registerDto);
+            var response = await _employeeService.UpdateEmployeeAsync(id, updateDto);
             return Ok(response);
         }
 

@@ -158,7 +158,7 @@ namespace Pacifica.API.Mapper
                             .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.Roles != null ? src.Roles.Select(role => role.Name!).ToList() : new List<string>()))
 
                             // Mapping for Position
-                            .ForMember(dest => dest.Positions, opt => opt.MapFrom(src => src.Position != null ? new List<string> { src.Position.Name! } : new List<string>())); // Null check for Position
+                            .ForMember(dest => dest.Position, opt => opt.MapFrom(src => src.Position != null ? new List<string> { src.Position.Name! } : new List<string>())); // Null check for Position
                 }
         }
 }
