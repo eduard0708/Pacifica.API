@@ -18,6 +18,7 @@ using Pacifica.API.Dtos.PaymentMethod;
 using Pacifica.API.Dtos.InventoryNormalization;
 using Pacifica.API.Models.EmployeManagement;
 using Pacifica.API.Dtos.UserManagement;
+using Pacifica.API.Dtos.Employee;
 
 namespace Pacifica.API.Mapper
 {

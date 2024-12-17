@@ -1,8 +1,10 @@
+using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Pacifica.API.Dtos.Admin;
 using Pacifica.API.Dtos.Branch;
+using Pacifica.API.Dtos.Employee;
 using Pacifica.API.Dtos.Role;
 
 namespace Pacifica.API.Services.EmployeeService
@@ -13,7 +15,7 @@ namespace Pacifica.API.Services.EmployeeService
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
 
-        public EmployeeService(UserManager<Employee> userManager, IMapper mapper, ApplicationDbContext context) 
+        public EmployeeService(UserManager<Employee> userManager, IMapper mapper, ApplicationDbContext context)
         {
             _userManager = userManager;
             _mapper = mapper;
@@ -222,9 +224,9 @@ namespace Pacifica.API.Services.EmployeeService
                 FirstName = employee.FirstName,
                 LastName = employee.LastName,
                 Email = employee.Email,
-                Department = employee.Department?.Name, 
+                Department = employee.Department?.Name,
                 Position = employee.Position?.Name,
-                                                      
+
                 Roles = employee.Roles?.Select(role => new RoleDto
                 {
                     Id = role.Id,
@@ -244,6 +246,96 @@ namespace Pacifica.API.Services.EmployeeService
                 Success = true,
                 Data = employeeDtos
             };
+        }
+
+        public async Task<ApiResponse<IEnumerable<GetFilter_Employee>>> GetEmployeesByPageAsync(int page, int pageSize, string sortField, int sortOrder)
+        {
+            // Map sortField to an actual Expression<Func<GetFilter_Employee, object>> that EF Core can process
+            var sortExpression = GetSortExpression(sortField);
+
+            if (sortExpression == null)
+            {
+                return new ApiResponse<IEnumerable<GetFilter_Employee>>
+                {
+                    Success = false,
+                    Message = "Invalid sort expression.",
+                    Data = null,
+                    TotalCount = 0
+                };
+            }
+
+            // Get the total count of employees
+            var totalCount = await _context.Employees
+                .IgnoreQueryFilters() // Ignore QueryFilters for soft delete if necessary
+                .CountAsync();
+
+            // Dynamically order the query based on the sort expression and sort order
+            IQueryable<GetFilter_Employee> query = _context.Employees
+                .IgnoreQueryFilters()  // Ignore global filters, so we can apply soft delete filter manually
+                .Include(e => e.Department)
+                .Include(e => e.Position)
+                .Include(e => e.Roles)
+                .Select(e => new GetFilter_Employee
+                {
+                    Id = e.Id.ToString(),  // Convert to string if necessary for your response format
+                    EmployeeId = e.EmployeeId,
+                    FirstName = e.FirstName,
+                    LastName = e.LastName,
+                    Email = e.Email,
+                    DepartmentId = e.Department != null ? e.Department.Id : 0,  // Check for null
+                    Department = e.Department!.Name,  // Check for null
+                    PositionId = e.Position != null ? e.Position.Id : 0,  // Check for null
+                    Position = e.Position!.Name,  // Check for null
+                    Roles = e.Roles!.Select(r => new RoleDto
+                    {
+                        Id = r.Id,
+                        Name = r.Name
+                    }).ToList()  // Ensure Roles is not null
+                });
+
+            // Apply sorting dynamically based on sortOrder
+            if (sortOrder == 1)
+            {
+                query = query.OrderBy(sortExpression);  // Apply ascending order
+            }
+            else
+            {
+                query = query.OrderByDescending(sortExpression);  // Apply descending order
+            }
+
+            // Apply pagination
+            var employees = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new ApiResponse<IEnumerable<GetFilter_Employee>>
+            {
+                Success = true,
+                Message = "Employees retrieved successfully.",
+                Data = employees,
+                TotalCount = totalCount
+            };
+        }
+        private Expression<Func<GetFilter_Employee, object>> GetSortExpression(string sortField)
+        {
+            switch (sortField.ToLower())  // Use ToLower() to make it case insensitive
+            {
+                case "firstname":
+                    return e => e.FirstName!;
+                case "lastname":
+                    return e => e.LastName!;
+                case "email":
+                    return e => e.Email!;
+                case "department":
+                    return e => e.Department!;
+                case "position":
+                    return e => e.Position!;
+                case "employeeid":
+                    return e => e.EmployeeId!;
+                default:
+                    return null!;  // Invalid sort field
+            }
         }
 
     }
