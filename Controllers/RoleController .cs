@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Pacifica.API.Dtos.User;
+using Pacifica.API.Dtos.Role;
 using Pacifica.API.Services.RoleService;
 
 namespace Pacifica.API.Controllers
@@ -32,7 +32,7 @@ namespace Pacifica.API.Controllers
 
         // Create a new role
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<string>>> CreateRole([FromBody] string roleName)
+        public async Task<ActionResult<ApiResponse<string>>> CreateRole([FromBody] RoleDto roleName)
         {
             try
             {
@@ -45,20 +45,46 @@ namespace Pacifica.API.Controllers
             }
         }
 
-        // Assign a role to an employee
-        [HttpPost("assign/{employeeId}/{roleName}")]
-        public async Task<ActionResult<ApiResponse<bool>>> AssignRole(string employeeId, string roleName)
+        // // Assign a role to an employee
+        // [HttpPost("assign/{employeeId}/{roleName}")]
+        // public async Task<ActionResult<ApiResponse<bool>>> AssignRole(string employeeId, string roleName)
+        // {
+        //     try
+        //     {
+        //         var response = await _roleService.AssignRoleToEmployeeAsync(employeeId, roleName);
+        //         return Ok(response);
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return BadRequest(new ApiResponse<bool> { Success = false, Message = $"Error assigning role: {ex.Message}" });
+        //     }
+        // }
+
+        [HttpPost("assign/{employeeId}")]
+        public async Task<ActionResult<ApiResponse<bool>>> AssignRoles(string employeeId, [FromBody] List<AssignRoleDto> roles)
         {
             try
             {
-                var response = await _roleService.AssignRoleToEmployeeAsync(employeeId, roleName);
-                return Ok(response);
+                if (roles == null || !roles.Any())
+                {
+                    return BadRequest(new ApiResponse<bool> { Success = false, Message = "No roles provided" });
+                }
+
+                // Call the service to handle assigning multiple roles
+                var response = await _roleService.AssignRolesToEmployeeAsync(employeeId, roles);
+                if (!response.Success)
+                {
+                    return BadRequest(new ApiResponse<bool> { Success = false, Message = response.Message });
+                }
+
+                return Ok(new ApiResponse<bool> { Success = true, Message = "Roles assigned successfully" });
             }
             catch (Exception ex)
             {
-                return BadRequest(new ApiResponse<bool> { Success = false, Message = $"Error assigning role: {ex.Message}" });
+                return BadRequest(new ApiResponse<bool> { Success = false, Message = $"Error assigning roles: {ex.Message}" });
             }
         }
+
 
         // Remove a role from an employee
         [HttpPost("remove/{Id}/{roleName}")]

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Pacifica.API.Dtos.User;
+using Pacifica.API.Dtos.Role;
 
 namespace Pacifica.API.Services.RoleService
 {
@@ -27,29 +27,51 @@ namespace Pacifica.API.Services.RoleService
         }
 
         // Create a new role
-        public async Task<ApiResponse<string>> CreateRoleAsync(string roleName)
+        public async Task<ApiResponse<string>> CreateRoleAsync(RoleDto roleName)
         {
-            var role = new IdentityRole(roleName);
+            var role = new IdentityRole(roleName.Name!);
             var result = await _roleManager.CreateAsync(role);
 
             if (result.Succeeded)
             {
-                return new ApiResponse<string> { Success = true, Message = "Role created successfully", Data = roleName };
+                return new ApiResponse<string> { Success = true, Message = "Role created successfully", Data = roleName.Name };
             }
 
             return new ApiResponse<string> { Success = false, Message = "Error creating role" };
         }
 
         // Assign role to an employee
-        public async Task<ApiResponse<bool>> AssignRoleToEmployeeAsync(string employeeId, string roleName)
+        public async Task<ApiResponse<bool>> AssignRolesToEmployeeAsync(string employeeId, List<AssignRoleDto> roles)
         {
-            var employee = await _userManager.FindByIdAsync(employeeId);
-            if (employee == null) return new ApiResponse<bool> { Success = false, Message = "Employee not found" };
+            try
+            {
+                var employee = await _userManager.Users
+                            .FirstOrDefaultAsync(e => e.Id == employeeId);  // Use FirstOrDefaultAsync
 
-            var result = await _userManager.AddToRoleAsync(employee, roleName);
+                if (employee == null)
+                {
+                    return new ApiResponse<bool> { Success = false, Message = "Employee not found" };
+                }
 
-            return new ApiResponse<bool> { Success = result.Succeeded, Message = result.Succeeded ? "Role assigned successfully" : "Error assigning role" };
+
+                // Loop through the roles and assign each one
+                foreach (var role in roles)
+                {
+                    var result = await _userManager.AddToRoleAsync(employee, role.Name!);
+                    if (!result.Succeeded)
+                    {
+                        return new ApiResponse<bool> { Success = false, Message = $"Error assigning role: {role.Name}", Data = true };
+                    }
+                }
+
+                return new ApiResponse<bool> { Success = true, Message = "Roles assigned successfully" };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<bool> { Success = false, Message = $"Error assigning roles: {ex.Message}" };
+            }
         }
+
 
         // Remove role from an employee
         public async Task<ApiResponse<bool>> RemoveRoleFromEmployeeAsync(string employeeId, string roleName)
