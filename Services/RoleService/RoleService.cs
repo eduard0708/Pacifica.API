@@ -8,11 +8,15 @@ namespace Pacifica.API.Services.RoleService
     {
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<Employee> _userManager;
+        private readonly ILogger<RoleService> _logger;  // Declare the logger
 
-        public RoleService(RoleManager<IdentityRole> roleManager, UserManager<Employee> userManager)
+
+        public RoleService(RoleManager<IdentityRole> roleManager, UserManager<Employee> userManager, ILogger<RoleService> logger)
         {
             _roleManager = roleManager;
             _userManager = userManager;
+            _logger = logger;  // Assign the injected logger
+
         }
 
         // Get all roles
@@ -45,21 +49,26 @@ namespace Pacifica.API.Services.RoleService
         {
             try
             {
+                // Log the incoming employeeId to verify it's correct
+                _logger.LogInformation($"Assigning roles to EmployeeId: {employeeId}");
+
                 var employee = await _userManager.Users
-                            .FirstOrDefaultAsync(e => e.Id == employeeId);  // Use FirstOrDefaultAsync
+                                        .FirstOrDefaultAsync(e => e.Id == employeeId);
 
                 if (employee == null)
                 {
                     return new ApiResponse<bool> { Success = false, Message = "Employee not found" };
                 }
 
+                // Log the employee data for debugging
+                _logger.LogInformation($"Found Employee: {employee.Id}, UserName: {employee.UserName}");
 
-                // Loop through the roles and assign each one
                 foreach (var role in roles)
                 {
                     var result = await _userManager.AddToRoleAsync(employee, role.Name!);
                     if (!result.Succeeded)
                     {
+                        _logger.LogError($"Error assigning role {role.Name} to employee {employeeId}");
                         return new ApiResponse<bool> { Success = false, Message = $"Error assigning role: {role.Name}", Data = true };
                     }
                 }
@@ -68,10 +77,10 @@ namespace Pacifica.API.Services.RoleService
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error assigning roles: {ex.Message}");
                 return new ApiResponse<bool> { Success = false, Message = $"Error assigning roles: {ex.Message}" };
             }
         }
-
 
         // Remove role from an employee
         public async Task<ApiResponse<bool>> RemoveRoleFromEmployeeAsync(string employeeId, string roleName)

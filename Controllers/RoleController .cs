@@ -61,7 +61,7 @@ namespace Pacifica.API.Controllers
         // }
 
         [HttpPost("assign/{employeeId}")]
-        public async Task<ActionResult<ApiResponse<bool>>> AssignRoles(string employeeId, [FromBody] List<AssignRoleDto> roles)
+        public async Task<ActionResult<ApiResponse<bool>>> AssignRoles(string Id, string employeeId, [FromBody] List<AssignRoleDto> roles)
         {
             try
             {

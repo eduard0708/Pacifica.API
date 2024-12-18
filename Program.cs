@@ -38,6 +38,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers(); // **This is the fix**
+builder.Services.AddLogging();
+
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
