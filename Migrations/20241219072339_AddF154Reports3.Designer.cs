@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pacifica.API.Data;
 
@@ -11,9 +12,11 @@ using Pacifica.API.Data;
 namespace Pacifica.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241219072339_AddF154Reports3")]
+    partial class AddF154Reports3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1199,7 +1202,7 @@ namespace Pacifica.API.Migrations
                     b.Property<string>("Bank")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CheckNumber")
+                    b.Property<string>("CheckNo")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("DailySalesReportId")
@@ -1238,33 +1241,17 @@ namespace Pacifica.API.Migrations
                     b.Property<decimal>("ChargeInvoice")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("CustomerCount")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DeletedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<decimal>("GrossSalesCRM")
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<decimal>("GrossSalesCashSlip")
                         .HasColumnType("decimal(18, 2)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<decimal>("LessChargeSales")
                         .HasColumnType("decimal(18, 2)");
@@ -1284,22 +1271,11 @@ namespace Pacifica.API.Migrations
                     b.Property<decimal>("PaymentsOfAccounts")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<string>("Remarks")
-                        .HasMaxLength(1500)
-                        .HasColumnType("nvarchar(1500)");
-
                     b.Property<decimal>("SalesForTheDay")
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<decimal>("TotalSales")
                         .HasColumnType("decimal(18, 2)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -1573,7 +1549,7 @@ namespace Pacifica.API.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("SoldPrice")
-                        .HasColumnType("decimal(18, 2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("StockOutReferenceId")
                         .HasColumnType("int");

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Pacifica.API.Models.Reports.F154Report;
 using Pacifica.API.Models.Transaction;
 
 namespace Pacifica.API.Models
@@ -23,6 +24,7 @@ namespace Pacifica.API.Models
         public ICollection<StockOut>? StockOuts { get; set; }  // Many-to-many relation with Product
         public ICollection<StockIn>? StockIns { get; set; }  // Many-to-many relation with Product
 
+        public ICollection<DailySalesReport>? DailySalesReports { get; set; }  // Many-to-many relation with DailySalesReport
     }
 }
 

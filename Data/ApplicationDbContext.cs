@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Pacifica.API.Models.EmployeManagement;
 using Pacifica.API.Models.GlobalAuditTrails;
 using Pacifica.API.Models.Inventory;
+using Pacifica.API.Models.Reports.F154Report;
 using Pacifica.API.Models.Transaction;
 
 namespace Pacifica.API.Data
@@ -50,32 +51,41 @@ namespace Pacifica.API.Data
         public DbSet<InventoryNormalization> InventoryNormalizations { get; set; }
 
 
+        /// <summary>
+        ///  Imported form ModelConfigurationF154Reports Class the configuration
+        /// </summary>
+        public DbSet<DailySalesReport> DailySalesReports { get; set; }
+        public DbSet<CashDenomination> CashDenominations { get; set; }
+        public DbSet<Check> Checks { get; set; }
+        public DbSet<SalesBreakdown> SalesBreakdowns { get; set; }
+
+
 
         // Configurations for model building
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-   
-        // Configure Employee entity
-        modelBuilder.Entity<Employee>(entity =>
-            {
-                // Set EmployeeId as the primary key
-                entity.HasKey(e => e.EmployeeId);
 
-                // Configure EmployeeId as a unique index
-                entity.HasIndex(e => e.EmployeeId)
-                      .IsUnique();
+            // Configure Employee entity
+            modelBuilder.Entity<Employee>(entity =>
+                {
+                    // Set EmployeeId as the primary key
+                    entity.HasKey(e => e.EmployeeId);
 
-                entity.Property(e => e.CreatedAt)
-                      .IsRequired()
-                      .HasDefaultValueSql("GETDATE()");
+                    // Configure EmployeeId as a unique index
+                    entity.HasIndex(e => e.EmployeeId)
+                          .IsUnique();
 
-                // Configure the one-to-one relationship with EmployeeProfile
-                entity.HasOne(e => e.EmployeeProfile)
-                      .WithOne(ep => ep.Employee)
-                      .HasForeignKey<EmployeeProfile>(ep => ep.EmployeeId)
-                      .OnDelete(DeleteBehavior.Restrict);  // If Employee is deleted, delete EmployeeProfile as well
-            });
+                    entity.Property(e => e.CreatedAt)
+                          .IsRequired()
+                          .HasDefaultValueSql("GETDATE()");
+
+                    // Configure the one-to-one relationship with EmployeeProfile
+                    entity.HasOne(e => e.EmployeeProfile)
+                          .WithOne(ep => ep.Employee)
+                          .HasForeignKey<EmployeeProfile>(ep => ep.EmployeeId)
+                          .OnDelete(DeleteBehavior.Restrict);  // If Employee is deleted, delete EmployeeProfile as well
+                });
 
             // Configure the relationship between AspNetUserRoles and Employee (not IdentityUser)
             modelBuilder.Entity<IdentityUserRole<string>>()
@@ -83,7 +93,7 @@ namespace Pacifica.API.Data
                         .WithMany()
                         .HasForeignKey(ur => ur.UserId)  // This is the foreign key in AspNetUserRoles
                         .HasPrincipalKey(e => e.EmployeeId);  // Point to EmployeeId instead of the default Id
-                        
+
 
             // Configure EmployeeProfile entity
             modelBuilder.Entity<EmployeeProfile>(entity =>
@@ -537,6 +547,21 @@ namespace Pacifica.API.Data
             // Ensure that global query filters on StockIn and Branch do not interfere with the audit trail
             modelBuilder.Entity<WeeklyInventory>()
                 .HasQueryFilter(si => si.DeletedAt == null || si.DeletedAt != null);  // Adjust depending on soft-delete behavior
+
+            // Ensure that global query filters on StockIn and Branch do not interfere with the audit trail
+            modelBuilder.Entity<Inventory>()
+                .HasQueryFilter(si => si.DeletedAt == null || si.DeletedAt != null);  // Adjust depending on soft-delete behavior
+            modelBuilder.Entity<InventoryNormalization>()
+                .HasQueryFilter(si => si.DeletedAt == null || si.DeletedAt != null);  // Adjust depending on soft-delete behavior    
+
+            modelBuilder.Entity<DailySalesReport>().HasQueryFilter(dsr => dsr.DeletedAt == null);
+            modelBuilder.Entity<SalesBreakdown>()
+                .HasQueryFilter(sb => sb.DailySalesReport.DeletedAt == null);  // Apply matching filter for SalesBreakdown
+            modelBuilder.Entity<CashDenomination>()
+                .HasQueryFilter(sb => sb.DailySalesReport.DeletedAt == null);  // Apply matching filter for SalesBreakdown    
+            modelBuilder.Entity<Check>()
+                .HasQueryFilter(sb => sb.DailySalesReport.DeletedAt == null);  // Apply matching filter for SalesBreakdown        
+
 
         }
     }

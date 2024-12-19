@@ -32,8 +32,8 @@ public class StockIn : AuditDetails
     public decimal RetailPrice { get; set; }
 
     // Navigation properties
-    public Product? Product { get; set; }
-    public Branch? Branch { get; set; }
+    public Product Product { get; set; } = new Product();
+    public Branch Branch { get; set; } = new Branch();
     public StockInReference? StockInReference { get; set; }
 
     public ICollection<StockInAuditTrail>? StockInAuditTrails { get; set; }

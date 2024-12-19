@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Pacifica.API.Models.GlobalAuditTrails;
 
 namespace Pacifica.API.Models.Transaction
@@ -28,23 +29,22 @@ namespace Pacifica.API.Models.Transaction
         public int StockOutReferenceId { get; set; }
 
         [Required]
-        public int? BranchId { get; set; }
+        public int BranchId { get; set; }
 
-        [Range(18, 2)]
+        [Column(TypeName = "decimal(18, 2)")]
         public decimal RetailPrice { get; set; }
-        
-        [Range(18, 2)]
+
+        [Column(TypeName = "decimal(18, 2)")]
         public decimal SoldPrice { get; set; }
 
         [Required]
         public DateTime DateSold { get; set; }
 
         // Navigation properties
-        public Product? Product { get; set; }
-        public Branch? Branch { get; set; }
+        public Product Product { get; set; } = new Product();
+        public Branch Branch { get; set; } = new Branch();
         public PaymentMethod? PaymentMethod { get; set; }
         public StockOutReference? StockOutReference { get; set; }
         public ICollection<StockOutAuditTrail>? StockOutAuditTrails { get; set; }
-
     }
 }

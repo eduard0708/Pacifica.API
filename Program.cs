@@ -30,6 +30,7 @@ using Pacifica.API.Services.PaymentMethodService;
 using Pacifica.API.Models.Inventory;
 using Pacifica.API.Models.EmployeManagement;
 using Pacifica.API.Services.EmployeeManagementService;
+using Pacifica.API.Services.F154ReportService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -94,7 +95,7 @@ builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
 builder.Services.AddScoped<IInventoryNormalizationService, InventoryNormalizationService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IPositionService, PositionService>();
-
+builder.Services.AddScoped<IF154ReportService, F154ReportService>();
 
 
 builder.Services.AddScoped<ProductAuditTrailHelper>();

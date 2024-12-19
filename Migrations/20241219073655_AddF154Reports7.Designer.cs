@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pacifica.API.Data;
 
@@ -11,9 +12,11 @@ using Pacifica.API.Data;
 namespace Pacifica.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241219073655_AddF154Reports7")]
+    partial class AddF154Reports7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1199,7 +1202,7 @@ namespace Pacifica.API.Migrations
                     b.Property<string>("Bank")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CheckNumber")
+                    b.Property<string>("CheckNo")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("DailySalesReportId")
