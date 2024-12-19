@@ -10,7 +10,7 @@ namespace Pacifica.API.Models
         [Required]
         [StringLength(128)]  // Maximum length for EmployeeId, set by your system design
         public string EmployeeId { get; set; } = string.Empty;
-
+        
         [Required]
         [StringLength(100)]
         public string? FirstName { get; set; }  // Employee's first name

@@ -105,6 +105,7 @@ namespace Pacifica.API.Services.EmployeeService
         public async Task<ApiResponse<EmployeeDto>> GetEmployeeByIdAsync(string employeeId)
         {
             // Fetch the employee by ID and include related entities (Roles, Department, Position)
+            
             var employee = await _userManager.Users
                 .Include(e => e.Roles)   // Include the roles for the employee
                 .Include(e => e.Department) // Assuming Department is related to Employee

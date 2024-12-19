@@ -43,45 +43,7 @@ namespace Pacifica.API.Services.RoleService
 
             return new ApiResponse<string> { Success = false, Message = "Error creating role" };
         }
-
-        // Assign role to an employee
-        public async Task<ApiResponse<bool>> AssignRolesToEmployeeAsync(string employeeId, List<AssignRoleDto> roles)
-        {
-            try
-            {
-                // Log the incoming employeeId to verify it's correct
-                _logger.LogInformation($"Assigning roles to EmployeeId: {employeeId}");
-
-                var employee = await _userManager.Users
-                                        .FirstOrDefaultAsync(e => e.Id == employeeId);
-
-                if (employee == null)
-                {
-                    return new ApiResponse<bool> { Success = false, Message = "Employee not found" };
-                }
-
-                // Log the employee data for debugging
-                _logger.LogInformation($"Found Employee: {employee.Id}, UserName: {employee.UserName}");
-
-                foreach (var role in roles)
-                {
-                    var result = await _userManager.AddToRoleAsync(employee, role.Name!);
-                    if (!result.Succeeded)
-                    {
-                        _logger.LogError($"Error assigning role {role.Name} to employee {employeeId}");
-                        return new ApiResponse<bool> { Success = false, Message = $"Error assigning role: {role.Name}", Data = true };
-                    }
-                }
-
-                return new ApiResponse<bool> { Success = true, Message = "Roles assigned successfully" };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error assigning roles: {ex.Message}");
-                return new ApiResponse<bool> { Success = false, Message = $"Error assigning roles: {ex.Message}" };
-            }
-        }
-
+  
         // Remove role from an employee
         public async Task<ApiResponse<bool>> RemoveRoleFromEmployeeAsync(string employeeId, string roleName)
         {
@@ -112,5 +74,60 @@ namespace Pacifica.API.Services.RoleService
 
             return new ApiResponse<string> { Success = false, Message = "Error updating role" };
         }
+
+
+        public async Task<ApiResponse<bool>> AssignRolesToEmployeeAsync(string Id, List<AssignRoleDto> roles)
+        {
+            try
+            {
+                // Log the incoming employeeId to verify it's correct
+                _logger.LogInformation($"Assigning roles to EmployeeId: {Id}");
+
+                var employee = await _userManager.Users
+                                                .FirstOrDefaultAsync(e => e.Id == Id);
+
+                if (employee == null)
+                {
+                    return new ApiResponse<bool> { Success = false, Message = "Employee not found" };
+                }
+
+                // Log the employee data for debugging
+                _logger.LogInformation($"Found Employee: {employee.Id}, UserName: {employee.UserName}");
+
+                // Prepare a list of role names to be assigned
+                var roleNames = roles.Select(role => role.Name!).ToList();
+
+                // Check if all roles exist in the database before assigning them
+                var existingRoles = await _roleManager.Roles
+                                                        .Where(r => roleNames.Contains(r.Name!))
+                                                        .ToListAsync();
+
+                // If there are roles that do not exist, return an error message
+                // var nonExistingRoles = roleNames.Except(existingRoles.Select(r => r.Name)).ToList();
+                // if (nonExistingRoles.Any())
+                // {
+                //     _logger.LogError($"The following roles do not exist: {string.Join(", ", nonExistingRoles)}");
+                //     return new ApiResponse<bool> { Success = false, Message = $"The following roles do not exist: {string.Join(", ", nonExistingRoles)}", Data = false };
+                // }
+
+                // Add roles to the user if all roles exist
+                var result = await _userManager.AddToRolesAsync(employee, roleNames);
+
+                if (!result.Succeeded)
+                {
+                    // Log detailed error message if role assignment fails
+                    _logger.LogError($"Error assigning roles to employee {Id}. Errors: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+                    return new ApiResponse<bool> { Success = false, Message = "Error assigning roles", Data = false };
+                }
+
+                return new ApiResponse<bool> { Success = true, Message = "Roles assigned successfully" };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error assigning roles to EmployeeId {Id}: {ex.Message}");
+                return new ApiResponse<bool> { Success = false, Message = $"Error assigning roles: {ex.Message}" };
+            }
+        }
+
     }
 }

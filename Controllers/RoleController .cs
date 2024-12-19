@@ -60,8 +60,8 @@ namespace Pacifica.API.Controllers
         //     }
         // }
 
-        [HttpPost("assign/{employeeId}")]
-        public async Task<ActionResult<ApiResponse<bool>>> AssignRoles(string Id, string employeeId, [FromBody] List<AssignRoleDto> roles)
+        [HttpPost("assign/{Id}")]
+        public async Task<ActionResult<ApiResponse<bool>>> AssignRoles(string Id, [FromBody] List<AssignRoleDto> roles)
         {
             try
             {
@@ -71,7 +71,7 @@ namespace Pacifica.API.Controllers
                 }
 
                 // Call the service to handle assigning multiple roles
-                var response = await _roleService.AssignRolesToEmployeeAsync(employeeId, roles);
+                var response = await _roleService.AssignRolesToEmployeeAsync(Id, roles);
                 if (!response.Success)
                 {
                     return BadRequest(new ApiResponse<bool> { Success = false, Message = response.Message });
