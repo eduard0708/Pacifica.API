@@ -1,11 +1,9 @@
 namespace Pacifica.API.Dtos.F154Report
 {
-    public class DailySalesReportDto
+    public class CreateDailySalesReportDto
     {
-        public int Id { get; set; } // Unique identifier for the report
         public DateTime Date { get; set; }
         public int BranchId { get; set; }
-        public string? BranchName { get; set; }
         public decimal SalesForTheDay { get; set; }
         public decimal GrossSalesCRM { get; set; }
         public decimal GrossSalesCashSlip { get; set; }
@@ -17,7 +15,6 @@ namespace Pacifica.API.Dtos.F154Report
         public decimal CashSlip { get; set; }
         public decimal ChargeInvoice { get; set; }
         public decimal PaymentsOfAccounts { get; set; }
-        public decimal DenominationSumAmount { get; set; }
         public decimal OtherReceipts { get; set; }
         public string? CertifiedBy { get; set; }
         public string? ApprovedBy { get; set; }

@@ -55,6 +55,7 @@ namespace Pacifica.API.Controllers
             return CreatedAtAction(nameof(GetPositionById), new { id = response.Data?.Id }, response);
         }
 
+
         // PUT: api/position/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePosition(int id, [FromBody] PositionDto positionDto)

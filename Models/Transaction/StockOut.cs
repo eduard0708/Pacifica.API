@@ -41,8 +41,8 @@ namespace Pacifica.API.Models.Transaction
         public DateTime DateSold { get; set; }
 
         // Navigation properties
-        public Product Product { get; set; } = new Product();
-        public Branch Branch { get; set; } = new Branch();
+        public Product? Product { get; set; }
+        public Branch? Branch { get; set; }
         public PaymentMethod? PaymentMethod { get; set; }
         public StockOutReference? StockOutReference { get; set; }
         public ICollection<StockOutAuditTrail>? StockOutAuditTrails { get; set; }

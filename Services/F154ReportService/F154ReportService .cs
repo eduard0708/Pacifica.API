@@ -40,7 +40,7 @@ namespace Pacifica.API.Services.F154ReportService
             return response;
         }
 
-        public async Task<ApiResponse<DailySalesReportDto>> CreateAsync(DailySalesReportDto reportDto)
+        public async Task<ApiResponse<DailySalesReportDto>> CreateAsync(CreateDailySalesReportDto reportDto)
         {
             var response = new ApiResponse<DailySalesReportDto>();
 
@@ -122,6 +122,7 @@ namespace Pacifica.API.Services.F154ReportService
                 Id = entity.Id,
                 Date = entity.Date,
                 BranchId = entity.BranchId,
+                BranchName = entity.Branch!.BranchName,
                 SalesForTheDay = entity.SalesForTheDay,
                 GrossSalesCRM = entity.GrossSalesCRM,
                 GrossSalesCashSlip = entity.GrossSalesCashSlip,
@@ -138,7 +139,7 @@ namespace Pacifica.API.Services.F154ReportService
                 ApprovedBy = entity.ApprovedBy,
                 // Map related data
                 
-                CashDenominations = entity.CashDenominations.Select(c => new CashDenominationDto
+                CashDenominations = entity.CashDenominations!.Select(c => new CashDenominationDto
                 {
                     Id = c.Id,
                     CashDenomination = (DenominationEnums)c.Denomination!,
@@ -146,7 +147,7 @@ namespace Pacifica.API.Services.F154ReportService
                     Amount = c.Amount
                 }).ToList(),
 
-                SalesBreakdowns = entity.SalesBreakdowns.Select(s => new SalesBreakdownDto
+                SalesBreakdowns = entity.SalesBreakdowns!.Select(s => new SalesBreakdownDto
                 {
                     Id = s.Id,
                     ProductCategory = (int)s.ProductCategory,
@@ -156,11 +157,11 @@ namespace Pacifica.API.Services.F154ReportService
         }
 
         // Helper method to map DTO to Entity
-        private DailySalesReport MapToEntity(DailySalesReportDto dto)
+        private DailySalesReport MapToEntity(CreateDailySalesReportDto dto)
         {
             return new DailySalesReport
             {
-                Id = dto.Id,
+                // Id = dto.Id,
                 Date = dto.Date,
                 BranchId = dto.BranchId,
                 SalesForTheDay = dto.SalesForTheDay,

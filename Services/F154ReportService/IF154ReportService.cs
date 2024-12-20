@@ -9,7 +9,7 @@ namespace Pacifica.API.Services.F154ReportService
         Task<ApiResponse<DailySalesReportDto>> GetByIdAsync(int id);
 
         // Create a new DailySalesReport
-        Task<ApiResponse<DailySalesReportDto>> CreateAsync(DailySalesReportDto reportDto);
+        Task<ApiResponse<DailySalesReportDto>> CreateAsync(CreateDailySalesReportDto reportDto);
 
         // Update an existing DailySalesReport
         Task<ApiResponse<DailySalesReportDto>> UpdateAsync(DailySalesReportDto reportDto);

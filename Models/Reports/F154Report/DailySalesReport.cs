@@ -2,12 +2,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Pacifica.API.Models.Reports.F154Report
 {
-    public class DailySalesReport :AuditDetails
+    public class DailySalesReport : AuditDetails
     {
         public int Id { get; set; } // Unique identifier for the report
         public DateTime Date { get; set; }
         public int BranchId { get; set; }
-        public Branch Branch { get; set; } = new Branch();
+        public Branch? Branch { get; set; }
 
         /// <summary>
         /// A. SALES FOR THE DAY
@@ -39,19 +39,22 @@ namespace Pacifica.API.Models.Reports.F154Report
         /// <summary>
         /// B. CASH ACCOUNT
         /// </summary>
-        public List<CashDenomination> CashDenominations { get; set; } = new List<CashDenomination>();
+        public List<CashDenomination>? CashDenominations { get; set; }
+        
+        [Column(TypeName = "decimal(18, 2)")]
+        public decimal DenominationSumAmount { get; set; }
 
         /// <summary>
         /// C. SALES
         /// </summary>
-        public List<SalesBreakdown> SalesBreakdowns { get; set; } = new List<SalesBreakdown>();
+        public List<SalesBreakdown>? SalesBreakdowns { get; set; }
 
         public int CustomerCount { get; set; }
 
         /// <summary>
         /// LIST OF CHECKS
         /// </summary>
-        public List<Check> Checks { get; set; } = new List<Check>();
+        public List<Check>? Checks { get; set; }
 
         /// <summary>
         /// LIST OF CHARGE SALES AND CASH SALES
