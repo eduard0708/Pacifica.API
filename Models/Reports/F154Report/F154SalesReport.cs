@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Pacifica.API.Models.Reports.F154Report
 {
-    public class DailySalesReport : AuditDetails
+    public class F154SalesReport : AuditDetails
     {
         public int Id { get; set; } // Unique identifier for the report
         public DateTime Date { get; set; }

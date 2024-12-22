@@ -54,7 +54,7 @@ namespace Pacifica.API.Data
         /// <summary>
         ///  Imported form ModelConfigurationF154Reports Class the configuration
         /// </summary>
-        public DbSet<DailySalesReport> DailySalesReports { get; set; }
+        public DbSet<F154SalesReport> F154SalesReports { get; set; }
         public DbSet<CashDenomination> CashDenominations { get; set; }
         public DbSet<Check> Checks { get; set; }
         public DbSet<SalesBreakdown> SalesBreakdowns { get; set; }
@@ -554,13 +554,13 @@ namespace Pacifica.API.Data
             modelBuilder.Entity<InventoryNormalization>()
                 .HasQueryFilter(si => si.DeletedAt == null || si.DeletedAt != null);  // Adjust depending on soft-delete behavior    
 
-            modelBuilder.Entity<DailySalesReport>().HasQueryFilter(dsr => dsr.DeletedAt == null);
+            modelBuilder.Entity<F154SalesReport>().HasQueryFilter(dsr => dsr.DeletedAt == null);
             modelBuilder.Entity<SalesBreakdown>()
-                .HasQueryFilter(sb => sb.DailySalesReport.DeletedAt == null);  // Apply matching filter for SalesBreakdown
+                .HasQueryFilter(sb => sb.F154SalesReport!.DeletedAt == null);  // Apply matching filter for SalesBreakdown
             modelBuilder.Entity<CashDenomination>()
-                .HasQueryFilter(sb => sb.DailySalesReport.DeletedAt == null);  // Apply matching filter for SalesBreakdown    
+                .HasQueryFilter(sb => sb.F154SalesReport!.DeletedAt == null);  // Apply matching filter for SalesBreakdown    
             modelBuilder.Entity<Check>()
-                .HasQueryFilter(sb => sb.DailySalesReport.DeletedAt == null);  // Apply matching filter for SalesBreakdown        
+                .HasQueryFilter(sb => sb.F154SalesReport!.DeletedAt == null);  // Apply matching filter for SalesBreakdown        
 
 
         }

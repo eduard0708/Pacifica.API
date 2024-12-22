@@ -11,7 +11,7 @@ namespace Pacifica.API.Models.Reports.F154Report
         
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Amount { get; set; }
-        public int DailySalesReportId { get; set; }
-        public DailySalesReport? DailySalesReport { get; set; }
+        public int F154SalesReportId { get; set; }
+        public F154SalesReport? F154SalesReport { get; set; }
     }
 }

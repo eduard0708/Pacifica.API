@@ -7,15 +7,15 @@ namespace Pacifica.API.Data
     {
         public static void ApplyConfigurations(ModelBuilder modelBuilder)
         {
-            // Configure DailySalesReport
-            modelBuilder.Entity<DailySalesReport>(entity =>
+            // Configure F154SalesReport
+            modelBuilder.Entity<F154SalesReport>(entity =>
             {
                 // Primary key configuration
                 entity.HasKey(x => x.Id);
 
                 // One-to-many relationship with Branch
                 entity.HasOne(x => x.Branch)
-                    .WithMany() // Assuming that Branch can have many DailySalesReports
+                    .WithMany() // Assuming that Branch can have many F154SalesReports
                     .HasForeignKey(x => x.BranchId)
                     .OnDelete(DeleteBehavior.Restrict);
 
@@ -29,10 +29,10 @@ namespace Pacifica.API.Data
                 // Primary key configuration
                 entity.HasKey(x => x.Id);
 
-                // One-to-many relationship with DailySalesReport
-                entity.HasOne(x => x.DailySalesReport)
+                // One-to-many relationship with F154SalesReport
+                entity.HasOne(x => x.F154SalesReport)
                     .WithMany(x => x.CashDenominations)
-                    .HasForeignKey(x => x.DailySalesReportId)
+                    .HasForeignKey(x => x.F154SalesReportId)
                     .OnDelete(DeleteBehavior.Restrict);
 
                 // Enum conversion for Denomination
@@ -46,10 +46,10 @@ namespace Pacifica.API.Data
                 // Primary key configuration
                 entity.HasKey(x => x.Id);
 
-                // One-to-many relationship with DailySalesReport
-                entity.HasOne(x => x.DailySalesReport)
+                // One-to-many relationship with F154SalesReport
+                entity.HasOne(x => x.F154SalesReport)
                     .WithMany(x => x.Checks)
-                    .HasForeignKey(x => x.DailySalesReportId)
+                    .HasForeignKey(x => x.F154SalesReportId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -59,10 +59,10 @@ namespace Pacifica.API.Data
                 // Primary key configuration
                 entity.HasKey(x => x.Id);
 
-                // One-to-many relationship with DailySalesReport
-                entity.HasOne(x => x.DailySalesReport)
+                // One-to-many relationship with F154SalesReport
+                entity.HasOne(x => x.F154SalesReport)
                     .WithMany(x => x.SalesBreakdowns)
-                    .HasForeignKey(x => x.DailySalesReportId)
+                    .HasForeignKey(x => x.F154SalesReportId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
         }

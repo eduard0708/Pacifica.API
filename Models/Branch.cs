@@ -24,7 +24,7 @@ namespace Pacifica.API.Models
         public ICollection<StockOut>? StockOuts { get; set; }  // Many-to-many relation with Product
         public ICollection<StockIn>? StockIns { get; set; }  // Many-to-many relation with Product
 
-        public ICollection<DailySalesReport>? DailySalesReports { get; set; }  // Many-to-many relation with DailySalesReport
+        public ICollection<F154SalesReport>? F154SalesReports { get; set; }  // Many-to-many relation with F154SalesReport
     }
 }
 

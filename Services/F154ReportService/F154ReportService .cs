@@ -18,14 +18,14 @@ namespace Pacifica.API.Services.F154ReportService
         {
             var response = new ApiResponse<DailySalesReportDto>();
 
-            var dailySalesReport = await _context.DailySalesReports
+            var F154SalesReport = await _context.F154SalesReports
                 .Include(dsr => dsr.Branch)
                 .Include(dsr => dsr.CashDenominations)
                 .Include(dsr => dsr.SalesBreakdowns)
                 .Include(dsr => dsr.Checks)
                 .FirstOrDefaultAsync(dsr => dsr.Id == id);
 
-            if (dailySalesReport == null)
+            if (F154SalesReport == null)
             {
                 response.Success = false;
                 response.Message = "Daily Sales Report not found.";
@@ -35,7 +35,7 @@ namespace Pacifica.API.Services.F154ReportService
             // Map entity to DTO
             response.Success = true;
             response.Message = "Daily Sales Report retrieved successfully.";
-            response.Data = MapToDto(dailySalesReport);
+            response.Data = MapToDto(F154SalesReport);
 
             return response;
         }
@@ -49,7 +49,7 @@ namespace Pacifica.API.Services.F154ReportService
                 // Map DTO to Entity
                 var report = MapToEntity(reportDto);
 
-                _context.DailySalesReports.Add(report);
+                _context.F154SalesReports.Add(report);
                 await _context.SaveChangesAsync();
 
                 response.Success = true;
@@ -69,7 +69,7 @@ namespace Pacifica.API.Services.F154ReportService
         {
             var response = new ApiResponse<DailySalesReportDto>();
 
-            var existingReport = await _context.DailySalesReports.FindAsync(reportDto.Id);
+            var existingReport = await _context.F154SalesReports.FindAsync(reportDto.Id);
             if (existingReport == null)
             {
                 response.Success = false;
@@ -96,7 +96,7 @@ namespace Pacifica.API.Services.F154ReportService
         {
             var response = new ApiResponse<bool>();
 
-            var report = await _context.DailySalesReports.FindAsync(id);
+            var report = await _context.F154SalesReports.FindAsync(id);
             if (report == null)
             {
                 response.Success = false;
@@ -104,7 +104,7 @@ namespace Pacifica.API.Services.F154ReportService
                 return response;
             }
 
-            _context.DailySalesReports.Remove(report);
+            _context.F154SalesReports.Remove(report);
             await _context.SaveChangesAsync();
 
             response.Success = true;
@@ -115,7 +115,7 @@ namespace Pacifica.API.Services.F154ReportService
         }
 
         // Helper method to map entity to DTO
-        private DailySalesReportDto MapToDto(DailySalesReport entity)
+        private DailySalesReportDto MapToDto(F154SalesReport entity)
         {
             return new DailySalesReportDto
             {
@@ -157,9 +157,9 @@ namespace Pacifica.API.Services.F154ReportService
         }
 
         // Helper method to map DTO to Entity
-        private DailySalesReport MapToEntity(CreateDailySalesReportDto dto)
+        private F154SalesReport MapToEntity(CreateDailySalesReportDto dto)
         {
-            return new DailySalesReport
+            return new F154SalesReport
             {
                 // Id = dto.Id,
                 Date = dto.Date,
