@@ -22,16 +22,9 @@ namespace Pacifica.API.Models.Reports.F154Report
         public decimal GrossSalesCashSlip { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal TotalSales { get; set; }
-
-        [Column(TypeName = "decimal(18, 2)")]
-        public decimal LessOverPunch { get; set; }
-
-        [Column(TypeName = "decimal(18, 2)")]
-        public decimal LessSalesReturn { get; set; }
-
-        [Column(TypeName = "decimal(18, 2)")]
-        public decimal LessChargeSales { get; set; }
+        
+        public decimal OverAllTotal { get; set; }
+        public Less? Less { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
         public decimal NetAccountability { get; set; }
@@ -40,15 +33,31 @@ namespace Pacifica.API.Models.Reports.F154Report
         /// B. CASH ACCOUNT
         /// </summary>
         public List<CashDenomination>? CashDenominations { get; set; }
-        
+
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal DenominationSumAmount { get; set; }
+        public decimal TotalDenomination { get; set; }
+
+        //ADD TOTAL CHECKS
+         [Column(TypeName = "decimal(18, 2)")]
+        public decimal AddTotalChecks { get; set; }
+
+        [Column(TypeName = "decimal(18, 2)")]
+        public decimal TotalCashCount { get; set; }
+
+        [Column(TypeName = "decimal(18, 2)")]
+        public decimal CashShortOver { get; set; }
+
 
         /// <summary>
         /// C. SALES
         /// </summary>
         public List<SalesBreakdown>? SalesBreakdowns { get; set; }
 
+
+        [Column(TypeName = "decimal(18, 2)")]
+        public decimal PerCapita { get; set; }
+        [Column(TypeName = "decimal(18, 2)")]
+        public decimal TotaSalesBreakDown { get; set; }
         public int CustomerCount { get; set; }
 
         /// <summary>
