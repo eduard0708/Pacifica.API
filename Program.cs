@@ -129,13 +129,13 @@ var app = builder.Build();
 
 // Seed data on application startup
 
-// using (var scope = app.Services.CreateScope())
-// {
-//     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-//     // Call the SeedData.Initialize method to populate the database
-//     SeedData.Initialize(dbContext);
-// }
+    // Call the SeedData.Initialize method to populate the database
+    SeedData.Initialize(dbContext);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -25,7 +25,7 @@ namespace Pacifica.API.Models.Reports.F154Report
 
         public decimal OverAllTotal { get; set; }
        
-        public List<Less>? Lesses { get; set; }
+        public Less? Less { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
         public decimal NetAccountability { get; set; }

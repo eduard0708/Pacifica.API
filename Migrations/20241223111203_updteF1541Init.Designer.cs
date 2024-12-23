@@ -12,8 +12,8 @@ using Pacifica.API.Data;
 namespace Pacifica.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241219071937_AddF154Reports")]
-    partial class AddF154Reports
+    [Migration("20241223111203_updteF1541Init")]
+    partial class updteF1541Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -961,13 +961,13 @@ namespace Pacifica.API.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("ActualQuantity")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<decimal>("AdjustedQuantity")
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<decimal>("CostPrice")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -985,7 +985,7 @@ namespace Pacifica.API.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<decimal>("DiscrepancyValue")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<int>("InventoryId")
                         .HasColumnType("int");
@@ -1003,7 +1003,7 @@ namespace Pacifica.API.Migrations
                         .HasColumnType("nvarchar(1500)");
 
                     b.Property<decimal>("SystemQuantity")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -1170,12 +1170,12 @@ namespace Pacifica.API.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("DailySalesReportId")
-                        .HasColumnType("int");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<int?>("Denomination")
+                        .HasColumnType("int");
+
+                    b.Property<int>("F154SalesReportId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -1183,7 +1183,7 @@ namespace Pacifica.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DailySalesReportId");
+                    b.HasIndex("F154SalesReportId");
 
                     b.ToTable("CashDenominations");
                 });
@@ -1197,15 +1197,15 @@ namespace Pacifica.API.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("Bank")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CheckNo")
+                    b.Property<string>("CheckNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DailySalesReportId")
+                    b.Property<int>("F154SalesReportId")
                         .HasColumnType("int");
 
                     b.Property<string>("Maker")
@@ -1213,12 +1213,12 @@ namespace Pacifica.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DailySalesReportId");
+                    b.HasIndex("F154SalesReportId");
 
                     b.ToTable("Checks");
                 });
 
-            modelBuilder.Entity("Pacifica.API.Models.Reports.F154Report.DailySalesReport", b =>
+            modelBuilder.Entity("Pacifica.API.Models.Reports.F154Report.F154SalesReport", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1226,62 +1226,126 @@ namespace Pacifica.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<decimal>("AddTotalChecks")
+                        .HasColumnType("decimal(18, 2)");
+
                     b.Property<string>("ApprovedBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("BranchId")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("CashShortOver")
+                        .HasColumnType("decimal(18, 2)");
+
                     b.Property<decimal>("CashSlip")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("CertifiedBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("ChargeInvoice")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CustomerCount")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("Date")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("DeletedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<decimal>("GrossSalesCRM")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<decimal>("GrossSalesCashSlip")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
-                    b.Property<decimal>("LessChargeSales")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("LessOverPunch")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("LessSalesReturn")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<decimal>("NetAccountability")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<decimal>("OtherReceipts")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("OverAllTotal")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<decimal>("PaymentsOfAccounts")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("PerCapita")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(1500)
+                        .HasColumnType("nvarchar(1500)");
 
                     b.Property<decimal>("SalesForTheDay")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
-                    b.Property<decimal>("TotalSales")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<decimal>("TotaSalesBreakDown")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("TotalCashCount")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("TotalDenomination")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("dateReported")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BranchId");
 
-                    b.ToTable("DailySalesReports");
+                    b.ToTable("F154SalesReports");
+                });
+
+            modelBuilder.Entity("Pacifica.API.Models.Reports.F154Report.Less", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("ChargeSales")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<int>("F154SalesReportId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("OverPunch")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("SalesReturnOP")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("F154SalesReportId")
+                        .IsUnique();
+
+                    b.ToTable("Lesses");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Reports.F154Report.SalesBreakdown", b =>
@@ -1293,9 +1357,9 @@ namespace Pacifica.API.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
-                    b.Property<int>("DailySalesReportId")
+                    b.Property<int>("F154SalesReportId")
                         .HasColumnType("int");
 
                     b.Property<int>("ProductCategory")
@@ -1303,7 +1367,7 @@ namespace Pacifica.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DailySalesReportId");
+                    b.HasIndex("F154SalesReportId");
 
                     b.ToTable("SalesBreakdowns");
                 });
@@ -1549,7 +1613,7 @@ namespace Pacifica.API.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("SoldPrice")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<int>("StockOutReferenceId")
                         .HasColumnType("int");
@@ -1927,30 +1991,30 @@ namespace Pacifica.API.Migrations
 
             modelBuilder.Entity("Pacifica.API.Models.Reports.F154Report.CashDenomination", b =>
                 {
-                    b.HasOne("Pacifica.API.Models.Reports.F154Report.DailySalesReport", "DailySalesReport")
+                    b.HasOne("Pacifica.API.Models.Reports.F154Report.F154SalesReport", "F154SalesReport")
                         .WithMany("CashDenominations")
-                        .HasForeignKey("DailySalesReportId")
+                        .HasForeignKey("F154SalesReportId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("DailySalesReport");
+                    b.Navigation("F154SalesReport");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Reports.F154Report.Check", b =>
                 {
-                    b.HasOne("Pacifica.API.Models.Reports.F154Report.DailySalesReport", "DailySalesReport")
+                    b.HasOne("Pacifica.API.Models.Reports.F154Report.F154SalesReport", "F154SalesReport")
                         .WithMany("Checks")
-                        .HasForeignKey("DailySalesReportId")
+                        .HasForeignKey("F154SalesReportId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("DailySalesReport");
+                    b.Navigation("F154SalesReport");
                 });
 
-            modelBuilder.Entity("Pacifica.API.Models.Reports.F154Report.DailySalesReport", b =>
+            modelBuilder.Entity("Pacifica.API.Models.Reports.F154Report.F154SalesReport", b =>
                 {
                     b.HasOne("Pacifica.API.Models.Branch", "Branch")
-                        .WithMany("DailySalesReports")
+                        .WithMany("F154SalesReports")
                         .HasForeignKey("BranchId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1958,15 +2022,26 @@ namespace Pacifica.API.Migrations
                     b.Navigation("Branch");
                 });
 
-            modelBuilder.Entity("Pacifica.API.Models.Reports.F154Report.SalesBreakdown", b =>
+            modelBuilder.Entity("Pacifica.API.Models.Reports.F154Report.Less", b =>
                 {
-                    b.HasOne("Pacifica.API.Models.Reports.F154Report.DailySalesReport", "DailySalesReport")
-                        .WithMany("SalesBreakdowns")
-                        .HasForeignKey("DailySalesReportId")
+                    b.HasOne("Pacifica.API.Models.Reports.F154Report.F154SalesReport", "F154SalesReport")
+                        .WithOne("Less")
+                        .HasForeignKey("Pacifica.API.Models.Reports.F154Report.Less", "F154SalesReportId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("DailySalesReport");
+                    b.Navigation("F154SalesReport");
+                });
+
+            modelBuilder.Entity("Pacifica.API.Models.Reports.F154Report.SalesBreakdown", b =>
+                {
+                    b.HasOne("Pacifica.API.Models.Reports.F154Report.F154SalesReport", "F154SalesReport")
+                        .WithMany("SalesBreakdowns")
+                        .HasForeignKey("F154SalesReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("F154SalesReport");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Transaction.StockOut", b =>
@@ -2044,9 +2119,9 @@ namespace Pacifica.API.Migrations
                 {
                     b.Navigation("BranchProducts");
 
-                    b.Navigation("DailySalesReports");
-
                     b.Navigation("EmployeeBranches");
+
+                    b.Navigation("F154SalesReports");
 
                     b.Navigation("StockIns");
 
@@ -2093,11 +2168,13 @@ namespace Pacifica.API.Migrations
                     b.Navigation("StockOuts");
                 });
 
-            modelBuilder.Entity("Pacifica.API.Models.Reports.F154Report.DailySalesReport", b =>
+            modelBuilder.Entity("Pacifica.API.Models.Reports.F154Report.F154SalesReport", b =>
                 {
                     b.Navigation("CashDenominations");
 
                     b.Navigation("Checks");
+
+                    b.Navigation("Less");
 
                     b.Navigation("SalesBreakdowns");
                 });

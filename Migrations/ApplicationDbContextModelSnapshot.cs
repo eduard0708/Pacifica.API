@@ -1178,9 +1178,6 @@ namespace Pacifica.API.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("SumAmount")
-                        .HasColumnType("decimal(18, 2)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("F154SalesReportId");
@@ -1342,7 +1339,8 @@ namespace Pacifica.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("F154SalesReportId");
+                    b.HasIndex("F154SalesReportId")
+                        .IsUnique();
 
                     b.ToTable("Lesses");
                 });
@@ -2024,8 +2022,8 @@ namespace Pacifica.API.Migrations
             modelBuilder.Entity("Pacifica.API.Models.Reports.F154Report.Less", b =>
                 {
                     b.HasOne("Pacifica.API.Models.Reports.F154Report.F154SalesReport", "F154SalesReport")
-                        .WithMany("Lesses")
-                        .HasForeignKey("F154SalesReportId")
+                        .WithOne("Less")
+                        .HasForeignKey("Pacifica.API.Models.Reports.F154Report.Less", "F154SalesReportId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2173,7 +2171,7 @@ namespace Pacifica.API.Migrations
 
                     b.Navigation("Checks");
 
-                    b.Navigation("Lesses");
+                    b.Navigation("Less");
 
                     b.Navigation("SalesBreakdowns");
                 });

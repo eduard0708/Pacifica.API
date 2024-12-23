@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Pacifica.API.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class updteF1541Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -207,6 +207,52 @@ namespace Pacifica.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "F154SalesReports",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    dateReported = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BranchId = table.Column<int>(type: "int", nullable: false),
+                    SalesForTheDay = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    GrossSalesCRM = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    GrossSalesCashSlip = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    OverAllTotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    NetAccountability = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalDenomination = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    AddTotalChecks = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalCashCount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CashShortOver = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PerCapita = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotaSalesBreakDown = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CustomerCount = table.Column<int>(type: "int", nullable: false),
+                    CashSlip = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ChargeInvoice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PaymentsOfAccounts = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    OtherReceipts = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CertifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ApprovedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(1500)", maxLength: 1500, nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_F154SalesReports", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_F154SalesReports_Branches_BranchId",
+                        column: x => x.BranchId,
+                        principalTable: "Branches",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUsers",
                 columns: table => new
                 {
@@ -297,6 +343,94 @@ namespace Pacifica.API.Migrations
                         principalTable: "Suppliers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CashDenominations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Denomination = table.Column<int>(type: "int", nullable: true),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    F154SalesReportId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CashDenominations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CashDenominations_F154SalesReports_F154SalesReportId",
+                        column: x => x.F154SalesReportId,
+                        principalTable: "F154SalesReports",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Checks",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Maker = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Bank = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CheckNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    F154SalesReportId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Checks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Checks_F154SalesReports_F154SalesReportId",
+                        column: x => x.F154SalesReportId,
+                        principalTable: "F154SalesReports",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Lesses",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OverPunch = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    SalesReturnOP = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ChargeSales = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    F154SalesReportId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Lesses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Lesses_F154SalesReports_F154SalesReportId",
+                        column: x => x.F154SalesReportId,
+                        principalTable: "F154SalesReports",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SalesBreakdowns",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductCategory = table.Column<int>(type: "int", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    F154SalesReportId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SalesBreakdowns", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SalesBreakdowns_F154SalesReports_F154SalesReportId",
+                        column: x => x.F154SalesReportId,
+                        principalTable: "F154SalesReports",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -924,6 +1058,16 @@ namespace Pacifica.API.Migrations
                 column: "StatusId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CashDenominations_F154SalesReportId",
+                table: "CashDenominations",
+                column: "F154SalesReportId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Checks_F154SalesReportId",
+                table: "Checks",
+                column: "F154SalesReportId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Departments_Name",
                 table: "Departments",
                 column: "Name",
@@ -941,6 +1085,11 @@ namespace Pacifica.API.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_F154SalesReports_BranchId",
+                table: "F154SalesReports",
+                column: "BranchId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Inventories_BranchId_ProductId",
                 table: "Inventories",
                 columns: new[] { "BranchId", "ProductId" });
@@ -949,6 +1098,12 @@ namespace Pacifica.API.Migrations
                 name: "IX_InventoryNormalizations_InventoryId",
                 table: "InventoryNormalizations",
                 column: "InventoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Lesses_F154SalesReportId",
+                table: "Lesses",
+                column: "F154SalesReportId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Positions_Name",
@@ -970,6 +1125,11 @@ namespace Pacifica.API.Migrations
                 name: "IX_Products_SupplierId",
                 table: "Products",
                 column: "SupplierId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SalesBreakdowns_F154SalesReportId",
+                table: "SalesBreakdowns",
+                column: "F154SalesReportId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StockInAuditTrails_StockInId",
@@ -1044,6 +1204,12 @@ namespace Pacifica.API.Migrations
                 name: "BranchProductAuditTrails");
 
             migrationBuilder.DropTable(
+                name: "CashDenominations");
+
+            migrationBuilder.DropTable(
+                name: "Checks");
+
+            migrationBuilder.DropTable(
                 name: "EmployeeBranches");
 
             migrationBuilder.DropTable(
@@ -1053,7 +1219,13 @@ namespace Pacifica.API.Migrations
                 name: "InventoryNormalizations");
 
             migrationBuilder.DropTable(
+                name: "Lesses");
+
+            migrationBuilder.DropTable(
                 name: "ProductAuditTrails");
+
+            migrationBuilder.DropTable(
+                name: "SalesBreakdowns");
 
             migrationBuilder.DropTable(
                 name: "StockInAuditTrails");
@@ -1069,6 +1241,9 @@ namespace Pacifica.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "Inventories");
+
+            migrationBuilder.DropTable(
+                name: "F154SalesReports");
 
             migrationBuilder.DropTable(
                 name: "StockIns");

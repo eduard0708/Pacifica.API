@@ -147,7 +147,7 @@ namespace Pacifica.API.Services.F154ReportService
                 SalesBreakdowns = entity.SalesBreakdowns!.Select(s => new SalesBreakdownDto
                 {
                     Id = s.Id,
-                    ProductCategory = (int)s.ProductCategory,
+                    ProductCategory = s.ProductCategory,
                     Amount = s.Amount
                 }).ToList()
             };
@@ -172,35 +172,34 @@ namespace Pacifica.API.Services.F154ReportService
                 CertifiedBy = dto.CertifiedBy,
                 ApprovedBy = dto.ApprovedBy,
                 // Map related data
-                CashDenominations = dto.CashDenominations.Select(c => new CashDenomination
+                CashDenominations = dto.CashDenominations!.Select(c => new CashDenomination
                 {
-                    Id = c.Id,
-                    Denomination = c.Denomination,  // Convert the int to the enum
+                    Denomination = c.CashDenomination,  // Convert the int to the enum
                     Quantity = c.Quantity,
                     Amount = c.Amount
                 }).ToList(),
 
-                SalesBreakdowns = dto.SalesBreakdowns.Select(s => new SalesBreakdown
+                SalesBreakdowns = dto.SalesBreakdowns!.Select(s => new SalesBreakdown
                 {
-                    Id = s.Id,
+             
                     // Mapping the Description property (which could be a ProductCategory in the SalesBreakdown model)
-                    ProductCategory = (ProductCategoryEnums)s.ProductCategory,
+                    ProductCategory = s.ProductCategory,
                     Amount = s.Amount // Mapping the Amount property from DTO to Entity
                 }).ToList(),
 
-                Checks = dto.Checks.Select(c => new Check
+                Checks = dto.Checks!.Select(c => new Check
                 {
-                    Id = c.Id,
+                    
                     CheckNumber = c.CheckNumber,
                     Amount = c.Amount // Mapping check-related properties
                 }).ToList(),
 
-                Lesses = dto.Lesses.Select(c => new Less {
-                    Id = c.Id,
-                    OverPunch = c.OverPunch,
-                    ChargeSales = -c.ChargeSales,
-                    SalesReturnOP = c.SalesReturnOP
-                }).ToList()
+                Less = new Less
+                {
+                    OverPunch = dto.Less!.OverPunch,
+                    SalesReturnOP = dto.Less.SalesReturnOP,
+                    ChargeSales = dto.Less.ChargeSales
+                }
 
             };
         }

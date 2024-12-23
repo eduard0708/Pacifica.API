@@ -10,9 +10,6 @@ namespace Pacifica.API.Dtos.F154Report
         public decimal GrossSalesCRM { get; set; }
         public decimal GrossSalesCashSlip { get; set; }
         public decimal TotalSales { get; set; }
-        public decimal LessOverPunch { get; set; }
-        public decimal LessSalesReturn { get; set; }
-        public decimal LessChargeSales { get; set; }
         public decimal NetAccountability { get; set; }
         public decimal CashSlip { get; set; }
         public decimal ChargeInvoice { get; set; }
@@ -20,12 +17,14 @@ namespace Pacifica.API.Dtos.F154Report
         public decimal OtherReceipts { get; set; }
         public string? CertifiedBy { get; set; }
         public string? ApprovedBy { get; set; }
+        public string? CreatedBy { get; set; }
+
 
         // Related data
-        public List<CashDenominationDto> CashDenominations { get; set; } = new List<CashDenominationDto>();
-        public List<SalesBreakdownDto> SalesBreakdowns { get; set; } = new List<SalesBreakdownDto>();
-        public List<CheckDto> Checks { get; set; } = new List<CheckDto>();
-        public List<Less> Lesses { get; set; } = new List<Less>();
+        public List<CreateCashDenominationDto>? CashDenominations { get; set; } 
+        public List<CreateSalesBreakdownDto>? SalesBreakdowns { get; set; }
+        public List<CreateCheckDto>? Checks { get; set; } 
+        public CreateLessDto? Less { get; set; } 
 
 
     }
