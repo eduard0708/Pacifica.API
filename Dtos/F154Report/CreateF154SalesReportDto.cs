@@ -4,7 +4,7 @@ namespace Pacifica.API.Dtos.F154Report
 {
     public class CreateF154SalesReportDto
     {
-        public DateTime Date { get; set; }
+        public DateTime dateReported { get; set; }
         public int BranchId { get; set; }
         public decimal SalesForTheDay { get; set; }
         public decimal GrossSalesCRM { get; set; }

@@ -78,7 +78,7 @@ namespace Pacifica.API.Services.F154ReportService
             }
 
             // Map DTO to Entity and update
-            existingReport.Date = reportDto.Date;
+            existingReport.dateReported = reportDto.dateReported;
             existingReport.SalesForTheDay = reportDto.SalesForTheDay;
             existingReport.GrossSalesCRM = reportDto.GrossSalesCRM;
             // Update other fields as needed...
@@ -120,7 +120,7 @@ namespace Pacifica.API.Services.F154ReportService
             return new F154SalesReportDto
             {
                 Id = entity.Id,
-                Date = entity.Date,
+                dateReported = entity.dateReported,
                 BranchId = entity.BranchId,
                 BranchName = entity.Branch!.BranchName,
                 SalesForTheDay = entity.SalesForTheDay,
@@ -159,7 +159,7 @@ namespace Pacifica.API.Services.F154ReportService
             return new F154SalesReport
             {
                 // Id = dto.Id,
-                Date = dto.Date,
+                dateReported = dto.dateReported,
                 BranchId = dto.BranchId,
                 SalesForTheDay = dto.SalesForTheDay,
                 GrossSalesCRM = dto.GrossSalesCRM,

@@ -18,9 +18,12 @@ namespace Pacifica.API.Data
                     .WithMany() // Assuming that Branch can have many F154SalesReports
                     .HasForeignKey(x => x.BranchId)
                     .OnDelete(DeleteBehavior.Restrict);
-
+                    
                 // Configure other properties
-                entity.Property(x => x.Date).IsRequired();
+                entity.Property(x => x.dateReported).IsRequired();
+                // Add a unique index on dateReported to ensure distinct values
+                entity.HasIndex(x => x.dateReported)
+                    .IsUnique(); // Enforces uniqueness
             });
 
             // Configure CashDenomination

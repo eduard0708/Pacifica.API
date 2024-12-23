@@ -5,7 +5,7 @@ namespace Pacifica.API.Models.Reports.F154Report
     public class F154SalesReport : AuditDetails
     {
         public int Id { get; set; } // Unique identifier for the report
-        public DateTime Date { get; set; }
+        public DateTime dateReported { get; set; }
         public int BranchId { get; set; }
         public Branch? Branch { get; set; }
 

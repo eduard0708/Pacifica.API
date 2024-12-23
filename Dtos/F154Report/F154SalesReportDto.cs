@@ -3,7 +3,7 @@ namespace Pacifica.API.Dtos.F154Report
     public class F154SalesReportDto
     {
         public int Id { get; set; } // Unique identifier for the report
-        public DateTime Date { get; set; }
+        public DateTime dateReported { get; set; }
         public int BranchId { get; set; }
         public string? BranchName { get; set; }
         public decimal SalesForTheDay { get; set; }

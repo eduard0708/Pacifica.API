@@ -560,6 +560,8 @@ namespace Pacifica.API.Data
                 .HasQueryFilter(sb => sb.F154SalesReport!.DeletedAt == null);  // Apply matching filter for SalesBreakdown    
             modelBuilder.Entity<Check>()
                 .HasQueryFilter(sb => sb.F154SalesReport!.DeletedAt == null);  // Apply matching filter for SalesBreakdown        
+            modelBuilder.Entity<Less>()
+                .HasQueryFilter(sb => sb.F154SalesReport!.DeletedAt == null);  // Apply matching filter for SalesBreakdown            
 
 
         }
