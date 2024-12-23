@@ -40,9 +40,9 @@ namespace Pacifica.API.Services.F154ReportService
             return response;
         }
 
-        public async Task<ApiResponse<F154SalesReportDto>> CreateAsync(CreateF154SalesReportDto reportDto)
+        public async Task<ApiResponse<F154SalesReport>> CreateAsync(CreateF154SalesReportDto reportDto)
         {
-            var response = new ApiResponse<F154SalesReportDto>();
+            var response = new ApiResponse<F154SalesReport>();
 
             try
             {
@@ -54,7 +54,7 @@ namespace Pacifica.API.Services.F154ReportService
 
                 response.Success = true;
                 response.Message = "Daily Sales Report created successfully.";
-                response.Data = MapToDto(report);
+                // response.Data = MapToDto(report);
             }
             catch (Exception ex)
             {
@@ -135,7 +135,7 @@ namespace Pacifica.API.Services.F154ReportService
                 CertifiedBy = entity.CertifiedBy,
                 ApprovedBy = entity.ApprovedBy,
                 // Map related data
-                
+
                 CashDenominations = entity.CashDenominations!.Select(c => new CashDenominationDto
                 {
                     Id = c.Id,
@@ -149,6 +149,14 @@ namespace Pacifica.API.Services.F154ReportService
                     Id = s.Id,
                     ProductCategory = s.ProductCategory,
                     Amount = s.Amount
+                }).ToList(),
+                Checks = entity.Checks!.Select(c => new CheckDto
+                {
+                    Id = c.Id,
+                    Maker = c.Maker,
+                    Bank = c.Bank,
+                    CheckNumber = c.CheckNumber,
+                    Amount = c.Amount
                 }).ToList()
             };
         }
@@ -189,7 +197,8 @@ namespace Pacifica.API.Services.F154ReportService
 
                 Checks = dto.Checks!.Select(c => new Check
                 {
-                    
+                    Maker= c.Maker,
+                    Bank = c.Bank,
                     CheckNumber = c.CheckNumber,
                     Amount = c.Amount // Mapping check-related properties
                 }).ToList(),
@@ -204,5 +213,6 @@ namespace Pacifica.API.Services.F154ReportService
             };
         }
 
+    
     }
 }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Pacifica.API.Dtos.F154Report;
+using Pacifica.API.Models.Reports.F154Report;
 using Pacifica.API.Services.F154ReportService;
 
 namespace Pacifica.API.Controllers
@@ -29,13 +30,13 @@ namespace Pacifica.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<F154SalesReportDto>>> CreateAsync([FromBody] CreateF154SalesReportDto reportDto)
+        public async Task<ActionResult<ApiResponse<F154SalesReport>>> CreateAsync([FromBody] CreateF154SalesReportDto reportDto)
         {
             var response = await _dailySalesReportService.CreateAsync(reportDto);
 
             if (!response.Success)
             {
-                return BadRequest(new ApiResponse<F154SalesReportDto>
+                return BadRequest(new ApiResponse<F154SalesReport>
                 {
                     Success = false,
                     Message = $"Failed to create product: {response.Message}",
@@ -43,7 +44,7 @@ namespace Pacifica.API.Controllers
                 });
             }
 
-            return Ok(new ApiResponse<F154SalesReportDto>
+            return Ok(new ApiResponse<F154SalesReport>
             {
                 Success = true,
                 Message = "Products created successfully.",

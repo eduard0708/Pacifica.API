@@ -12,7 +12,7 @@ using Pacifica.API.Data;
 namespace Pacifica.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241223111203_updteF1541Init")]
+    [Migration("20241223112824_updteF1541Init")]
     partial class updteF1541Init
     {
         /// <inheritdoc />
