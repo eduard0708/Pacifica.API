@@ -58,8 +58,7 @@ namespace Pacifica.API.Data
         public DbSet<CashDenomination> CashDenominations { get; set; }
         public DbSet<Check> Checks { get; set; }
         public DbSet<SalesBreakdown> SalesBreakdowns { get; set; }
-
-
+        public DbSet<Less> Lesses { get; set; }
 
         // Configurations for model building
         protected override void OnModelCreating(ModelBuilder modelBuilder)

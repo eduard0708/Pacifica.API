@@ -16,7 +16,7 @@ namespace Pacifica.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ApiResponse<DailySalesReportDto>>> GetByIdAsync(int id)
+        public async Task<ActionResult<ApiResponse<F154SalesReportDto>>> GetByIdAsync(int id)
         {
             var response = await _dailySalesReportService.GetByIdAsync(id);
 
@@ -29,13 +29,13 @@ namespace Pacifica.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<DailySalesReportDto>>> CreateAsync([FromBody] CreateDailySalesReportDto reportDto)
+        public async Task<ActionResult<ApiResponse<F154SalesReportDto>>> CreateAsync([FromBody] CreateF154SalesReportDto reportDto)
         {
             var response = await _dailySalesReportService.CreateAsync(reportDto);
 
             if (!response.Success)
             {
-                return BadRequest(new ApiResponse<DailySalesReportDto>
+                return BadRequest(new ApiResponse<F154SalesReportDto>
                 {
                     Success = false,
                     Message = $"Failed to create product: {response.Message}",
@@ -43,7 +43,7 @@ namespace Pacifica.API.Controllers
                 });
             }
 
-            return Ok(new ApiResponse<DailySalesReportDto>
+            return Ok(new ApiResponse<F154SalesReportDto>
             {
                 Success = true,
                 Message = "Products created successfully.",
@@ -52,11 +52,11 @@ namespace Pacifica.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<ApiResponse<DailySalesReportDto>>> UpdateAsync(int id, DailySalesReportDto reportDto)
+        public async Task<ActionResult<ApiResponse<F154SalesReportDto>>> UpdateAsync(int id, F154SalesReportDto reportDto)
         {
             if (id != reportDto.Id)
             {
-                return BadRequest(new ApiResponse<DailySalesReportDto>
+                return BadRequest(new ApiResponse<F154SalesReportDto>
                 {
                     Success = false,
                     Message = "Report ID mismatch."

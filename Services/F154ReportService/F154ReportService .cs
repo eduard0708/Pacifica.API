@@ -14,9 +14,9 @@ namespace Pacifica.API.Services.F154ReportService
             _context = context;
         }
 
-        public async Task<ApiResponse<DailySalesReportDto>> GetByIdAsync(int id)
+        public async Task<ApiResponse<F154SalesReportDto>> GetByIdAsync(int id)
         {
-            var response = new ApiResponse<DailySalesReportDto>();
+            var response = new ApiResponse<F154SalesReportDto>();
 
             var F154SalesReport = await _context.F154SalesReports
                 .Include(dsr => dsr.Branch)
@@ -40,9 +40,9 @@ namespace Pacifica.API.Services.F154ReportService
             return response;
         }
 
-        public async Task<ApiResponse<DailySalesReportDto>> CreateAsync(CreateDailySalesReportDto reportDto)
+        public async Task<ApiResponse<F154SalesReportDto>> CreateAsync(CreateF154SalesReportDto reportDto)
         {
-            var response = new ApiResponse<DailySalesReportDto>();
+            var response = new ApiResponse<F154SalesReportDto>();
 
             try
             {
@@ -65,9 +65,9 @@ namespace Pacifica.API.Services.F154ReportService
             return response;
         }
 
-        public async Task<ApiResponse<DailySalesReportDto>> UpdateAsync(DailySalesReportDto reportDto)
+        public async Task<ApiResponse<F154SalesReportDto>> UpdateAsync(F154SalesReportDto reportDto)
         {
-            var response = new ApiResponse<DailySalesReportDto>();
+            var response = new ApiResponse<F154SalesReportDto>();
 
             var existingReport = await _context.F154SalesReports.FindAsync(reportDto.Id);
             if (existingReport == null)
@@ -115,9 +115,9 @@ namespace Pacifica.API.Services.F154ReportService
         }
 
         // Helper method to map entity to DTO
-        private DailySalesReportDto MapToDto(F154SalesReport entity)
+        private F154SalesReportDto MapToDto(F154SalesReport entity)
         {
-            return new DailySalesReportDto
+            return new F154SalesReportDto
             {
                 Id = entity.Id,
                 Date = entity.Date,
@@ -126,10 +126,7 @@ namespace Pacifica.API.Services.F154ReportService
                 SalesForTheDay = entity.SalesForTheDay,
                 GrossSalesCRM = entity.GrossSalesCRM,
                 GrossSalesCashSlip = entity.GrossSalesCashSlip,
-                TotalSales = entity.TotalSales,
-                LessOverPunch = entity.LessOverPunch,
-                LessSalesReturn = entity.LessSalesReturn,
-                LessChargeSales = entity.LessChargeSales,
+                TotalSales = entity.OverAllTotal,
                 NetAccountability = entity.NetAccountability,
                 CashSlip = entity.CashSlip,
                 ChargeInvoice = entity.ChargeInvoice,
@@ -142,7 +139,7 @@ namespace Pacifica.API.Services.F154ReportService
                 CashDenominations = entity.CashDenominations!.Select(c => new CashDenominationDto
                 {
                     Id = c.Id,
-                    CashDenomination = (DenominationEnums)c.Denomination!,
+                    Denomination = (DenominationEnums)c.Denomination!,
                     Quantity = c.Quantity,
                     Amount = c.Amount
                 }).ToList(),
@@ -157,7 +154,7 @@ namespace Pacifica.API.Services.F154ReportService
         }
 
         // Helper method to map DTO to Entity
-        private F154SalesReport MapToEntity(CreateDailySalesReportDto dto)
+        private F154SalesReport MapToEntity(CreateF154SalesReportDto dto)
         {
             return new F154SalesReport
             {
@@ -167,10 +164,6 @@ namespace Pacifica.API.Services.F154ReportService
                 SalesForTheDay = dto.SalesForTheDay,
                 GrossSalesCRM = dto.GrossSalesCRM,
                 GrossSalesCashSlip = dto.GrossSalesCashSlip,
-                TotalSales = dto.TotalSales,
-                LessOverPunch = dto.LessOverPunch,
-                LessSalesReturn = dto.LessSalesReturn,
-                LessChargeSales = dto.LessChargeSales,
                 NetAccountability = dto.NetAccountability,
                 CashSlip = dto.CashSlip,
                 ChargeInvoice = dto.ChargeInvoice,
@@ -182,7 +175,7 @@ namespace Pacifica.API.Services.F154ReportService
                 CashDenominations = dto.CashDenominations.Select(c => new CashDenomination
                 {
                     Id = c.Id,
-                    Denomination = c.CashDenomination,  // Convert the int to the enum
+                    Denomination = c.Denomination,  // Convert the int to the enum
                     Quantity = c.Quantity,
                     Amount = c.Amount
                 }).ToList(),
@@ -200,6 +193,13 @@ namespace Pacifica.API.Services.F154ReportService
                     Id = c.Id,
                     CheckNumber = c.CheckNumber,
                     Amount = c.Amount // Mapping check-related properties
+                }).ToList(),
+
+                Lesses = dto.Lesses.Select(c => new Less {
+                    Id = c.Id,
+                    OverPunch = c.OverPunch,
+                    ChargeSales = -c.ChargeSales,
+                    SalesReturnOP = c.SalesReturnOP
                 }).ToList()
 
             };

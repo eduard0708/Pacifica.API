@@ -1,6 +1,6 @@
 namespace Pacifica.API.Dtos.F154Report
 {
-    public class DailySalesReportDto
+    public class F154SalesReportDto
     {
         public int Id { get; set; } // Unique identifier for the report
         public DateTime Date { get; set; }

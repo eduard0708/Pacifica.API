@@ -6,13 +6,13 @@ namespace Pacifica.API.Services.F154ReportService
     public interface IF154ReportService
     {
         // Get a specific DailySalesReport by Id
-        Task<ApiResponse<DailySalesReportDto>> GetByIdAsync(int id);
+        Task<ApiResponse<F154SalesReportDto>> GetByIdAsync(int id);
 
         // Create a new DailySalesReport
-        Task<ApiResponse<DailySalesReportDto>> CreateAsync(CreateDailySalesReportDto reportDto);
+        Task<ApiResponse<F154SalesReportDto>> CreateAsync(CreateF154SalesReportDto reportDto);
 
         // Update an existing DailySalesReport
-        Task<ApiResponse<DailySalesReportDto>> UpdateAsync(DailySalesReportDto reportDto);
+        Task<ApiResponse<F154SalesReportDto>> UpdateAsync(F154SalesReportDto reportDto);
 
         // Delete a DailySalesReport by Id
         Task<ApiResponse<bool>> DeleteAsync(int id);

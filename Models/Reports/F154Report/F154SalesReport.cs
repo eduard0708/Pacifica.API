@@ -22,9 +22,10 @@ namespace Pacifica.API.Models.Reports.F154Report
         public decimal GrossSalesCashSlip { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
-        
+
         public decimal OverAllTotal { get; set; }
-        public Less? Less { get; set; }
+       
+        public List<Less>? Lesses { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
         public decimal NetAccountability { get; set; }
@@ -38,7 +39,7 @@ namespace Pacifica.API.Models.Reports.F154Report
         public decimal TotalDenomination { get; set; }
 
         //ADD TOTAL CHECKS
-         [Column(TypeName = "decimal(18, 2)")]
+        [Column(TypeName = "decimal(18, 2)")]
         public decimal AddTotalChecks { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
@@ -52,7 +53,6 @@ namespace Pacifica.API.Models.Reports.F154Report
         /// C. SALES
         /// </summary>
         public List<SalesBreakdown>? SalesBreakdowns { get; set; }
-
 
         [Column(TypeName = "decimal(18, 2)")]
         public decimal PerCapita { get; set; }

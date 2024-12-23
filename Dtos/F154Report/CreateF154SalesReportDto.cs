@@ -1,6 +1,8 @@
+using Pacifica.API.Models.Reports.F154Report;
+
 namespace Pacifica.API.Dtos.F154Report
 {
-    public class CreateDailySalesReportDto
+    public class CreateF154SalesReportDto
     {
         public DateTime Date { get; set; }
         public int BranchId { get; set; }
@@ -23,6 +25,7 @@ namespace Pacifica.API.Dtos.F154Report
         public List<CashDenominationDto> CashDenominations { get; set; } = new List<CashDenominationDto>();
         public List<SalesBreakdownDto> SalesBreakdowns { get; set; } = new List<SalesBreakdownDto>();
         public List<CheckDto> Checks { get; set; } = new List<CheckDto>();
+        public List<Less> Lesses { get; set; } = new List<Less>();
 
 
     }
