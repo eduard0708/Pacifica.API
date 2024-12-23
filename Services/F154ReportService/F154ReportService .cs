@@ -115,6 +115,57 @@ namespace Pacifica.API.Services.F154ReportService
         }
 
         // Helper method to map entity to DTO
+        // private F154SalesReportDto MapToDto(F154SalesReport entity)
+        // {
+        //     return new F154SalesReportDto
+        //     {
+        //         Id = entity.Id,
+        //         DateReported = entity.DateReported,
+        //         BranchId = entity.BranchId,
+        //         BranchName = entity.Branch!.BranchName,
+        //         SalesForTheDay = entity.SalesForTheDay,
+        //         GrossSalesCRM = entity.GrossSalesCRM,
+        //         GrossSalesCashSlip = entity.GrossSalesCashSlip,
+        //         OverAllTotal = entity.OverAllTotal,
+        //         NetAccountability = entity.NetAccountability,
+        //         CertifiedBy = entity.CertifiedBy,
+        //         ApprovedBy = entity.ApprovedBy,
+        //         // Map related data
+
+        //         CashDenominations = entity.CashDenominations!.Select(c => new CashDenominationDto
+        //         {
+        //             Id = c.Id,
+        //             Denomination = (DenominationEnums)c.Denomination!,
+        //             Quantity = c.Quantity,
+        //             Amount = c.Amount
+        //         }).ToList(),
+
+        //         InclusiveInvoiceTypes = entity.InclusiveInvoiceTypes!.Select(it => new InclusiveInvoiceTypeDto
+        //         {
+        //             InclusiveInvoiceTypes = it.InclusiveInvoiceTypes,
+        //             From = it.From,
+        //             To = it.To,
+        //             Amount = it.Amount,
+
+        //         }).ToList(),
+        //         SalesBreakDowns = entity.SalesBreakDowns!.Select(s => new SalesBreakdownDto
+        //         {
+        //             Id = s.Id,
+        //             ProductCategory = s.ProductCategory,
+        //             Amount = s.Amount
+        //         }).ToList(),
+        //         Checks = entity.Checks!.Select(c => new CheckDto
+        //         {
+        //             Id = c.Id,
+        //             Maker = c.Maker,
+        //             Bank = c.Bank,
+        //             CheckNumber = c.CheckNumber,
+        //             Amount = c.Amount
+        //         }).ToList()
+
+        //     };
+        // }
+
         private F154SalesReportDto MapToDto(F154SalesReport entity)
         {
             return new F154SalesReportDto
@@ -122,7 +173,7 @@ namespace Pacifica.API.Services.F154ReportService
                 Id = entity.Id,
                 DateReported = entity.DateReported,
                 BranchId = entity.BranchId,
-                BranchName = entity.Branch!.BranchName,
+                BranchName = entity.Branch?.BranchName,  // Use safe navigation operator to prevent null reference
                 SalesForTheDay = entity.SalesForTheDay,
                 GrossSalesCRM = entity.GrossSalesCRM,
                 GrossSalesCashSlip = entity.GrossSalesCashSlip,
@@ -130,48 +181,101 @@ namespace Pacifica.API.Services.F154ReportService
                 NetAccountability = entity.NetAccountability,
                 CertifiedBy = entity.CertifiedBy,
                 ApprovedBy = entity.ApprovedBy,
-                // Map related data
 
-                CashDenominations = entity.CashDenominations!.Select(c => new CashDenominationDto
+                CashDenominations = entity.CashDenominations?.Select(c => new CashDenominationDto
                 {
                     Id = c.Id,
                     Denomination = (DenominationEnums)c.Denomination!,
                     Quantity = c.Quantity,
                     Amount = c.Amount
-                }).ToList(),
-                
-                InclusiveInvoiceTypes = entity.InclusiveInvoiceTypes!.Select(it => new InclusiveInvoiceTypeDto
+                }).ToList() ?? new List<CashDenominationDto>(),  // Default to empty list if null
+
+                InclusiveInvoiceTypes = entity.InclusiveInvoiceTypes?.Select(it => new InclusiveInvoiceTypeDto
                 {
                     InclusiveInvoiceTypes = it.InclusiveInvoiceTypes,
                     From = it.From,
                     To = it.To,
-                    Amount = it.Amount,
+                    Amount = it.Amount
+                }).ToList() ?? new List<InclusiveInvoiceTypeDto>(),  // Default to empty list if null
 
-                }).ToList(),
-                SalesBreakDowns = entity.SalesBreakDowns!.Select(s => new SalesBreakdownDto
+                SalesBreakDowns = entity.SalesBreakDowns?.Select(s => new SalesBreakdownDto
                 {
                     Id = s.Id,
                     ProductCategory = s.ProductCategory,
                     Amount = s.Amount
-                }).ToList(),
-                Checks = entity.Checks!.Select(c => new CheckDto
+                }).ToList() ?? new List<SalesBreakdownDto>(),  // Default to empty list if null
+
+                Checks = entity.Checks?.Select(c => new CheckDto
                 {
                     Id = c.Id,
                     Maker = c.Maker,
                     Bank = c.Bank,
                     CheckNumber = c.CheckNumber,
                     Amount = c.Amount
-                }).ToList()
-
+                }).ToList() ?? new List<CheckDto>()  // Default to empty list if null
             };
         }
 
         // Helper method to map DTO to Entity
+        // private F154SalesReport MapToEntity(CreateF154SalesReportDto dto)
+        // {
+        //     return new F154SalesReport
+        //     {
+        //         // Id = dto.Id,
+        //         DateReported = dto.DateReported,
+        //         BranchId = dto.BranchId,
+        //         SalesForTheDay = dto.SalesForTheDay,
+        //         GrossSalesCRM = dto.GrossSalesCRM,
+        //         GrossSalesCashSlip = dto.GrossSalesCashSlip,
+        //         NetAccountability = dto.NetAccountability,
+        //         CertifiedBy = dto.CertifiedBy,
+        //         ApprovedBy = dto.ApprovedBy,
+        //         // Map related data
+        //         CashDenominations = dto.CashDenominations!.Select(c => new CashDenomination
+        //         {
+        //             Denomination = c.Denomination,  // Convert the int to the enum
+        //             Quantity = c.Quantity,
+        //             Amount = c.Amount
+        //         }).ToList(),
+
+        //         InclusiveInvoiceTypes = dto.InclusiveInvoiceTypes!.Select(it => new InclusiveInvoiceType
+        //         {
+        //             InclusiveInvoiceTypes = it.InclusiveInvoiceTypes,
+        //             From = it.From,
+        //             To = it.To,
+        //             Amount = it.Amount,
+
+        //         }).ToList(),
+
+        //         SalesBreakDowns = dto.SalesBreakDowns!.Select(s => new SalesBreakdown
+        //         {
+        //             // Mapping the Description property (which could be a ProductCategory in the SalesBreakdown model)
+        //             ProductCategory = s.ProductCategory,
+        //             Amount = s.Amount // Mapping the Amount property from DTO to Entity
+        //         }).ToList(),
+
+        //         Checks = dto.Checks!.Select(c => new Check
+        //         {
+        //             Maker = c.Maker,
+        //             Bank = c.Bank,
+        //             CheckNumber = c.CheckNumber,
+        //             Amount = c.Amount // Mapping check-related properties
+        //         }).ToList(),
+
+        //         Less = new Less
+        //         {
+        //             OverPunch = dto.Less!.OverPunch,
+        //             SalesReturnOP = dto.Less.SalesReturnOP,
+        //             ChargeSales = dto.Less.ChargeSales
+        //         }
+
+        //     };
+        // }
+
         private F154SalesReport MapToEntity(CreateF154SalesReportDto dto)
         {
             return new F154SalesReport
             {
-                // Id = dto.Id,
                 DateReported = dto.DateReported,
                 BranchId = dto.BranchId,
                 SalesForTheDay = dto.SalesForTheDay,
@@ -180,48 +284,44 @@ namespace Pacifica.API.Services.F154ReportService
                 NetAccountability = dto.NetAccountability,
                 CertifiedBy = dto.CertifiedBy,
                 ApprovedBy = dto.ApprovedBy,
-                // Map related data
-                CashDenominations = dto.CashDenominations!.Select(c => new CashDenomination
+
+                CashDenominations = dto.CashDenominations?.Select(c => new CashDenomination
                 {
                     Denomination = c.Denomination,  // Convert the int to the enum
                     Quantity = c.Quantity,
                     Amount = c.Amount
-                }).ToList(),
+                }).ToList() ?? new List<CashDenomination>(),  // Default to empty list if null
 
-                InclusiveInvoiceTypes = dto.InclusiveInvoiceTypes!.Select(it => new InclusiveInvoiceType
+                InclusiveInvoiceTypes = dto.InclusiveInvoiceTypes?.Select(it => new InclusiveInvoiceType
                 {
                     InclusiveInvoiceTypes = it.InclusiveInvoiceTypes,
                     From = it.From,
                     To = it.To,
-                    Amount = it.Amount,
+                    Amount = it.Amount
+                }).ToList() ?? new List<InclusiveInvoiceType>(),  // Default to empty list if null
 
-                }).ToList(),
-
-                SalesBreakDowns = dto.SalesBreakDowns!.Select(s => new SalesBreakdown
+                SalesBreakDowns = dto.SalesBreakDowns?.Select(s => new SalesBreakdown
                 {
-                    // Mapping the Description property (which could be a ProductCategory in the SalesBreakdown model)
                     ProductCategory = s.ProductCategory,
-                    Amount = s.Amount // Mapping the Amount property from DTO to Entity
-                }).ToList(),
+                    Amount = s.Amount
+                }).ToList() ?? new List<SalesBreakdown>(),  // Default to empty list if null
 
-                Checks = dto.Checks!.Select(c => new Check
+                Checks = dto.Checks?.Select(c => new Check
                 {
                     Maker = c.Maker,
                     Bank = c.Bank,
                     CheckNumber = c.CheckNumber,
-                    Amount = c.Amount // Mapping check-related properties
-                }).ToList(),
+                    Amount = c.Amount
+                }).ToList() ?? new List<Check>(),  // Default to empty list if null
 
                 Less = new Less
                 {
-                    OverPunch = dto.Less!.OverPunch,
-                    SalesReturnOP = dto.Less.SalesReturnOP,
-                    ChargeSales = dto.Less.ChargeSales
+                    OverPunch = dto.Less?.OverPunch ?? 0,  // Handle null values with defaults
+                    SalesReturnOP = dto.Less?.SalesReturnOP ?? 0,
+                    ChargeSales = dto.Less?.ChargeSales ?? 0
                 }
-
             };
         }
-
 
     }
 }
