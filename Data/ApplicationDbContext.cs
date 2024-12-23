@@ -59,6 +59,8 @@ namespace Pacifica.API.Data
         public DbSet<Check> Checks { get; set; }
         public DbSet<SalesBreakdown> SalesBreakdowns { get; set; }
         public DbSet<Less> Lesses { get; set; }
+        public DbSet<InclusiveInvoiceType> InclusiveInvoiceTypes { get; set; }
+
 
         // Configurations for model building
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -561,7 +563,9 @@ namespace Pacifica.API.Data
             modelBuilder.Entity<Check>()
                 .HasQueryFilter(sb => sb.F154SalesReport!.DeletedAt == null);  // Apply matching filter for SalesBreakdown        
             modelBuilder.Entity<Less>()
-                .HasQueryFilter(sb => sb.F154SalesReport!.DeletedAt == null);  // Apply matching filter for SalesBreakdown            
+                .HasQueryFilter(sb => sb.F154SalesReport!.DeletedAt == null);  // Apply matching filter for SalesBreakdown        
+            modelBuilder.Entity<InclusiveInvoiceType>()
+          .HasQueryFilter(sb => sb.F154SalesReport!.DeletedAt == null);  // Apply matching filter for SalesBreakdown             
 
 
         }

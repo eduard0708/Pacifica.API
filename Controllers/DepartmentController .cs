@@ -5,6 +5,7 @@ using Pacifica.API.Services.EmployeeManagementService;
 
 namespace Pacifica.API.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
     public class DepartmentController : ControllerBase

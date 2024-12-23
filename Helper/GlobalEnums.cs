@@ -10,13 +10,14 @@ namespace Pacifica.API.Helper
             SpecialtyFeeds = 2,
             AgriculturalFeeds = 3,
             DayOldChicks = 4,
-            ChemicalsOthers =5,
+            ChemicalsOthers = 5,
             FertilizersSeeds = 6,
         }
-        public enum SalesLess { 
+        public enum SalesLess
+        {
             OverPunch = 1,
             SalesReturnOP = 2,
-            ChargeSales= 3,
+            ChargeSales = 3,
         }
         public enum ReportPeriod
         {
@@ -40,6 +41,15 @@ namespace Pacifica.API.Helper
             Two = 2,
             One = 1,
             AssortedCoin = 0
+        }
+
+
+        public enum InclusiveInvoiceTypeEnums
+        {
+            CashSlip = 1,
+            ChargeInvoice = 2,
+            PaymentsOfAccounts = 3,
+            OtherReceipts = 4
         }
 
         public enum InventoryStatus

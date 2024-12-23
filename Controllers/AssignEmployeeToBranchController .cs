@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Pacifica.API.Models;
-using Pacifica.API.Models.EmployeManagement;
-using System.Threading.Tasks;
-
 namespace Pacifica.API.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [ApiController]
     [Route("api/assign")]
     public class AssignEmployeeToBranchController : ControllerBase

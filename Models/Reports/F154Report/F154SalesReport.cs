@@ -1,11 +1,12 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using static Pacifica.API.Helper.GlobalEnums;
 
 namespace Pacifica.API.Models.Reports.F154Report
 {
     public class F154SalesReport : AuditDetails
     {
         public int Id { get; set; } // Unique identifier for the report
-        public DateTime dateReported { get; set; }
+        public DateTime DateReported { get; set; }
         public int BranchId { get; set; }
         public Branch? Branch { get; set; }
 
@@ -36,11 +37,11 @@ namespace Pacifica.API.Models.Reports.F154Report
         public List<CashDenomination>? CashDenominations { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal TotalDenomination { get; set; }
+        public decimal TotalDenominations { get; set; }
 
         //ADD TOTAL CHECKS
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal AddTotalChecks { get; set; }
+        public decimal TotalChecksAmount { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
         public decimal TotalCashCount { get; set; }
@@ -52,13 +53,13 @@ namespace Pacifica.API.Models.Reports.F154Report
         /// <summary>
         /// C. SALES
         /// </summary>
-        public List<SalesBreakdown>? SalesBreakdowns { get; set; }
+        public List<SalesBreakdown>? SalesBreakDowns { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
         public decimal PerCapita { get; set; }
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal TotaSalesBreakDown { get; set; }
-        public int CustomerCount { get; set; }
+        public decimal TotalSalesBreakDown { get; set; }
+        public int CustomerCounts { get; set; }
 
         /// <summary>
         /// LIST OF CHECKS
@@ -68,21 +69,11 @@ namespace Pacifica.API.Models.Reports.F154Report
         /// <summary>
         /// LIST OF CHARGE SALES AND CASH SALES
         /// </summary>
-        [Column(TypeName = "decimal(18, 2)")]
-        public decimal CashSlip { get; set; }
-
-        [Column(TypeName = "decimal(18, 2)")]
-        public decimal ChargeInvoice { get; set; }
-
+        public List<InclusiveInvoiceType>? InclusiveInvoiceTypes { get; set; }
         /// <summary>
         /// LIST OF OFFICIAL RECEIPT
         /// </summary>
-        [Column(TypeName = "decimal(18, 2)")]
-        public decimal PaymentsOfAccounts { get; set; }
-
-        [Column(TypeName = "decimal(18, 2)")]
-        public decimal OtherReceipts { get; set; }
-
+        
         public string? CertifiedBy { get; set; }
         public string? ApprovedBy { get; set; }
     }

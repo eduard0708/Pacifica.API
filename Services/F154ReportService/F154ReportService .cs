@@ -21,7 +21,7 @@ namespace Pacifica.API.Services.F154ReportService
             var F154SalesReport = await _context.F154SalesReports
                 .Include(dsr => dsr.Branch)
                 .Include(dsr => dsr.CashDenominations)
-                .Include(dsr => dsr.SalesBreakdowns)
+                .Include(dsr => dsr.SalesBreakDowns)
                 .Include(dsr => dsr.Checks)
                 .FirstOrDefaultAsync(dsr => dsr.Id == id);
 
@@ -78,7 +78,7 @@ namespace Pacifica.API.Services.F154ReportService
             }
 
             // Map DTO to Entity and update
-            existingReport.dateReported = reportDto.dateReported;
+            existingReport.DateReported = reportDto.DateReported;
             existingReport.SalesForTheDay = reportDto.SalesForTheDay;
             existingReport.GrossSalesCRM = reportDto.GrossSalesCRM;
             // Update other fields as needed...
@@ -120,18 +120,14 @@ namespace Pacifica.API.Services.F154ReportService
             return new F154SalesReportDto
             {
                 Id = entity.Id,
-                dateReported = entity.dateReported,
+                DateReported = entity.DateReported,
                 BranchId = entity.BranchId,
                 BranchName = entity.Branch!.BranchName,
                 SalesForTheDay = entity.SalesForTheDay,
                 GrossSalesCRM = entity.GrossSalesCRM,
                 GrossSalesCashSlip = entity.GrossSalesCashSlip,
-                TotalSales = entity.OverAllTotal,
+                OverAllTotal = entity.OverAllTotal,
                 NetAccountability = entity.NetAccountability,
-                CashSlip = entity.CashSlip,
-                ChargeInvoice = entity.ChargeInvoice,
-                PaymentsOfAccounts = entity.PaymentsOfAccounts,
-                OtherReceipts = entity.OtherReceipts,
                 CertifiedBy = entity.CertifiedBy,
                 ApprovedBy = entity.ApprovedBy,
                 // Map related data
@@ -143,8 +139,16 @@ namespace Pacifica.API.Services.F154ReportService
                     Quantity = c.Quantity,
                     Amount = c.Amount
                 }).ToList(),
+                
+                InclusiveInvoiceTypes = entity.InclusiveInvoiceTypes!.Select(it => new InclusiveInvoiceTypeDto
+                {
+                    InclusiveInvoiceTypes = it.InclusiveInvoiceTypes,
+                    From = it.From,
+                    To = it.To,
+                    Amount = it.Amount,
 
-                SalesBreakdowns = entity.SalesBreakdowns!.Select(s => new SalesBreakdownDto
+                }).ToList(),
+                SalesBreakDowns = entity.SalesBreakDowns!.Select(s => new SalesBreakdownDto
                 {
                     Id = s.Id,
                     ProductCategory = s.ProductCategory,
@@ -158,6 +162,7 @@ namespace Pacifica.API.Services.F154ReportService
                     CheckNumber = c.CheckNumber,
                     Amount = c.Amount
                 }).ToList()
+
             };
         }
 
@@ -167,29 +172,33 @@ namespace Pacifica.API.Services.F154ReportService
             return new F154SalesReport
             {
                 // Id = dto.Id,
-                dateReported = dto.dateReported,
+                DateReported = dto.DateReported,
                 BranchId = dto.BranchId,
                 SalesForTheDay = dto.SalesForTheDay,
                 GrossSalesCRM = dto.GrossSalesCRM,
                 GrossSalesCashSlip = dto.GrossSalesCashSlip,
                 NetAccountability = dto.NetAccountability,
-                CashSlip = dto.CashSlip,
-                ChargeInvoice = dto.ChargeInvoice,
-                PaymentsOfAccounts = dto.PaymentsOfAccounts,
-                OtherReceipts = dto.OtherReceipts,
                 CertifiedBy = dto.CertifiedBy,
                 ApprovedBy = dto.ApprovedBy,
                 // Map related data
                 CashDenominations = dto.CashDenominations!.Select(c => new CashDenomination
                 {
-                    Denomination = c.CashDenomination,  // Convert the int to the enum
+                    Denomination = c.Denomination,  // Convert the int to the enum
                     Quantity = c.Quantity,
                     Amount = c.Amount
                 }).ToList(),
 
-                SalesBreakdowns = dto.SalesBreakdowns!.Select(s => new SalesBreakdown
+                InclusiveInvoiceTypes = dto.InclusiveInvoiceTypes!.Select(it => new InclusiveInvoiceType
                 {
-             
+                    InclusiveInvoiceTypes = it.InclusiveInvoiceTypes,
+                    From = it.From,
+                    To = it.To,
+                    Amount = it.Amount,
+
+                }).ToList(),
+
+                SalesBreakDowns = dto.SalesBreakDowns!.Select(s => new SalesBreakdown
+                {
                     // Mapping the Description property (which could be a ProductCategory in the SalesBreakdown model)
                     ProductCategory = s.ProductCategory,
                     Amount = s.Amount // Mapping the Amount property from DTO to Entity
@@ -197,7 +206,7 @@ namespace Pacifica.API.Services.F154ReportService
 
                 Checks = dto.Checks!.Select(c => new Check
                 {
-                    Maker= c.Maker,
+                    Maker = c.Maker,
                     Bank = c.Bank,
                     CheckNumber = c.CheckNumber,
                     Amount = c.Amount // Mapping check-related properties
@@ -213,6 +222,6 @@ namespace Pacifica.API.Services.F154ReportService
             };
         }
 
-    
+
     }
 }

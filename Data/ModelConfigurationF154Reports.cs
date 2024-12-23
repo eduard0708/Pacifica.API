@@ -20,9 +20,9 @@ namespace Pacifica.API.Data
                     .OnDelete(DeleteBehavior.Restrict);
                     
                 // Configure other properties
-                entity.Property(x => x.dateReported).IsRequired();
+                entity.Property(x => x.DateReported).IsRequired();
                 // Add a unique index on dateReported to ensure distinct values
-                entity.HasIndex(x => x.dateReported)
+                entity.HasIndex(x => x.DateReported)
                     .IsUnique(); // Enforces uniqueness
             });
 
@@ -42,6 +42,24 @@ namespace Pacifica.API.Data
                 entity.Property(x => x.Denomination)
                     .HasConversion<int>(); // Enum to int conversion for database storage
             });
+
+              // Configure CashDenomination
+            modelBuilder.Entity<InclusiveInvoiceType>(entity =>
+            {
+                // Primary key configuration
+                entity.HasKey(x => x.Id);
+
+                // One-to-many relationship with F154SalesReport
+                entity.HasOne(x => x.F154SalesReport)
+                    .WithMany(x => x.InclusiveInvoiceTypes)
+                    .HasForeignKey(x => x.F154SalesReportId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                // Enum conversion for Denomination
+                entity.Property(x => x.InclusiveInvoiceTypes)
+                    .HasConversion<int>(); // Enum to int conversion for database storage
+            });
+
 
             // Configure Check
             modelBuilder.Entity<Check>(entity =>
@@ -64,7 +82,7 @@ namespace Pacifica.API.Data
 
                 // One-to-many relationship with F154SalesReport
                 entity.HasOne(x => x.F154SalesReport)
-                    .WithMany(x => x.SalesBreakdowns)
+                    .WithMany(x => x.SalesBreakDowns)
                     .HasForeignKey(x => x.F154SalesReportId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
