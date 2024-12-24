@@ -1,7 +1,6 @@
-using AutoMapper;
+
 using Microsoft.AspNetCore.Identity;
 using Pacifica.API.Dtos.Admin;
-using Pacifica.API.Helper;
 using Pacifica.API.Services.TokenService;
 
 namespace Pacifica.API.Services.AuthService
@@ -58,38 +57,6 @@ namespace Pacifica.API.Services.AuthService
                     ? new ApiResponse<object> { Success = false, Message = "Your account is not allowed to sign in." }
                     : new ApiResponse<object> { Success = false, Message = "Invalid login attempt" };
         }
-        
-        // public async Task<ApiResponse<string>> RegisterAsync(RegisterDto registerDto)
-        // {
-        //     var employee = _mapper.Map<Employee>(registerDto);
-        //     // Set the Username field explicitly to the EmployeeId
-        //     employee.UserName = registerDto.EmployeeId;
-
-        //     var result = await _userManager.CreateAsync(employee, registerDto.Password!);
-
-
-        //     if (result.Succeeded)
-        //     {
-        //         return new ApiResponse<string>
-        //         {
-        //             Success = true,
-        //             Message = "Employee registered successfully",
-        //             Data = "TokenPlaceholder"
-        //         };
-        //     }
-        //     else
-        //     {
-        //         // Collect error messages from IdentityResult
-        //         var errorMessage = string.Join("; ", result.Errors.Select(e => e.Description));
-
-        //         return new ApiResponse<string>
-        //         {
-        //             Success = false,
-        //             Message = $"Error registering employee: {errorMessage}"
-        //         };
-        //     }
-        // }
-
     }
-
 }
+

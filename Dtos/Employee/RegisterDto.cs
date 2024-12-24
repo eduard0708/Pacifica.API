@@ -5,7 +5,7 @@ namespace Pacifica.API.Dtos.Employee
     public class RegisterDto
     {
         [Required(ErrorMessage = "EmployeeId is required.")]
-        [StringLength(128, ErrorMessage = "EmployeeId cannot be longer than 128 characters.")]
+        [StringLength(450, ErrorMessage = "EmployeeId cannot be longer than 128 characters.")]
         public string EmployeeId { get; set; } = string.Empty;
 
         [StringLength(50)]

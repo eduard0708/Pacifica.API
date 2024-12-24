@@ -12,8 +12,8 @@ using Pacifica.API.Data;
 namespace Pacifica.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241223112824_updteF1541Init")]
-    partial class updteF1541Init
+    [Migration("20241224214614_InitialCreate1")]
+    partial class InitialCreate1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -101,9 +101,6 @@ namespace Pacifica.API.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EmployeeId")
-                        .HasColumnType("nvarchar(128)");
-
                     b.Property<string>("Name")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -113,8 +110,6 @@ namespace Pacifica.API.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
@@ -165,7 +160,7 @@ namespace Pacifica.API.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -187,7 +182,7 @@ namespace Pacifica.API.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -199,7 +194,7 @@ namespace Pacifica.API.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("RoleId")
                         .HasColumnType("nvarchar(450)");
@@ -214,7 +209,7 @@ namespace Pacifica.API.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -426,8 +421,8 @@ namespace Pacifica.API.Migrations
 
                     b.Property<string>("EmployeeId")
                         .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -517,9 +512,8 @@ namespace Pacifica.API.Migrations
 
             modelBuilder.Entity("Pacifica.API.Models.Employee", b =>
                 {
-                    b.Property<string>("EmployeeId")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
@@ -559,6 +553,11 @@ namespace Pacifica.API.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("EmployeeId")
+                        .IsRequired()
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
+
                     b.Property<int>("EmployeeProfileId")
                         .HasColumnType("int");
 
@@ -566,17 +565,16 @@ namespace Pacifica.API.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.PrimitiveCollection<string>("EmpoyeeRoles")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Gender")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -585,9 +583,8 @@ namespace Pacifica.API.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -623,6 +620,10 @@ namespace Pacifica.API.Migrations
                         .HasMaxLength(1500)
                         .HasColumnType("nvarchar(1500)");
 
+                    b.PrimitiveCollection<string>("Roles")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -640,7 +641,7 @@ namespace Pacifica.API.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.HasKey("EmployeeId");
+                    b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
 
@@ -663,7 +664,7 @@ namespace Pacifica.API.Migrations
             modelBuilder.Entity("Pacifica.API.Models.EmployeeBranch", b =>
                 {
                     b.Property<string>("EmployeeId")
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("BranchId")
                         .HasColumnType("int");
@@ -1226,9 +1227,6 @@ namespace Pacifica.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("AddTotalChecks")
-                        .HasColumnType("decimal(18, 2)");
-
                     b.Property<string>("ApprovedBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -1238,14 +1236,8 @@ namespace Pacifica.API.Migrations
                     b.Property<decimal>("CashShortOver")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<decimal>("CashSlip")
-                        .HasColumnType("decimal(18, 2)");
-
                     b.Property<string>("CertifiedBy")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("ChargeInvoice")
-                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -1253,8 +1245,11 @@ namespace Pacifica.API.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CustomerCount")
+                    b.Property<int>("CustomerCounts")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("DateReported")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
@@ -1275,13 +1270,7 @@ namespace Pacifica.API.Migrations
                     b.Property<decimal>("NetAccountability")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<decimal>("OtherReceipts")
-                        .HasColumnType("decimal(18, 2)");
-
                     b.Property<decimal>("OverAllTotal")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<decimal>("PaymentsOfAccounts")
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<decimal>("PerCapita")
@@ -1294,13 +1283,16 @@ namespace Pacifica.API.Migrations
                     b.Property<decimal>("SalesForTheDay")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<decimal>("TotaSalesBreakDown")
-                        .HasColumnType("decimal(18, 2)");
-
                     b.Property<decimal>("TotalCashCount")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<decimal>("TotalDenomination")
+                    b.Property<decimal>("TotalChecksAmount")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("TotalDenominations")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("TotalSalesBreakDown")
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -1310,14 +1302,41 @@ namespace Pacifica.API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime>("dateReported")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
 
                     b.HasIndex("BranchId");
 
                     b.ToTable("F154SalesReports");
+                });
+
+            modelBuilder.Entity("Pacifica.API.Models.Reports.F154Report.InclusiveInvoiceType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<int>("F154SalesReportId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("From")
+                        .HasColumnType("int");
+
+                    b.Property<int>("InclusiveInvoiceTypes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("To")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("F154SalesReportId");
+
+                    b.ToTable("InclusiveInvoiceTypes");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Reports.F154Report.Less", b =>
@@ -1328,16 +1347,16 @@ namespace Pacifica.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("ChargeSales")
+                    b.Property<decimal?>("ChargeSales")
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<int>("F154SalesReportId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("OverPunch")
+                    b.Property<decimal?>("OverPunch")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<decimal>("SalesReturnOP")
+                    b.Property<decimal?>("SalesReturnOP")
                         .HasColumnType("decimal(18, 2)");
 
                     b.HasKey("Id");
@@ -1788,13 +1807,6 @@ namespace Pacifica.API.Migrations
                     b.Navigation("Status");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.HasOne("Pacifica.API.Models.Employee", null)
-                        .WithMany("Roles")
-                        .HasForeignKey("EmployeeId");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -2022,6 +2034,17 @@ namespace Pacifica.API.Migrations
                     b.Navigation("Branch");
                 });
 
+            modelBuilder.Entity("Pacifica.API.Models.Reports.F154Report.InclusiveInvoiceType", b =>
+                {
+                    b.HasOne("Pacifica.API.Models.Reports.F154Report.F154SalesReport", "F154SalesReport")
+                        .WithMany("InclusiveInvoiceTypes")
+                        .HasForeignKey("F154SalesReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("F154SalesReport");
+                });
+
             modelBuilder.Entity("Pacifica.API.Models.Reports.F154Report.Less", b =>
                 {
                     b.HasOne("Pacifica.API.Models.Reports.F154Report.F154SalesReport", "F154SalesReport")
@@ -2036,7 +2059,7 @@ namespace Pacifica.API.Migrations
             modelBuilder.Entity("Pacifica.API.Models.Reports.F154Report.SalesBreakdown", b =>
                 {
                     b.HasOne("Pacifica.API.Models.Reports.F154Report.F154SalesReport", "F154SalesReport")
-                        .WithMany("SalesBreakdowns")
+                        .WithMany("SalesBreakDowns")
                         .HasForeignKey("F154SalesReportId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2148,8 +2171,6 @@ namespace Pacifica.API.Migrations
                     b.Navigation("EmployeeBranches");
 
                     b.Navigation("EmployeeProfile");
-
-                    b.Navigation("Roles");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Inventory.Inventory", b =>
@@ -2174,9 +2195,11 @@ namespace Pacifica.API.Migrations
 
                     b.Navigation("Checks");
 
+                    b.Navigation("InclusiveInvoiceTypes");
+
                     b.Navigation("Less");
 
-                    b.Navigation("SalesBreakdowns");
+                    b.Navigation("SalesBreakDowns");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Status", b =>

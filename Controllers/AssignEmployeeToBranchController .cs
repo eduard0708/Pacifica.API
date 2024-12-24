@@ -23,7 +23,7 @@ namespace Pacifica.API.Controllers
             }
 
             // Check if the employee exists
-            var employee = await _context.Employees.FindAsync(request.EmployeeId);
+            var employee = await _context.Users.FindAsync(request.EmployeeId);
             if (employee == null)
             {
                 return NotFound($"Employee with ID {request.EmployeeId} not found.");

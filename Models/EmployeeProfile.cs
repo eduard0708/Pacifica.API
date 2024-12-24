@@ -2,12 +2,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Pacifica.API.Models.EmployeManagement
 {
-    public class EmployeeProfile: AuditDetails
+    public class EmployeeProfile : AuditDetails
     {
         [Key]
         public int Id { get; set; }
 
         [Required]
+        [StringLength(450)]  // Ensures that EmployeeId matches IdentityUser.Id length
         public string? EmployeeId { get; set; }  // Foreign key to Employee
 
         public virtual Employee? Employee { get; set; }  // Navigation property to Employee

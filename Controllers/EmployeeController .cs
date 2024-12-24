@@ -5,13 +5,13 @@ using Pacifica.API.Services.EmployeeService;
 
 namespace Pacifica.API.Controllers
 {
-    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
+    //[ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [ApiController]
     [Route("api/[controller]")]
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
-        private  readonly IMapper _mapper;
+        private readonly IMapper _mapper;
 
         public EmployeeController(IEmployeeService employeeService, IMapper mapper)
         {
@@ -80,10 +80,10 @@ namespace Pacifica.API.Controllers
             });
 
             // List of valid sort fields for employees
-            var validSortFields = new List<string> { "employeeid", "firstname", "lastname", "email","department", "position" }; // Add more fields as needed
+            var validSortFields = new List<string> { "employeeid", "firstname", "lastname", "email", "department", "position" }; // Add more fields as needed
 
-         
-                if (!validSortFields.Contains(sortField))
+
+            if (!validSortFields.Contains(sortField))
             {
                 return BadRequest(new ApiResponse<IEnumerable<GetFilter_Employee>>
                 {
@@ -109,7 +109,34 @@ namespace Pacifica.API.Controllers
             });
         }
 
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterUserDto createUser)
+        {
+            // Check if the model is valid
+            if (!ModelState.IsValid)
+            {
+                var errorResponse = new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = "Model validation failed.",
+                    Data = null
+                };
 
+                return BadRequest(errorResponse);
+            }
+
+            // Use the service to register the employee and get the response
+            var result = await _employeeService.RegisterEmployeeAsync(createUser);
+
+            // Check if the registration succeeded
+            if (result.Success)
+            {
+                return Ok(result); // Return the successful response with employee data
+            }
+
+            // If there were errors, return a failure response
+            return BadRequest(result); // Return the failure response
+        }
     }
-
 }
+

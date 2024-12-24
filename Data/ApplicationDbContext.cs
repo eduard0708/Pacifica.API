@@ -23,8 +23,6 @@ namespace Pacifica.API.Data
                 .ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
         }
 
-        // DbSets for entities
-        public DbSet<Employee> Employees { get; set; }
         public DbSet<EmployeeProfile> EmployeeProfiles { get; set; }
         public DbSet<Branch> Branches { get; set; }
         public DbSet<Position> Positions { get; set; }
@@ -70,12 +68,22 @@ namespace Pacifica.API.Data
             // Configure Employee entity
             modelBuilder.Entity<Employee>(entity =>
                 {
-                    // Set EmployeeId as the primary key
-                    entity.HasKey(e => e.EmployeeId);
 
                     // Configure EmployeeId as a unique index
                     entity.HasIndex(e => e.EmployeeId)
                           .IsUnique();
+
+                    entity.Property(e => e.EmployeeId)
+                            .IsRequired()
+                            .HasMaxLength(25); // Example constraint
+
+                    entity.Property(e => e.FirstName)
+                        .HasMaxLength(50)
+                        .IsRequired(false); // Optional field
+
+                    entity.Property(e => e.LastName)
+                        .HasMaxLength(50)
+                        .IsRequired(false); // Optional field
 
                     entity.Property(e => e.CreatedAt)
                           .IsRequired()
@@ -88,14 +96,6 @@ namespace Pacifica.API.Data
                           .OnDelete(DeleteBehavior.Restrict);  // If Employee is deleted, delete EmployeeProfile as well
                 });
 
-            // Configure the relationship between AspNetUserRoles and Employee (not IdentityUser)
-            modelBuilder.Entity<IdentityUserRole<string>>()
-                        .HasOne<Employee>()  // Use Employee instead of IdentityUser
-                        .WithMany()
-                        .HasForeignKey(ur => ur.UserId)  // This is the foreign key in AspNetUserRoles
-                        .HasPrincipalKey(e => e.EmployeeId);  // Point to EmployeeId instead of the default Id
-
-
             // Configure EmployeeProfile entity
             modelBuilder.Entity<EmployeeProfile>(entity =>
                       {
@@ -103,8 +103,8 @@ namespace Pacifica.API.Data
 
                           // Properties
                           entity.Property(ep => ep.EmployeeId)
-                  .IsRequired()
-                  .HasMaxLength(128);
+                            .IsRequired()
+                            .HasMaxLength(450);
 
                           entity.Property(ep => ep.Region)
                   .HasMaxLength(100);

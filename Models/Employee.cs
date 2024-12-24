@@ -6,11 +6,11 @@ namespace Pacifica.API.Models
 {
     public class Employee : IdentityUser
     {
-        [Key]
+
         [Required]
-        [StringLength(128)]  // Maximum length for EmployeeId, set by your system design
+        [StringLength(450)]  // Maximum length for EmployeeId, matching IdentityUser.Id length
         public string EmployeeId { get; set; } = string.Empty;
-        
+
         [Required]
         [StringLength(100)]
         public string? FirstName { get; set; }  // Employee's first name
@@ -28,6 +28,7 @@ namespace Pacifica.API.Models
 
         [StringLength(20)]
         public string? Gender { get; set; }  // Employee's gender
+        public List<string> Roles { get; set; } = new List<string>();
 
         [StringLength(50)]
         public string? EmploymentStatus { get; set; }  // Employment status (Full-Time, Part-Time, etc.)
@@ -44,7 +45,7 @@ namespace Pacifica.API.Models
         public virtual Position? Position { get; set; }
 
         // Roles, branches, and other employee-related properties
-        public virtual ICollection<IdentityRole>? Roles { get; set; }
+        public virtual ICollection<string>? EmpoyeeRoles { get; set; }
         public ICollection<EmployeeBranch>? EmployeeBranches { get; set; }
 
         // Indicates if the employee is active

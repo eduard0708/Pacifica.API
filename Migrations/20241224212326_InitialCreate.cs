@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Pacifica.API.Migrations
 {
     /// <inheritdoc />
-    public partial class updteF1541Init : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -212,24 +212,20 @@ namespace Pacifica.API.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    dateReported = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateReported = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BranchId = table.Column<int>(type: "int", nullable: false),
                     SalesForTheDay = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     GrossSalesCRM = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     GrossSalesCashSlip = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     OverAllTotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     NetAccountability = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TotalDenomination = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    AddTotalChecks = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalDenominations = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalChecksAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TotalCashCount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     CashShortOver = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PerCapita = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TotaSalesBreakDown = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CustomerCount = table.Column<int>(type: "int", nullable: false),
-                    CashSlip = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ChargeInvoice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PaymentsOfAccounts = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    OtherReceipts = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalSalesBreakDown = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CustomerCounts = table.Column<int>(type: "int", nullable: false),
                     CertifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ApprovedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Remarks = table.Column<string>(type: "nvarchar(1500)", maxLength: 1500, nullable: true),
@@ -256,10 +252,11 @@ namespace Pacifica.API.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    EmployeeId = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    EmployeeId = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     MiddleName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DateOfHire = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Gender = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
@@ -276,7 +273,6 @@ namespace Pacifica.API.Migrations
                     UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DeletedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Id = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -294,7 +290,7 @@ namespace Pacifica.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.EmployeeId);
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                     table.ForeignKey(
                         name: "FK_AspNetUsers_Departments_DepartmentId",
                         column: x => x.DepartmentId,
@@ -391,14 +387,37 @@ namespace Pacifica.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "InclusiveInvoiceTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    InclusiveInvoiceTypes = table.Column<int>(type: "int", nullable: false),
+                    From = table.Column<int>(type: "int", nullable: false),
+                    To = table.Column<int>(type: "int", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    F154SalesReportId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InclusiveInvoiceTypes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_InclusiveInvoiceTypes_F154SalesReports_F154SalesReportId",
+                        column: x => x.F154SalesReportId,
+                        principalTable: "F154SalesReports",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Lesses",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    OverPunch = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    SalesReturnOP = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ChargeSales = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    OverPunch = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    SalesReturnOP = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    ChargeSales = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     F154SalesReportId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -438,7 +457,7 @@ namespace Pacifica.API.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    EmployeeId = table.Column<string>(type: "nvarchar(128)", nullable: true),
+                    EmployeeId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -450,7 +469,7 @@ namespace Pacifica.API.Migrations
                         name: "FK_AspNetRoles_AspNetUsers_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "EmployeeId");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -459,7 +478,7 @@ namespace Pacifica.API.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(128)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -470,7 +489,7 @@ namespace Pacifica.API.Migrations
                         name: "FK_AspNetUserClaims_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "EmployeeId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -481,7 +500,7 @@ namespace Pacifica.API.Migrations
                     LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(128)", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -490,7 +509,7 @@ namespace Pacifica.API.Migrations
                         name: "FK_AspNetUserLogins_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "EmployeeId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -498,7 +517,7 @@ namespace Pacifica.API.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "nvarchar(128)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -510,7 +529,7 @@ namespace Pacifica.API.Migrations
                         name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "EmployeeId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -518,7 +537,7 @@ namespace Pacifica.API.Migrations
                 name: "EmployeeBranches",
                 columns: table => new
                 {
-                    EmployeeId = table.Column<string>(type: "nvarchar(128)", nullable: false),
+                    EmployeeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     BranchId = table.Column<int>(type: "int", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
@@ -535,7 +554,7 @@ namespace Pacifica.API.Migrations
                         name: "FK_EmployeeBranches_AspNetUsers_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "EmployeeId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_EmployeeBranches_Branches_BranchId",
@@ -551,7 +570,7 @@ namespace Pacifica.API.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    EmployeeId = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    EmployeeId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
                     Region = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Province = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     CityOrMunicipality = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
@@ -575,7 +594,7 @@ namespace Pacifica.API.Migrations
                         name: "FK_EmployeeProfiles_AspNetUsers_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "EmployeeId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -776,7 +795,7 @@ namespace Pacifica.API.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "nvarchar(128)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -792,7 +811,7 @@ namespace Pacifica.API.Migrations
                         name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "EmployeeId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -1090,6 +1109,11 @@ namespace Pacifica.API.Migrations
                 column: "BranchId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_InclusiveInvoiceTypes_F154SalesReportId",
+                table: "InclusiveInvoiceTypes",
+                column: "F154SalesReportId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Inventories_BranchId_ProductId",
                 table: "Inventories",
                 columns: new[] { "BranchId", "ProductId" });
@@ -1214,6 +1238,9 @@ namespace Pacifica.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "EmployeeProfiles");
+
+            migrationBuilder.DropTable(
+                name: "InclusiveInvoiceTypes");
 
             migrationBuilder.DropTable(
                 name: "InventoryNormalizations");
