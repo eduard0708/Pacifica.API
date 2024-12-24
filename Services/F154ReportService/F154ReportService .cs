@@ -40,6 +40,35 @@ namespace Pacifica.API.Services.F154ReportService
             return response;
         }
 
+        public async Task<ApiResponse<F154SalesReportDto>> GetByBranchIdAndDateAsync(int branchId, DateTime date)
+        {
+            var response = new ApiResponse<F154SalesReportDto>();
+
+            // Query the database for the report with both id and date, ignoring time portion
+            var F154SalesReport = await _context.F154SalesReports
+                .Include(dsr => dsr.Branch)
+                .Include(dsr => dsr.CashDenominations)
+                .Include(dsr => dsr.SalesBreakDowns)
+                .Include(dsr => dsr.Checks)
+                .FirstOrDefaultAsync(dsr => dsr.BranchId == branchId && dsr.DateReported.Date == date.Date); // Compare only the date part
+
+            if (F154SalesReport == null)
+            {
+                response.Success = false;
+                response.Message = "Daily Sales Report not found for the provided ID and date.";
+                return response;
+            }
+
+            // Map entity to DTO
+            response.Success = true;
+            response.Message = "Daily Sales Report retrieved successfully.";
+            response.Data = MapToDto(F154SalesReport);
+
+            return response;
+        }
+
+
+
         public async Task<ApiResponse<F154SalesReport>> CreateAsync(CreateF154SalesReportDto reportDto)
         {
             var response = new ApiResponse<F154SalesReport>();

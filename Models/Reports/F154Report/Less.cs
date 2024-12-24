@@ -7,11 +7,11 @@ namespace Pacifica.API.Models.Reports.F154Report
     {
         public int Id { get; set; } // Primary key
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal OverPunch { get; set; }
+        public decimal? OverPunch { get; set; }
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal SalesReturnOP { get; set; }
+        public decimal? SalesReturnOP { get; set; }
         [Column(TypeName = "decimal(18, 2)")]
-        public decimal ChargeSales { get; set; }
+        public decimal? ChargeSales { get; set; }
 
         // Foreign Key
         public int F154SalesReportId { get; set; }  // One-to-One relationship with SalesReport

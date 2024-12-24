@@ -7,6 +7,7 @@ namespace Pacifica.API.Services.F154ReportService
     {
         // Get a specific DailySalesReport by Id
         Task<ApiResponse<F154SalesReportDto>> GetByIdAsync(int id);
+        Task<ApiResponse<F154SalesReportDto>> GetByBranchIdAndDateAsync(int branchId, DateTime date);
 
         // Create a new DailySalesReport
         Task<ApiResponse<F154SalesReport>> CreateAsync(CreateF154SalesReportDto reportDto);

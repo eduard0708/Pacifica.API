@@ -29,6 +29,20 @@ namespace Pacifica.API.Controllers
             return Ok(response);
         }
 
+        [HttpGet("{branchId}/{date}")]
+        public async Task<ActionResult<ApiResponse<F154SalesReportDto>>> GetByBranchIdAndDate(int branchId, DateTime date)
+        {
+            var response = await _dailySalesReportService.GetByBranchIdAndDateAsync(branchId, date);
+
+            if (!response.Success)
+            {
+                return NotFound(response);
+            }
+
+            return Ok(response);
+        }
+
+
         [HttpPost]
         public async Task<ActionResult<ApiResponse<F154SalesReport>>> CreateAsync([FromBody] CreateF154SalesReportDto reportDto)
         {

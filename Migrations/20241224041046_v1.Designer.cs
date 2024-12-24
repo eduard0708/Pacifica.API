@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pacifica.API.Data;
 
@@ -11,9 +12,11 @@ using Pacifica.API.Data;
 namespace Pacifica.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241224041046_v1")]
+    partial class v1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1343,16 +1346,16 @@ namespace Pacifica.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal?>("ChargeSales")
+                    b.Property<decimal>("ChargeSales")
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<int>("F154SalesReportId")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("OverPunch")
+                    b.Property<decimal>("OverPunch")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<decimal?>("SalesReturnOP")
+                    b.Property<decimal>("SalesReturnOP")
                         .HasColumnType("decimal(18, 2)");
 
                     b.HasKey("Id");
