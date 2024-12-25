@@ -39,7 +39,7 @@ namespace Pacifica.API.Services.EmployeeService
                 CreatedBy = "System" // You can customize this, depending on who creates the employee
             };
 
-           
+
 
             // Create the employee using the UserManager (for handling Identity)
             var result = await _userManager.CreateAsync(employee, registerDto.Password!);
@@ -76,7 +76,7 @@ namespace Pacifica.API.Services.EmployeeService
             };
         }
 
-   // Register a new employee
+        // Register a new employee
         public async Task<ApiResponse<EmployeeDto>> RegisterEmployeeAsync(RegisterUserDto registerUser)
         {
             // Create a new Employee (Identity User)
@@ -122,14 +122,13 @@ namespace Pacifica.API.Services.EmployeeService
                 Data = null
             };
         }
-   
-   
+
         public async Task<ApiResponse<EmployeeDto>> GetEmployeeByIdAsync(string employeeId)
         {
             // Fetch the employee by ID and include related entities (Roles, Department, Position)
-            
+
             var employee = await _userManager.Users
-                .Include(e => e.Roles)   // Include the roles for the employee
+                // .Include(e => e.Roles)   // Include the roles for the employee
                 .Include(e => e.Department) // Assuming Department is related to Employee
                 .Include(e => e.Position)  // Assuming Position is related to Employee
                 .FirstOrDefaultAsync(e => e.Id == employeeId);
@@ -142,6 +141,10 @@ namespace Pacifica.API.Services.EmployeeService
                     Message = "Employee not found"
                 };
             }
+
+            // Fetch the roles associated with the employee using UserManager
+            var employeeRoles = await _userManager.GetRolesAsync(employee);
+            employee.Roles = employeeRoles.ToList();
 
             // Map the employee to EmployeeDto using AutoMapper
             var employeeDto = _mapper.Map<EmployeeDto>(employee);
@@ -233,20 +236,17 @@ namespace Pacifica.API.Services.EmployeeService
         {
             // Get all employees with roles, department, position, and branches
             var employees = await _userManager.Users
-                .Include(e => e.Department) // Assuming Department is an entity linked to Employee
-                .Include(e => e.Position) // Assuming Position is an entity linked to Employee
+                .Include(e => e.Department)       // Assuming Department is an entity linked to Employee
+                .Include(e => e.Position)         // Assuming Position is an entity linked to Employee
                 .Include(e => e.EmployeeBranches) // Include the branches for each employee
                 .ToListAsync();
 
-                  foreach (var employee in employees)
-    {
-        // Get the roles for each user
-        var roles = await _userManager.GetRolesAsync(employee);
-        
-        // Add roles to employee's Roles property (assuming Roles is a List<string>)
-            employee.EmpoyeeRoles = roles.ToList();
-    }
-
+            // For each employee, fetch their roles asynchronously
+            foreach (var employee in employees)
+            {
+                var roles = await _userManager.GetRolesAsync(employee);
+                employee.Roles = roles.ToList(); // Manually set the Roles to the employee object
+            }
 
             // Manually map Employee entities to GetEmployeeDto
             var employeeDtos = employees.Select(employee => new GetEmployeeDto
@@ -256,20 +256,17 @@ namespace Pacifica.API.Services.EmployeeService
                 FirstName = employee.FirstName,
                 LastName = employee.LastName,
                 Email = employee.Email,
-                Department = employee.Department?.Name,
-                Position = employee.Position?.Name,
+                Department = employee.Department?.Name, // Handle null values in Department
+                Position = employee.Position?.Name, // Handle null values in Position
+                Roles = employee.Roles, // Roles are set directly here from the employee entity
 
-                // Roles = employee.Roles?.Select(role => new RoleDto
-                // {
-                //     Id = role.Id,
-                //     Name = role.Name
-                // }).ToList() ?? new List<RoleDto>(),  // If Roles is null, return an empty list
-                                                     // Map Branches to BranchDto list
+                // Map Branches to BranchDto list
                 Branches = employee.EmployeeBranches?.Select(branch => new BranchDto
                 {
                     Id = branch.BranchId,
-                    BranchName = branch.Branch!.BranchName
-                }).ToList() ?? new List<BranchDto>()  // If Branches is null, return an empty list
+                    BranchName = branch.Branch?.BranchName // Ensure Branch is not null before accessing
+                }).ToList() ?? new List<BranchDto>()  // If EmployeeBranches is null, return an empty list
+
             }).ToList();
 
             // Return the response with the mapped employee data
@@ -279,6 +276,7 @@ namespace Pacifica.API.Services.EmployeeService
                 Data = employeeDtos
             };
         }
+
 
         public async Task<ApiResponse<IEnumerable<GetFilter_Employee>>> GetEmployeesByPageAsync(int page, int pageSize, string sortField, int sortOrder)
         {
@@ -297,12 +295,12 @@ namespace Pacifica.API.Services.EmployeeService
             }
 
             // Get the total count of employees
-            var totalCount = await _context.Users 
+            var totalCount = await _context.Users
                 .IgnoreQueryFilters() // Ignore QueryFilters for soft delete if necessary
                 .CountAsync();
 
-               // Get the total count of employees
-         
+            // Get the total count of employees
+
 
             // Dynamically order the query based on the sort expression and sort order
             IQueryable<GetFilter_Employee> query = _context.Users

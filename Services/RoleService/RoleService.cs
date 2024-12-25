@@ -24,7 +24,7 @@ namespace Pacifica.API.Services.RoleService
         public async Task<ApiResponse<List<RoleDto>>> GetAllRolesAsync()
         {
             var roles = await _roleManager.Roles
-                .Select(r => new RoleDto { Id = r.Id, Name = r.Name })
+                .Select(r => new RoleDto { Name = r.Name })
                 .ToListAsync();
 
             return new ApiResponse<List<RoleDto>> { Success = true, Data = roles! };

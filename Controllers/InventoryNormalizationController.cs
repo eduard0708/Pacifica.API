@@ -5,6 +5,8 @@ using Pacifica.API.Models.Inventory;
 
 namespace Pacifica.API.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
+
     [Route("api/[controller]")]
     [ApiController]
     public class InventoryNormalizationController : ControllerBase
