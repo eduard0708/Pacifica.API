@@ -249,12 +249,13 @@ namespace Pacifica.API.Services.EmployeeService
                     Success = true,
                     Data = new EmployeeDto
                     {
+                        Id = employee.Id,
                         EmployeeId = employee.EmployeeId,
                         FirstName = employee.FirstName,
                         LastName = employee.LastName,
                         Email = employee.Email,
-                        Department = employee.Department!.Name,
-                        Position = employee.Position!.Name,
+                        Department = employee.Department?.Name ?? "Unknown",
+                        Position = employee.Position?.Name ?? "Unknown",
                         // Explicitly convert IList<string> to List<string>
                         Roles = await _userManager.GetRolesAsync(employee) // Convert the IList to List<string>
                     }
