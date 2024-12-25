@@ -1,11 +1,9 @@
 using System.Linq.Expressions;
-using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Pacifica.API.Dtos.Admin;
 using Pacifica.API.Dtos.Branch;
 using Pacifica.API.Dtos.Employee;
-using Pacifica.API.Dtos.Role;
 
 namespace Pacifica.API.Services.EmployeeService
 {
@@ -15,11 +13,13 @@ namespace Pacifica.API.Services.EmployeeService
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
 
+
         public EmployeeService(UserManager<Employee> userManager, IMapper mapper, ApplicationDbContext context)
         {
             _userManager = userManager;
             _mapper = mapper;
             _context = context;
+
         }
 
         public async Task<ApiResponse<EmployeeDto>> CreateEmployeeAsync(RegisterDto registerDto)
@@ -156,38 +156,45 @@ namespace Pacifica.API.Services.EmployeeService
             };
         }
 
-        // public async Task<ApiResponse<List<GetEmployeeDto>>> GetAllEmployeesAsync()
+        // public async Task<ApiResponse<EmployeeDto>> UpdateEmployeeAsync(string employeeId, UpdateEmployeeDto updateDto)
         // {
-        //     // Get all employees with roles, department, and position
-        //     var employees = await _userManager.Users
-        //         .Include(e => e.Roles) // Include the roles for each employee
-        //         .Include(e => e.Department) // Assuming Department is an entity linked to Employee
-        //         .Include(e => e.Position) // Assuming Position is an entity linked to Employee
-        //         .ToListAsync();
+        //     // Find the employee by their Id
+        //     var employee = await _userManager.FindByIdAsync(employeeId);
+        //     if (employee == null) return new ApiResponse<EmployeeDto> { Success = false, Message = "Employee not found" };
 
-        //     // Manually map Employee entities to GetEmployeeDto
-        //     var employeeDtos = employees.Select(employee => new GetEmployeeDto
+        //     // Perform manual mapping from UpdateEmployeeDto to Employee
+        //     employee.FirstName = updateDto.FirstName ?? employee.FirstName;  // If null, keep existing value
+        //     employee.LastName = updateDto.LastName ?? employee.LastName;
+        //     employee.Email = updateDto.Email ?? employee.Email;
+        //     employee.PasswordHash = string.IsNullOrEmpty(updateDto.Password) ? employee.PasswordHash : _userManager.PasswordHasher.HashPassword(employee, updateDto.Password); // Hash password if provided
+        //     employee.DepartmentId = updateDto.DepartmentId ?? employee.DepartmentId;
+        //     employee.PositionId = updateDto.PositionId ?? employee.PositionId;
+
+        //     // Here you would map any other properties you need to update.
+
+        //     // Update employee in the database
+        //     var result = await _userManager.UpdateAsync(employee);
+
+        //     // Return the response based on the result of the update operation
+        //     if (result.Succeeded)
         //     {
-        //         Id = employee.Id,
-        //         FirstName = employee.FirstName,
-        //         LastName = employee.LastName,
-        //         Email = employee.Email,
-        //         Department = employee.Department?.Name,  // Assuming Department is an entity with a Name property
-        //         Position = employee.Position?.Name,  // Assuming Position is an entity with a Title property
-        //                                               // Mapping Roles to a list of RoleDto objects
-        //         Roles = employee.Roles?.Select(role => new RoleDto
+        //         return new ApiResponse<EmployeeDto>
         //         {
-        //             Id = role.Id.ToString(),  // Assuming role Id is a Guid or similar
-        //             RolRole = role.Name  // Assuming role has a Name property
-        //         }).ToList() ?? new List<RoleDto>()  // If Roles is null, return an empty list
-        //     }).ToList();
+        //             Success = true,
+        //             Data = new EmployeeDto
+        //             {
+        //                 EmployeeId = employee.EmployeeId,
+        //                 FirstName = employee.FirstName,
+        //                 LastName = employee.LastName,
+        //                 Email = employee.Email,
+        //                 Department = employee.Department!.Name,
+        //                 Position = employee.Position!.Name,
+        //                 // Map any other fields you need to return in the response
+        //             }
+        //         };
+        //     }
 
-        //     // Return the response with the mapped employee data
-        //     return new ApiResponse<List<GetEmployeeDto>>
-        //     {
-        //         Success = true,
-        //         Data = employeeDtos
-        //     };
+        //     return new ApiResponse<EmployeeDto> { Success = false, Message = "Error updating employee" };
         // }
 
         public async Task<ApiResponse<EmployeeDto>> UpdateEmployeeAsync(string employeeId, UpdateEmployeeDto updateDto)
@@ -200,11 +207,36 @@ namespace Pacifica.API.Services.EmployeeService
             employee.FirstName = updateDto.FirstName ?? employee.FirstName;  // If null, keep existing value
             employee.LastName = updateDto.LastName ?? employee.LastName;
             employee.Email = updateDto.Email ?? employee.Email;
-            employee.PasswordHash = string.IsNullOrEmpty(updateDto.Password) ? employee.PasswordHash : _userManager.PasswordHasher.HashPassword(employee, updateDto.Password); // Hash password if provided
+            // employee.PasswordHash = string.IsNullOrEmpty(updateDto.Password) ? employee.PasswordHash : _userManager.PasswordHasher.HashPassword(employee, updateDto.Password); // Hash password if provided
             employee.DepartmentId = updateDto.DepartmentId ?? employee.DepartmentId;
             employee.PositionId = updateDto.PositionId ?? employee.PositionId;
 
-            // Here you would map any other properties you need to update.
+            // Fetch existing roles assigned to the employee
+            var existingRoles = await _userManager.GetRolesAsync(employee);
+
+            // If roles are provided in the DTO, update the roles
+            if (updateDto.Roles != null && updateDto.Roles.Any())
+            {
+                // Remove the employee's current roles and assign the new roles
+                var rolesToAdd = updateDto.Roles.Except(existingRoles).ToList(); // Roles to add
+                var rolesToRemove = existingRoles.Except(updateDto.Roles).ToList(); // Roles to remove
+
+                // Remove the roles from the employee
+                var removeResult = await _userManager.RemoveFromRolesAsync(employee, rolesToRemove);
+
+                if (!removeResult.Succeeded)
+                {
+                    return new ApiResponse<EmployeeDto> { Success = false, Message = "Error removing roles" };
+                }
+
+                // Add the new roles
+                var addResult = await _userManager.AddToRolesAsync(employee, rolesToAdd);
+
+                if (!addResult.Succeeded)
+                {
+                    return new ApiResponse<EmployeeDto> { Success = false, Message = "Error adding roles" };
+                }
+            }
 
             // Update employee in the database
             var result = await _userManager.UpdateAsync(employee);
@@ -223,14 +255,14 @@ namespace Pacifica.API.Services.EmployeeService
                         Email = employee.Email,
                         Department = employee.Department!.Name,
                         Position = employee.Position!.Name,
-                        // Map any other fields you need to return in the response
+                        // Explicitly convert IList<string> to List<string>
+                        Roles = await _userManager.GetRolesAsync(employee) // Convert the IList to List<string>
                     }
                 };
             }
 
             return new ApiResponse<EmployeeDto> { Success = false, Message = "Error updating employee" };
         }
-
 
         public async Task<ApiResponse<List<GetEmployeeDto>>> GetAllEmployeesAsync()
         {
@@ -277,10 +309,9 @@ namespace Pacifica.API.Services.EmployeeService
             };
         }
 
-
         public async Task<ApiResponse<IEnumerable<GetFilter_Employee>>> GetEmployeesByPageAsync(int page, int pageSize, string sortField, int sortOrder)
         {
-            // Map sortField to an actual Expression<Func<GetFilter_Employee, object>> that EF Core can process
+            // Map sortField to an actual Expression<Func<Employee, object>> that EF Core can process
             var sortExpression = GetSortExpression(sortField);
 
             if (sortExpression == null)
@@ -299,32 +330,13 @@ namespace Pacifica.API.Services.EmployeeService
                 .IgnoreQueryFilters() // Ignore QueryFilters for soft delete if necessary
                 .CountAsync();
 
-            // Get the total count of employees
-
-
             // Dynamically order the query based on the sort expression and sort order
-            IQueryable<GetFilter_Employee> query = _context.Users
+            IQueryable<Employee> query = _context.Users  // Replace `User` with your actual entity class name
                 .IgnoreQueryFilters()  // Ignore global filters, so we can apply soft delete filter manually
                 .Include(e => e.Department)
                 .Include(e => e.Position)
-                .Include(e => e.Roles)
-                .Select(e => new GetFilter_Employee
-                {
-                    Id = e.Id.ToString(),  // Convert to string if necessary for your response format
-                    EmployeeId = e.EmployeeId,
-                    FirstName = e.FirstName,
-                    LastName = e.LastName,
-                    Email = e.Email,
-                    DepartmentId = e.Department != null ? e.Department.Id : 0,  // Check for null
-                    Department = e.Department!.Name,  // Check for null
-                    PositionId = e.Position != null ? e.Position.Id : 0,  // Check for null
-                    Position = e.Position!.Name,  // Check for null
-                    // Roles = e.Roles!.Select(r => new RoleDto
-                    // {
-                    //     Id = r.Id,
-                    //     Name = r.Name
-                    // }).ToList()  // Ensure Roles is not null
-                });
+                .Include(e => e.EmployeeBranches)  // Include EmployeeBranches if needed
+                .Select(e => e);  // Start with just the entity
 
             // Apply sorting dynamically based on sortOrder
             if (sortOrder == 1)
@@ -342,15 +354,47 @@ namespace Pacifica.API.Services.EmployeeService
                 .Take(pageSize)
                 .ToListAsync();
 
+            // Now retrieve the roles for each employee
+            var employeeDtos = new List<GetFilter_Employee>();
+            foreach (var employee in employees)
+            {
+                // Get the roles for each employee using UserManager
+                var roles = await _userManager.GetRolesAsync(employee);
+
+                // Create the DTO and map other properties
+                var employeeDto = new GetFilter_Employee
+                {
+                    Id = employee.Id.ToString(),
+                    EmployeeId = employee.EmployeeId,
+                    FirstName = employee.FirstName,
+                    LastName = employee.LastName,
+                    Email = employee.Email,
+                    DepartmentId = employee.Department?.Id ?? 0,  // Handle null safely
+                    Department = employee.Department?.Name,
+                    PositionId = employee.Position?.Id ?? 0,  // Handle null safely
+                    Position = employee.Position?.Name,
+                    Roles = roles.ToList(),  // Store roles as a list of role names
+                    Branches = employee.EmployeeBranches?.Select(branch => new BranchDto
+                    {
+                        Id = branch.BranchId,
+                        BranchName = branch.Branch?.BranchName
+                    }).ToList() ?? new List<BranchDto>(),  // Handle null safely
+                };
+
+                employeeDtos.Add(employeeDto);
+            }
+
+            // Return the response with the mapped employee data
             return new ApiResponse<IEnumerable<GetFilter_Employee>>
             {
                 Success = true,
                 Message = "Employees retrieved successfully.",
-                Data = employees,
+                Data = employeeDtos,
                 TotalCount = totalCount
             };
         }
-        private Expression<Func<GetFilter_Employee, object>> GetSortExpression(string sortField)
+
+        private Expression<Func<Employee, object>> GetSortExpression(string sortField)
         {
             switch (sortField.ToLower())  // Use ToLower() to make it case insensitive
             {
@@ -361,9 +405,9 @@ namespace Pacifica.API.Services.EmployeeService
                 case "email":
                     return e => e.Email!;
                 case "department":
-                    return e => e.Department!;
+                    return e => e.Department!.Name!;  // Assuming Department is an entity and has a Name property
                 case "position":
-                    return e => e.Position!;
+                    return e => e.Position!.Name!;  // Assuming Position is an entity and has a Name property
                 case "employeeid":
                     return e => e.EmployeeId!;
                 default:

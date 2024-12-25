@@ -1,3 +1,4 @@
+using Pacifica.API.Dtos.Branch;
 using Pacifica.API.Dtos.Role;
 
 namespace Pacifica.API.Dtos.Employee
@@ -13,6 +14,8 @@ namespace Pacifica.API.Dtos.Employee
         public string? Department { get; set; }
         public int PositionId { get; set; }
         public string? Position { get; set; }
-        public List<RoleDto>? Roles { get; set; }
+        public List<string>? Roles { get; set; }
+
+        public List<BranchDto>? Branches { get; set; }
     }
 }
