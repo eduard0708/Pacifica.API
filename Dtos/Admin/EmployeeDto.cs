@@ -1,3 +1,5 @@
+using Pacifica.API.Dtos.Branch;
+
 namespace Pacifica.API.Dtos.Admin
 {
     public class EmployeeDto
@@ -8,6 +10,7 @@ namespace Pacifica.API.Dtos.Admin
         public string? LastName { get; set; }
         public string? Email { get; set; }
         public IList<string>? Roles { get; set; }
+        public List<BranchDto>? Branches { get; set; }
         public string? Department { get; set; }
         public string? Position { get; set; }
     }

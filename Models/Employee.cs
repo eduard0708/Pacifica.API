@@ -46,7 +46,7 @@ namespace Pacifica.API.Models
 
         // Roles, branches, and other employee-related properties
         public virtual ICollection<string>? EmpoyeeRoles { get; set; }
-        public ICollection<EmployeeBranch>? EmployeeBranches { get; set; }
+        public ICollection<EmployeeBranch>? EmployeeBranches { get; set; } 
 
         // Indicates if the employee is active
         [Required]

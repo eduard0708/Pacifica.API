@@ -10,5 +10,6 @@ namespace Pacifica.API.Dtos.Admin
         public int? DepartmentId { get; set; }
         public int? PositionId { get; set; }
         public IList<string>? Roles { get; set; }
+        public IList<int>? BranchIds { get; set; }
     }
 }
