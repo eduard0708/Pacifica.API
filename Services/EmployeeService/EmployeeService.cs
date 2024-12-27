@@ -4,19 +4,23 @@ using Microsoft.EntityFrameworkCore;
 using Pacifica.API.Dtos.Admin;
 using Pacifica.API.Dtos.Branch;
 using Pacifica.API.Dtos.Employee;
+using Pacifica.API.Dtos.Role;
 
 namespace Pacifica.API.Services.EmployeeService
 {
     public class EmployeeService : IEmployeeService
     {
         private readonly UserManager<Employee> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
 
 
-        public EmployeeService(UserManager<Employee> userManager, IMapper mapper, ApplicationDbContext context)
+        public EmployeeService(UserManager<Employee> userManager, IMapper mapper, ApplicationDbContext context, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
             _mapper = mapper;
             _context = context;
 
@@ -82,7 +86,7 @@ namespace Pacifica.API.Services.EmployeeService
             // Create a new Employee (Identity User)
             var employee = new Employee
             {
-                UserName = registerUser.EmployeeId,  // Set EmployeeId as UserName
+                UserName = registerUser.EmployeeId,
                 Email = registerUser.Email,
                 EmployeeId = registerUser.EmployeeId,
                 FirstName = registerUser.FirstName,
@@ -142,10 +146,6 @@ namespace Pacifica.API.Services.EmployeeService
                 };
             }
 
-            // Fetch the roles associated with the employee using UserManager
-            var employeeRoles = await _userManager.GetRolesAsync(employee);
-            employee.Roles = employeeRoles.ToList();
-
             // Map the employee to EmployeeDto using AutoMapper
             var employeeDto = _mapper.Map<EmployeeDto>(employee);
 
@@ -158,19 +158,44 @@ namespace Pacifica.API.Services.EmployeeService
 
         public async Task<ApiResponse<List<GetEmployeeDto>>> GetAllEmployeesAsync()
         {
+            // Fetch employees with related data (Department, Position, and EmployeeBranches)
             var employees = await _userManager.Users
                 .Include(e => e.Department)             // Assuming Department is an entity linked to Employee
                 .Include(e => e.Position)               // Assuming Position is an entity linked to Employee
-                .Include(e => e.EmployeeBranches)
+                .Include(e => e.EmployeeBranches)       // Include EmployeeBranches related data
                 .ToListAsync();                         // Execute the query to retrieve the data
 
-
-            // For each employee, fetch their roles asynchronously
+            // For each employee, fetch their roles asynchronously, including the role ID
+            // For each employee, fetch their roles asynchronously, including the role ID
             foreach (var employee in employees)
             {
-                var roles = await _userManager.GetRolesAsync(employee);
-                employee.Roles = roles.ToList(); // Manually set the Roles to the employee object
+                // Get the list of role names assigned to the employee
+                var roleNames = await _userManager.GetRolesAsync(employee);
+
+                // Fetch the role objects based on the role names
+                var rolesWithIds = new List<RoleDto>(); // Assuming RoleDto is a DTO with properties like Id and Name
+
+                foreach (var roleName in roleNames)
+                {
+                    // Fetch the role object by name using _roleManager
+                    var role = await _roleManager.FindByNameAsync(roleName);
+
+                    if (role != null)
+                    {
+                        // Add the role ID and Name to the RoleDto list
+                        rolesWithIds.Add(new RoleDto
+                        {
+                            Id = role.Id,    // The Role ID
+                            Name = role.Name // The Role Name
+                        });
+                    }
+                }
+
+                // Assign the roles with IDs to the employee object
+                employee.Roles = rolesWithIds;
             }
+
+
 
             // Manually map Employee entities to GetEmployeeDto
             var employeeDtos = employees.Select(employee => new GetEmployeeDto
@@ -181,21 +206,23 @@ namespace Pacifica.API.Services.EmployeeService
                 LastName = employee.LastName,
                 Email = employee.Email,
                 Department = employee.Department?.Name, // Handle null values in Department
-                Position = employee.Position?.Name, // Handle null values in Position
-                Roles = employee.Roles, // Roles are set directly here from the employee entity
+                Position = employee.Position?.Name,     // Handle null values in Position
+
+                // Roles are set directly here from the employee entity (with ID included)
+                Roles = employee.Roles, // Roles are already assigned to employee from the previous logic
 
                 // Check if EmployeeBranches is not null or empty
                 Branches = employee.EmployeeBranches!
-                            .Select(eb => new BranchDto
-                            {
-                                Id = eb.BranchId,  // Map BranchId from EmployeeBranch
+                                .Select(eb => new BranchDto
+                                {
+                                    Id = eb.BranchId,  // Map BranchId from EmployeeBranch
 
-                                // Fetch BranchName from _context.Branches using BranchId
-                                BranchName = _context.Branches
-                                    .Where(b => b.Id == eb.BranchId)
-                                    .Select(b => b.BranchName)
-                                    .FirstOrDefault() ?? "Unknown"  // Default to "Unknown" if Branch is not found
-                            }).ToList()
+                                    // Fetch BranchName from _context.Branches using BranchId
+                                    BranchName = _context.Branches
+                                        .Where(b => b.Id == eb.BranchId)
+                                        .Select(b => b.BranchName)
+                                        .FirstOrDefault() ?? "Unknown"  // Default to "Unknown" if Branch is not found
+                                }).ToList()
 
             }).ToList();
 
@@ -206,6 +233,7 @@ namespace Pacifica.API.Services.EmployeeService
                 Data = employeeDtos
             };
         }
+
 
         public async Task<ApiResponse<IEnumerable<GetFilter_Employee>>> GetEmployeesByPageAsync(int page, int pageSize, string sortField, int sortOrder)
         {
@@ -313,6 +341,8 @@ namespace Pacifica.API.Services.EmployeeService
             }
         }
 
+        /// <summary>
+        /// Edit Employee asign remove roles, assign remove branches,ssign change department, assign change position
         public async Task<ApiResponse<EmployeeDto>> UpdateEmployeeAsync(string employeeId, UpdateEmployeeDto updateDto)
         {
             // Find the employee by their Id
@@ -444,8 +474,59 @@ namespace Pacifica.API.Services.EmployeeService
             };
         }
 
+        // Method to check if employeeId or email exists
+        public async Task<ApiResponse<bool>> CheckIfExistsAsync(string value, string type)
+        {
+            var response = new ApiResponse<bool>
+            {
+                Success = false,  // Default success status
+                Message = "Validation failed",  // Default message
+                Data = false,  // Default data value (false, meaning not found)
+                TotalCount = 0  // Optional field, can be set to 0 if not needed
+            };
+
+            try
+            {
+                // Validate input
+                if (string.IsNullOrEmpty(value) || string.IsNullOrEmpty(type))
+                {
+                    response.Message = "Value or type cannot be null or empty.";
+                    return response; // Return early if input is invalid
+                }
+
+                // Check if type is 'employeeId'
+                if (type == "employeeId")
+                {
+                    var user = await _userManager.Users
+                        .FirstOrDefaultAsync(u => u.EmployeeId == value);
+
+                    response.Data = user != null;  // Set existence status (true/false)
+                    response.Success = true;  // Operation was successful
+                    response.Message = response.Data ? "Employee ID exists." : "Employee ID does not exist.";
+                }
+                // Check if type is 'email'
+                else if (type == "email")
+                {
+                    var user = await _userManager.FindByEmailAsync(value);
+
+                    response.Data = user != null;  // Set existence status (true/false)
+                    response.Success = true;  // Operation was successful
+                    response.Message = response.Data ? "Email exists." : "Email does not exist.";
+                }
+                else
+                {
+                    response.Message = "Invalid type provided.";  // If invalid type
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle any unexpected errors
+                response.Message = $"An error occurred: {ex.Message}";
+            }
+
+            return response;  // Return the ApiResponse object
+        }
 
 
     }
-
 }

@@ -13,5 +13,13 @@ namespace Pacifica.API.Services.EmployeeService
         Task<ApiResponse<EmployeeDto>> UpdateEmployeeAsync(string employeeId, UpdateEmployeeDto registerDto);
         Task<ApiResponse<IEnumerable<GetFilter_Employee>>> GetEmployeesByPageAsync(int page, int pageSize, string sortField, int sortOrder);
 
+        /// <summary>
+        /// Checks if an employee ID or email exists in the database.
+        /// </summary>
+        /// <param name="value">The employee ID or email to check.</param>
+        /// <param name="type">The type of value ("employeeId" or "email").</param>
+        /// <returns>True if the value exists, false otherwise.</returns>
+        Task<ApiResponse<bool>> CheckIfExistsAsync(string value, string type);
+
     }
 }

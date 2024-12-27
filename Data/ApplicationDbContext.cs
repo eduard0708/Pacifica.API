@@ -78,11 +78,11 @@ namespace Pacifica.API.Data
                             .HasMaxLength(25); // Example constraint
 
                     entity.Property(e => e.FirstName)
-                        .HasMaxLength(50)
+                        .HasMaxLength(20)
                         .IsRequired(false); // Optional field
 
                     entity.Property(e => e.LastName)
-                        .HasMaxLength(50)
+                        .HasMaxLength(20)
                         .IsRequired(false); // Optional field
 
                     entity.Property(e => e.CreatedAt)

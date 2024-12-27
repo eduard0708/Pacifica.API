@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Pacifica.API.Dtos.Role;
 using Pacifica.API.Models.EmployeManagement;
 using System.ComponentModel.DataAnnotations;
 
@@ -28,7 +29,7 @@ namespace Pacifica.API.Models
 
         [StringLength(20)]
         public string? Gender { get; set; }  // Employee's gender
-        public List<string> Roles { get; set; } = new List<string>();
+        public List<RoleDto> Roles { get; set; } = new List<RoleDto>();
 
         [StringLength(50)]
         public string? EmploymentStatus { get; set; }  // Employment status (Full-Time, Part-Time, etc.)
@@ -45,8 +46,8 @@ namespace Pacifica.API.Models
         public virtual Position? Position { get; set; }
 
         // Roles, branches, and other employee-related properties
-        public virtual ICollection<string>? EmpoyeeRoles { get; set; }
-        public ICollection<EmployeeBranch>? EmployeeBranches { get; set; } 
+        public virtual ICollection<Role>? EmpoyeeRoles { get; set; }
+        public ICollection<EmployeeBranch>? EmployeeBranches { get; set; }
 
         // Indicates if the employee is active
         [Required]

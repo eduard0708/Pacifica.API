@@ -97,7 +97,6 @@ builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IPositionService, PositionService>();
 builder.Services.AddScoped<IF154ReportService, F154ReportService>();
 
-
 builder.Services.AddScoped<ProductAuditTrailHelper>();
 
 

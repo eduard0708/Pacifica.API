@@ -24,7 +24,7 @@ namespace Pacifica.API.Services.RoleService
         public async Task<ApiResponse<List<RoleDto>>> GetAllRolesAsync()
         {
             var roles = await _roleManager.Roles
-                .Select(r => new RoleDto { Name = r.Name })
+                .Select(r => new RoleDto { Id = r.Id, Name = r.Name })
                 .ToListAsync();
 
             return new ApiResponse<List<RoleDto>> { Success = true, Data = roles! };
@@ -102,13 +102,7 @@ namespace Pacifica.API.Services.RoleService
                                                         .Where(r => roleNames.Contains(r.Name!))
                                                         .ToListAsync();
 
-                // If there are roles that do not exist, return an error message
-                // var nonExistingRoles = roleNames.Except(existingRoles.Select(r => r.Name)).ToList();
-                // if (nonExistingRoles.Any())
-                // {
-                //     _logger.LogError($"The following roles do not exist: {string.Join(", ", nonExistingRoles)}");
-                //     return new ApiResponse<bool> { Success = false, Message = $"The following roles do not exist: {string.Join(", ", nonExistingRoles)}", Data = false };
-                // }
+            
 
                 // Add roles to the user if all roles exist
                 var result = await _userManager.AddToRolesAsync(employee, roleNames);

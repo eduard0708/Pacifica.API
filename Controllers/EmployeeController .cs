@@ -137,6 +137,28 @@ namespace Pacifica.API.Controllers
             // If there were errors, return a failure response
             return BadRequest(result); // Return the failure response
         }
+
+        // POST method to check if an EmployeeId or Email exists
+        // Method to check if employeeId or email exists
+        [HttpPost("check")]
+        public async Task<IActionResult> CheckIfExists([FromBody] EmployeeCheckRequest request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.Value) || string.IsNullOrEmpty(request.Type))
+            {
+                return BadRequest("Invalid request.");
+            }
+
+            // Call the service method to check for existence
+            var response = await _employeeService.CheckIfExistsAsync(request.Value, request.Type);
+
+            // Return the result as a JSON object
+            if (response.Success)
+            {
+                return Ok(response);
+            }
+
+            return BadRequest(response.Message);
+        }
     }
 }
 
