@@ -8,8 +8,13 @@ namespace Pacifica.API.Dtos.Employee
         [StringLength(450, ErrorMessage = "EmployeeId cannot be longer than 128 characters.")]
         public string EmployeeId { get; set; } = string.Empty;
 
+
+        [StringLength(25)]
+        public string? Username { get; set; }
+
         [StringLength(50)]
         public string? FirstName { get; set; }
+
         [StringLength(50)]
         public string? LastName { get; set; }
 

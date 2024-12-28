@@ -154,8 +154,8 @@ namespace Pacifica.API.Services.EmployeeService
                 EmployeeId = createDto.EmployeeId,
                 FirstName = createDto.FirstName,
                 LastName = createDto.LastName,
-                Email = createDto.Email,
-                UserName = createDto.Email, // Using email as username
+                Email = createDto.Username,
+                UserName = createDto.Username, // Using email as username
                 PositionId = createDto.Position,
                 DepartmentId = createDto.Department,
                 IsActive = true, // Set the default value for IsActive
@@ -284,7 +284,6 @@ namespace Pacifica.API.Services.EmployeeService
                 Data = false
             };
         }
-
 
 
         public async Task<ApiResponse<EmployeeDto>> RegisterEmployeeAsync(RegisterUserDto registerUser)
