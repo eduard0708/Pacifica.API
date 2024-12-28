@@ -40,10 +40,10 @@ namespace Pacifica.API.Controllers
             return Ok(response);
         }
 
-        [HttpPost]
-        public async Task<ActionResult<ApiResponse<EmployeeDto>>> CreateEmployee(RegisterDto registerDto)
+        [HttpPost("create")]
+        public async Task<ActionResult<ApiResponse<bool>>> CreateEmployee(CreateEmployeeDto createEmpoyee)
         {
-            var response = await _employeeService.CreateEmployeeAsync(registerDto);
+            var response = await _employeeService.CreateEmployeeAsync(createEmpoyee);
             return Ok(response);
         }
 

@@ -26,61 +26,267 @@ namespace Pacifica.API.Services.EmployeeService
 
         }
 
-        public async Task<ApiResponse<EmployeeDto>> CreateEmployeeAsync(RegisterDto registerDto)
+
+        // public async Task<ApiResponse<bool>> CreateEmployeeAsync(CreateEmployeeDto createDto)
+        // {
+        //     // Manually create the Employee entity from RegisterDto
+        //     var employee = new Employee
+        //     {
+        //         EmployeeId = createDto.EmployeeId,
+        //         FirstName = createDto.FirstName,
+        //         LastName = createDto.LastName,
+        //         Email = createDto.Email,
+        //         UserName = createDto.Email, // Using email as username
+        //         PositionId = createDto.Position,
+        //         DepartmentId = createDto.Department,
+        //         IsActive = true, // Set the default value for IsActive
+        //         IsDeleted = false, // Set the default value for IsDeleted
+        //         CreatedBy = "System" // You can customize this based on who creates the employee
+        //     };
+
+        //     // Optionally load related entities to ensure EF Core understands the relationships
+        //     if (createDto.Department.HasValue)
+        //     {
+        //         var department = await _context.Departments.FindAsync(createDto.Department.Value);
+        //         if (department != null)
+        //         {
+        //             employee.Department = department;
+        //         }
+        //     }
+
+        //     if (createDto.Position.HasValue)
+        //     {
+        //         var position = await _context.Positions.FindAsync(createDto.Position.Value);
+        //         if (position != null)
+        //         {
+        //             employee.Position = position;
+        //         }
+        //     }
+
+        //     // Create the employee using the UserManager (for handling Identity)
+        //     var result = await _userManager.CreateAsync(employee, createDto.Password!);
+
+        //     // Check if the creation succeeded
+        //     if (result.Succeeded)
+        //     {
+        //         // Now handle roles and branches (assuming you have some logic to map these)
+
+        //         if (createDto.Roles != null && createDto.Roles.Any())
+        //         {
+        //             // Add roles to the employee
+        //             foreach (var role in createDto.Roles)
+        //             {
+        //                 if (!await _roleManager.RoleExistsAsync(role))
+        //                 {
+        //                     // Optionally, create the role if it doesn't exist
+        //                     var roleResult = await _roleManager.CreateAsync(new IdentityRole(role));
+        //                     if (!roleResult.Succeeded)
+        //                     {
+        //                         return new ApiResponse<bool>
+        //                         {
+        //                             Success = false,
+        //                             Message = "Failed to create role.",
+        //                             Data = false
+        //                         };
+        //                     }
+        //                 }
+
+        //                 await _userManager.AddToRoleAsync(employee, role);
+        //             }
+        //         }
+
+        //         if (createDto.Branches != null && createDto.Branches.Any())
+        //         {
+        //             // Assuming you have a logic to map branches (e.g., adding to a join table)
+        //             foreach (var branchId in createDto.Branches)
+        //             {
+        //                 // Assuming you have a Branch entity that you can fetch by ID
+        //                 var branch = await _context.Branches.FindAsync(branchId);
+        //                 if (branch != null)
+        //                 {
+        //                     // Add the branch to the employee through the join table
+        //                     employee.EmployeeBranches!.Add(new EmployeeBranch
+        //                     {
+        //                         EmployeeId = employee.EmployeeId,
+        //                         BranchId = branchId
+        //                     });
+        //                 }
+        //             }
+        //         }
+
+        //         await _context.SaveChangesAsync();
+
+
+        //         return new ApiResponse<bool>
+        //         {
+        //             Success = true,
+        //             Message = "Employee created successfully",
+        //             Data = true
+        //         };
+        //     }
+
+        //     // If there were errors, return a failure response with the error messages
+        //     return new ApiResponse<bool>
+        //     {
+        //         Success = false,
+        //         Message = "Error creating employee",
+        //         Data = false
+        //     };
+        // }
+
+
+        public async Task<ApiResponse<bool>> CreateEmployeeAsync(CreateEmployeeDto createDto)
         {
-            // Manually create the Employee entity from RegisterDto
+            // Check if createDto is null
+            if (createDto == null)
+            {
+                return new ApiResponse<bool>
+                {
+                    Success = false,
+                    Message = "CreateEmployeeDto is null.",
+                    Data = false
+                };
+            }
+
+            // Manually create the Employee entity from CreateEmployeeDto
             var employee = new Employee
             {
-                EmployeeId = registerDto.EmployeeId,
-                FirstName = registerDto.FirstName,
-                LastName = registerDto.LastName,
-                Email = registerDto.Email,
-                UserName = registerDto.Email,
-                PositionId = registerDto.PositionId,
-                DepartmentId = registerDto.DepartmentId,
-                IsActive = true,  // Set the default value for IsActive
+                EmployeeId = createDto.EmployeeId,
+                FirstName = createDto.FirstName,
+                LastName = createDto.LastName,
+                Email = createDto.Email,
+                UserName = createDto.Email, // Using email as username
+                PositionId = createDto.Position,
+                DepartmentId = createDto.Department,
+                IsActive = true, // Set the default value for IsActive
                 IsDeleted = false, // Set the default value for IsDeleted
-                CreatedBy = "System" // You can customize this, depending on who creates the employee
+                CreatedBy = "System" // You can customize this based on who creates the employee
             };
 
+            // Initialize EmployeeBranches if it is null
+            employee.EmployeeBranches = employee.EmployeeBranches ?? new List<EmployeeBranch>();
 
+            // Optionally load related entities to ensure EF Core understands the relationships
+            if (createDto.Department.HasValue)
+            {
+                var department = await _context.Departments.FindAsync(createDto.Department.Value);
+                if (department != null)
+                {
+                    employee.Department = department;
+                }
+                else
+                {
+                    return new ApiResponse<bool>
+                    {
+                        Success = false,
+                        Message = "Department not found.",
+                        Data = false
+                    };
+                }
+            }
+
+            if (createDto.Position.HasValue)
+            {
+                var position = await _context.Positions.FindAsync(createDto.Position.Value);
+                if (position != null)
+                {
+                    employee.Position = position;
+                }
+                else
+                {
+                    return new ApiResponse<bool>
+                    {
+                        Success = false,
+                        Message = "Position not found.",
+                        Data = false
+                    };
+                }
+            }
 
             // Create the employee using the UserManager (for handling Identity)
-            var result = await _userManager.CreateAsync(employee, registerDto.Password!);
+            var result = await _userManager.CreateAsync(employee, createDto.Password!);
 
             // Check if the creation succeeded
             if (result.Succeeded)
             {
-                // Manually create the EmployeeDto to return
-                var employeeDto = new EmployeeDto
-                {
-                    Id = employee.Id,  // Assuming Id is of type Guid, convert it to string
-                    EmployeeId = employee.EmployeeId,
-                    FirstName = employee.FirstName,
-                    LastName = employee.LastName,
-                    Email = employee.Email,
-                    // Department = employee.Department?.Name,  // Assuming you want the department name
-                    // Position = employee.Position?.Name
-                };
+                // Now handle roles and branches (assuming you have some logic to map these)
 
-                return new ApiResponse<EmployeeDto>
+                if (createDto.Roles != null && createDto.Roles.Any())
+                {
+                    // Add roles to the employee
+                    foreach (var role in createDto.Roles)
+                    {
+                        if (!await _roleManager.RoleExistsAsync(role))
+                        {
+                            // Optionally, create the role if it doesn't exist
+                            var roleResult = await _roleManager.CreateAsync(new IdentityRole(role));
+                            if (!roleResult.Succeeded)
+                            {
+                                return new ApiResponse<bool>
+                                {
+                                    Success = false,
+                                    Message = "Failed to create role.",
+                                    Data = false
+                                };
+                            }
+                        }
+
+                        await _userManager.AddToRoleAsync(employee, role);
+                    }
+                }
+
+                if (createDto.Branches != null && createDto.Branches.Any())
+                {
+                    // Assuming you have a logic to map branches (e.g., adding to a join table)
+                    foreach (var branchId in createDto.Branches)
+                    {
+                        // Assuming you have a Branch entity that you can fetch by ID
+                        var branch = await _context.Branches.FindAsync(branchId);
+                        if (branch != null)
+                        {
+                            // Add the branch to the employee through the join table
+                            employee.EmployeeBranches!.Add(new EmployeeBranch
+                            {
+                                EmployeeId = employee.EmployeeId,
+                                BranchId = branchId,
+                                Role = "DefaultRole" // You should replace this with a valid role if needed
+
+                            });
+                        }
+                        else
+                        {
+                            // Handle the case when a branch is not found
+                            return new ApiResponse<bool>
+                            {
+                                Success = false,
+                                Message = $"Branch with ID {branchId} not found.",
+                                Data = false
+                            };
+                        }
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+
+                return new ApiResponse<bool>
                 {
                     Success = true,
                     Message = "Employee created successfully",
-                    Data = employeeDto
+                    Data = true
                 };
             }
 
             // If there were errors, return a failure response with the error messages
-            return new ApiResponse<EmployeeDto>
+            return new ApiResponse<bool>
             {
                 Success = false,
                 Message = "Error creating employee",
-                Data = null
+                Data = false
             };
         }
 
-        // Register a new employee
+
+
         public async Task<ApiResponse<EmployeeDto>> RegisterEmployeeAsync(RegisterUserDto registerUser)
         {
             // Create a new Employee (Identity User)
@@ -194,9 +400,6 @@ namespace Pacifica.API.Services.EmployeeService
                 // Assign the roles with IDs to the employee object
                 employee.Roles = rolesWithIds;
             }
-
-
-
             // Manually map Employee entities to GetEmployeeDto
             var employeeDtos = employees.Select(employee => new GetEmployeeDto
             {
@@ -233,7 +436,6 @@ namespace Pacifica.API.Services.EmployeeService
                 Data = employeeDtos
             };
         }
-
 
         public async Task<ApiResponse<IEnumerable<GetFilter_Employee>>> GetEmployeesByPageAsync(int page, int pageSize, string sortField, int sortOrder)
         {
@@ -446,6 +648,34 @@ namespace Pacifica.API.Services.EmployeeService
                 return new ApiResponse<EmployeeDto> { Success = false, Message = $"Error saving changes: {ex.Message}" };
             }
 
+
+            // Get the list of role names assigned to the employee
+            var roleNames = await _userManager.GetRolesAsync(employee);
+
+            // Fetch the role objects based on the role names
+            var rolesWithIds = new List<RoleDto>(); // Assuming RoleDto is a DTO with properties like Id and Name
+
+            foreach (var roleName in roleNames)
+            {
+                // Fetch the role object by name using _roleManager
+                var role = await _roleManager.FindByNameAsync(roleName);
+
+                if (role != null)
+                {
+                    // Add the role ID and Name to the RoleDto list
+                    rolesWithIds.Add(new RoleDto
+                    {
+                        Id = role.Id,    // The Role ID
+                        Name = role.Name // The Role Name
+                    });
+                }
+            }
+
+            // Assign the roles with IDs to the employee object
+            employee.Roles = rolesWithIds;
+
+
+
             // Prepare and return the updated EmployeeDto
             var updatedEmployeeDto = new EmployeeDto
             {
@@ -456,7 +686,7 @@ namespace Pacifica.API.Services.EmployeeService
                 Email = employee.Email,
                 Department = employee.Department?.Name ?? "Unknown",
                 Position = employee.Position?.Name ?? "Unknown",
-                Roles = await _userManager.GetRolesAsync(employee),
+                Roles = rolesWithIds,
                 Branches = _context.Branches
                     .Where(b => employee.EmployeeBranches!.Select(eb => eb.BranchId).Contains(b.Id))
                     .Select(b => new BranchDto

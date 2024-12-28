@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Pacifica.API.Dtos.Employee
 {
-    public class RegisterDto
+    public class CreateEmployeeDto
     {
         [Required(ErrorMessage = "EmployeeId is required.")]
         [StringLength(450, ErrorMessage = "EmployeeId cannot be longer than 128 characters.")]
@@ -19,11 +19,13 @@ namespace Pacifica.API.Dtos.Employee
 
         [Required(ErrorMessage = "Password is required.")]
         [MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")]
-        public List<string>? Roles { get; set; }
-        public List<int>? BranchIds  { get; set; }
         public string? Password { get; set; }
-        public int? DepartmentId { get; set; }
 
-        public int? PositionId { get; set; }
+        public List<string>? Roles { get; set; }
+        public List<int>? Branches { get; set; }
+        
+        public int? Department { get; set; }
+
+        public int? Position { get; set; }
     }
 }
