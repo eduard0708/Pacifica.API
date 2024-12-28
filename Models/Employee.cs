@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Pacifica.API.Dtos.Role;
 using Pacifica.API.Models.EmployeManagement;
+using Pacifica.API.Models.Menu;
 using System.ComponentModel.DataAnnotations;
 
 namespace Pacifica.API.Models
@@ -48,6 +49,9 @@ namespace Pacifica.API.Models
         // Roles, branches, and other employee-related properties
         public virtual ICollection<Role>? EmpoyeeRoles { get; set; }
         public ICollection<EmployeeBranch>? EmployeeBranches { get; set; }
+
+        public List<UserMenu> UserMenus { get; set; } = new List<UserMenu>();
+
 
         // Indicates if the employee is active
         [Required]

@@ -7,7 +7,7 @@ using Pacifica.API.Services.EmployeeService;
 
 namespace Pacifica.API.Controllers
 {
-    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
+   // [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase

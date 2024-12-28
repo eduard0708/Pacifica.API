@@ -19,6 +19,8 @@ using Pacifica.API.Dtos.InventoryNormalization;
 using Pacifica.API.Models.EmployeManagement;
 using Pacifica.API.Dtos.UserManagement;
 using Pacifica.API.Dtos.Employee;
+using Pacifica.API.Dtos.Menu;
+using Pacifica.API.Models.Menu;
 
 namespace Pacifica.API.Mapper
 {
@@ -135,6 +137,12 @@ namespace Pacifica.API.Mapper
 
 
                         CreateMap<Inventory, CreateInventoryDTO>().ReverseMap();
+
+                        CreateMap<CreateMenuDto, Menu>();
+
+
+                        CreateMap<Menu, MenuDto>().ReverseMap();
+
                         CreateMap<Inventory, ResponseInventoryDTO>()
                                 .ForMember(dest => dest.InventoryDate, opt => opt.MapFrom(src => src.InventoryDate))
                                 .ReverseMap();
@@ -145,7 +153,7 @@ namespace Pacifica.API.Mapper
                         CreateMap<Department, DepartmentDto>().ReverseMap();
                         CreateMap<Position, PositionDto>().ReverseMap();
                         // Map Employee to GetEmployeeDto
-                       
+
                         CreateMap<Employee, EmployeeDto>()
                             // Map EmployeeId correctly from Employee to EmployeeDto
                             .ForMember(dest => dest.EmployeeId, opt => opt.MapFrom(src => src.EmployeeId))
@@ -156,7 +164,7 @@ namespace Pacifica.API.Mapper
                             .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department != null ? new List<string> { src.Department.Name! } : new List<string>()))
 
                             // Mapping for Roles
-                        //     .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.Roles != null ? src.Roles.Select(role => role.Name!).ToList() : new List<string>()))
+                            //     .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.Roles != null ? src.Roles.Select(role => role.Name!).ToList() : new List<string>()))
 
                             // Mapping for Position
                             .ForMember(dest => dest.Position, opt => opt.MapFrom(src => src.Position != null ? new List<string> { src.Position.Name! } : new List<string>())); // Null check for Position

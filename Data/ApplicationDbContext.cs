@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Pacifica.API.Models.EmployeManagement;
 using Pacifica.API.Models.GlobalAuditTrails;
 using Pacifica.API.Models.Inventory;
+using Pacifica.API.Models.Menu;
 using Pacifica.API.Models.Reports.F154Report;
 using Pacifica.API.Models.Transaction;
 
@@ -59,6 +60,9 @@ namespace Pacifica.API.Data
         public DbSet<Less> Lesses { get; set; }
         public DbSet<InclusiveInvoiceType> InclusiveInvoiceTypes { get; set; }
 
+        public DbSet<Menu> Menus { get; set; }
+        public DbSet<UserMenu> UserMenus { get; set; }
+
 
         // Configurations for model building
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -96,6 +100,32 @@ namespace Pacifica.API.Data
                           .OnDelete(DeleteBehavior.Restrict);  // If Employee is deleted, delete EmployeeProfile as well
                 });
 
+
+            // Configure Menu entity (Self-Referencing relationship for submenus)
+            modelBuilder.Entity<Menu>(entity => {
+                entity.HasMany(m => m.Items)  // A menu can have many submenus (Items)
+                .WithOne(m => m.Parent) // Each submenu has one parent menu
+                .HasForeignKey(m => m.ParentId)  // Foreign key to parent menu (ParentId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete, as you might not want to delete submenus if a parent is deleted
+                
+            });
+               
+            // Configure the many-to-many relationship between Employee and Menu (through UserMenu)
+            modelBuilder.Entity<UserMenu>(entity => {
+                entity.HasKey(um => new { um.EmployeeId, um.MenuId });  // Composite primary key for UserMenu
+    
+                entity.HasOne(um => um.Employee)  // Each UserMenu is linked to one Employee
+                        .WithMany(e => e.UserMenus) // An Employee can have many UserMenus
+                        .HasForeignKey(um => um.EmployeeId)
+                        .OnDelete(DeleteBehavior.Cascade);  // Deleting an Employee will delete the UserMenu records associated with them
+
+                entity.HasOne(um => um.Menu)  // Each UserMenu is linked to one Menu
+                        .WithMany(m => m.UserMenus)  // A Menu can have many UserMenus (employees assigned to it)
+                        .HasForeignKey(um => um.MenuId)
+                        .OnDelete(DeleteBehavior.Cascade);  // Deleting a Menu will delete the UserMenu records associated with it
+
+            });
+                
             // Configure EmployeeProfile entity
             modelBuilder.Entity<EmployeeProfile>(entity =>
                       {
@@ -565,7 +595,10 @@ namespace Pacifica.API.Data
             modelBuilder.Entity<Less>()
                 .HasQueryFilter(sb => sb.F154SalesReport!.DeletedAt == null);  // Apply matching filter for SalesBreakdown        
             modelBuilder.Entity<InclusiveInvoiceType>()
-          .HasQueryFilter(sb => sb.F154SalesReport!.DeletedAt == null);  // Apply matching filter for SalesBreakdown             
+                .HasQueryFilter(sb => sb.F154SalesReport!.DeletedAt == null);  // Apply matching filter for SalesBreakdown             
+            modelBuilder.Entity<UserMenu>()
+                .HasQueryFilter(sb => sb.Employee!.DeletedAt == null);  // Apply matching filter for Employee
+
 
 
         }
