@@ -5,7 +5,7 @@ using Pacifica.API.Services.BranchProductService;
 
 namespace Pacifica.API.Controllers
 {
-    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
+    //[ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
     public class BranchProductController : ControllerBase
@@ -60,7 +60,7 @@ namespace Pacifica.API.Controllers
 
         [HttpGet]
         public async Task<ActionResult<ApiResponse<IEnumerable<BranchProductResponseDto>>>> GetBranchProductsByPageAsync(
-                [FromQuery] int branchId = 1, // Branch ID to filter products
+                [FromQuery] int? branchId, // Branch ID to filter products
                 [FromQuery] int? page = 1,
                 [FromQuery] int? pageSize = 5,
                 [FromQuery] string sortField = "productName", // Default sort field
@@ -95,7 +95,7 @@ namespace Pacifica.API.Controllers
             }
 
             // List of valid sort fields
-            var validSortFields = new List<string> { "productName", "status", "costPrice", "retailPrice","stockQuantity",
+            var validSortFields = new List<string> { "productName","sku", "status", "costPrice", "retailPrice","stockQuantity",
                                "minStockLevel","reorderLevel", "createdAt" }; // Add fields relevant to BranchProduct
             if (!validSortFields.Contains(sortField))
             {
@@ -108,7 +108,7 @@ namespace Pacifica.API.Controllers
             }
 
             // Fetch paginated and sorted products for the branch
-            var response = await _branchProductService.GetBranchProductsByPageAsync(branchId, page.Value, pageSize.Value, sortField, sortOrder);
+            var response = await _branchProductService.GetBranchProductsByPageAsync(branchId!.Value, page.Value, pageSize.Value, sortField, sortOrder);
 
             if (!response.Success)
             {
@@ -184,6 +184,23 @@ namespace Pacifica.API.Controllers
 
             return Ok(response);
         }
+
+//         [HttpPut("update/{id}")]
+//         public async Task<ActionResult<ApiResponse<BranchProductResponseDto>>> UpdateBranchProduct(
+//                 [FromRoute] int id, // Get the ID from the route
+//                 [FromBody] UpdateBranchProductDto updateDto // Get the data from the request body
+// )
+//         {
+//             var response = await _branchProductService.UpdateBranchProductAsync(updateDto);
+
+//             if (!response.Success)
+//             {
+//                 return BadRequest(response); // Return bad request if failed
+//             }
+
+//             return Ok(response); // Return OK if successful
+//         }
+
 
         [HttpDelete("delete")]
         public async Task<ActionResult<ApiResponse<bool>>> SoftDeleteBranchProduct([FromQuery] SoftDeleteBranchProductParams deleteBranchProduct)

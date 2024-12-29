@@ -38,7 +38,7 @@ namespace Pacifica.API.Helper
         public static BranchProductAuditTrail CreateAuditTrailEntry(
             BranchProduct existingBranchProduct,
             string action,
-            string actionBy,
+            string updatedBy,
             string newValueJson,
             string oldValueJson,
             string remarks)
@@ -50,7 +50,7 @@ namespace Pacifica.API.Helper
                 ProductId = existingBranchProduct.ProductId,
                 Action = action,
                 ActionDate = DateTime.UtcNow,
-                ActionBy = actionBy,
+                ActionBy = updatedBy,
                 NewValue = newValueJson,
                 OldValue = oldValueJson,
                 Remarks = remarks

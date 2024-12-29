@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using OfficeOpenXml.Packaging.Ionic.Zip;
 using Pacifica.API.Dtos.AuditTrails;
 using Pacifica.API.Dtos.BranchProduct;
 using Pacifica.API.Dtos.Product;
@@ -123,9 +124,12 @@ namespace Pacifica.API.Services.BranchProductService
 
             // Filter by branchId
             IQueryable<BranchProduct> query = _context.BranchProducts
-                .Include(bp => bp.Product) // Include related Product data if necessary
-                .Where(bp => bp.BranchId == branchId);
-
+                    .Include(b => b.Branch)
+                    .Include(bp => bp.Product)
+                        .ThenInclude(p => p!.Category)  // Include Category of the product
+                    .Include(bp => bp.Product)
+                        .ThenInclude(p => p!.Supplier)  // Include Supplier directly under Product
+                    .Where(bp => bp.BranchId == branchId);
             // Count total records
             var totalCount = await query.CountAsync();
 
@@ -158,6 +162,8 @@ namespace Pacifica.API.Services.BranchProductService
             {
                 case "productName":
                     return bp => bp.Product!.ProductName;
+                case "sku":
+                    return bp => bp.Product!.SKU;
                 case "status":
                     return bp => bp.Status!;
                 case "costPrice":
@@ -467,6 +473,7 @@ namespace Pacifica.API.Services.BranchProductService
                 };
             }
         }
+
 
         public async Task<ApiResponse<BranchProductResponseDto>> UpdateBranchProductAsync(UpdateBranchProductDto updateDto)
         {
@@ -825,7 +832,7 @@ namespace Pacifica.API.Services.BranchProductService
         public async Task<ApiResponse<IEnumerable<BranchProductForStockInDTO>>> GetBranchProductsBySKUAsync(int branchId, string sku)
         {
             var products = await _context.BranchProducts
-                .Where(p => p.BranchId == branchId && p.Product!.SKU.Contains(sku)) 
+                .Where(p => p.BranchId == branchId && p.Product!.SKU.Contains(sku))
                 .Select(bp => new BranchProductForStockInDTO
                 {
                     BranchId = bp.BranchId,

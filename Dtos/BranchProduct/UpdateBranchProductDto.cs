@@ -1,35 +1,26 @@
-using System.ComponentModel.DataAnnotations;
 
 namespace Pacifica.API.Dtos.BranchProduct
 {
     public class UpdateBranchProductDto
     {
-        [Required]
         public int BranchId { get; set; }
-        [Required]
+        public string? BranchName { get; set; }
         public int ProductId { get; set; }
-        [Required]
+        public string? ProductName { get; set; }
+        public int CategoryId { get; set; }
+        public string? Category { get; set; }
+        public int SupplierId { get; set; }
+        public string? Supplier { get; set; }
+        public string? Sku { get; set; }
         public int StatusId { get; set; }
-
-        [Range(0.01, double.MaxValue, ErrorMessage = "CostPrice must be greater than zero.")]
+        public string? Status { get; set; }
         public decimal CostPrice { get; set; }
-
-        [Range(0.01, double.MaxValue, ErrorMessage = "RetailPrice must be greater than zero.")]
         public decimal RetailPrice { get; set; }
-
-        [Range(0, 7, ErrorMessage = "StockQuantity cannot be negative.")]
-        public decimal StockQuantity { get; set; }
-
-        [Required]
-        [Range(1, int.MaxValue, ErrorMessage = "ReorderLevel must be greater than zero.")]
-        public int ReorderLevel { get; set; }
-
-
-        [Required]
-        [Range(1, int.MaxValue, ErrorMessage = "MinStockLevel must be greater than zero.")]
+        public int StockQuantity { get; set; }
         public int MinStockLevel { get; set; }
+        public int ReorderLevel { get; set; }
         public string? Remarks { get; set; }
-
+        public string? CreatedBy { get; set; }
         public string? UpdatedBy { get; set; }
     }
 }
