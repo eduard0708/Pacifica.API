@@ -56,8 +56,8 @@ namespace Pacifica.API.Services.AuthService
                 {
                     employee.Email,
                     employee.EmployeeId,
-                    employee.Id,
-                    name = employee.FirstName + " " + employee.LastName,
+                    userId = employee.Id,
+                    fullname = employee.FirstName + " " + employee.LastName,
                     employee.Position,
                     Roles = await _userManager.GetRolesAsync(employee),
                     Branches = branches.Select(eb => new

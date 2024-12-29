@@ -154,7 +154,7 @@ namespace Pacifica.API.Services.EmployeeService
                 EmployeeId = createDto.EmployeeId,
                 FirstName = createDto.FirstName,
                 LastName = createDto.LastName,
-                Email = createDto.Username,
+                Email = createDto.Email,
                 UserName = createDto.Username, // Using email as username
                 PositionId = createDto.Position,
                 DepartmentId = createDto.Department,
