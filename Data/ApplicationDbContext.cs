@@ -199,10 +199,6 @@ namespace Pacifica.API.Data
                     .WithOne(bp => bp.Branch)
                     .HasForeignKey(bp => bp.BranchId);
 
-                entity.HasMany(b => b.BeginningInventories)
-                   .WithOne(bp => bp.Branch)
-                   .HasForeignKey(bp => bp.BranchId);
-
             });
 
             // Configure EmployeeBranch entity
@@ -510,6 +506,15 @@ namespace Pacifica.API.Data
                 entity.Property(e => e.FertilizersSeedsValue).HasColumnType("decimal(18,2)").IsRequired();
                 entity.Property(e => e.BeginningInventoryDate).IsRequired();
 
+                // Add unique constraint on BeginningInventoryDate
+                entity.HasIndex(bi => bi.BeginningInventoryDate)
+                      .IsUnique(); // Ensures only one record with a specific date
+
+                // Configure the relationship with Branch
+                entity.HasOne(bi => bi.Branch)
+                    .WithMany(b => b.BeginningInventories)
+                    .HasForeignKey(bi => bi.BranchId)
+                    .OnDelete(DeleteBehavior.Restrict); // Optional: adjust delete behavior as needed
 
                 // Configure Index for BeginningInventoryDate column with the updated method
                 entity.HasIndex(e => e.BeginningInventoryDate)
