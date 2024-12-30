@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pacifica.API.Data;
 
@@ -11,9 +12,11 @@ using Pacifica.API.Data;
 namespace Pacifica.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241230061249_beginningInventory")]
+    partial class beginningInventory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -923,6 +926,9 @@ namespace Pacifica.API.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Remarks")
                         .HasMaxLength(1500)
                         .HasColumnType("nvarchar(1500)");
@@ -945,7 +951,7 @@ namespace Pacifica.API.Migrations
                     b.HasIndex("BeginningInventoryDate")
                         .HasDatabaseName("IX_BeginningInventoryDate");
 
-                    b.HasIndex("BranchId");
+                    b.HasIndex("BranchId", "ProductId");
 
                     b.ToTable("BeginningInventories", (string)null);
                 });
@@ -2123,13 +2129,13 @@ namespace Pacifica.API.Migrations
 
             modelBuilder.Entity("Pacifica.API.Models.Inventory.BeginningInventory", b =>
                 {
-                    b.HasOne("Pacifica.API.Models.Branch", "Branch")
+                    b.HasOne("BranchProduct", "BranchProduct")
                         .WithMany("BeginningInventories")
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("BranchId", "ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Branch");
+                    b.Navigation("BranchProduct");
                 });
 
             modelBuilder.Entity("Pacifica.API.Models.Inventory.Inventory", b =>
@@ -2350,6 +2356,8 @@ namespace Pacifica.API.Migrations
 
             modelBuilder.Entity("BranchProduct", b =>
                 {
+                    b.Navigation("BeginningInventories");
+
                     b.Navigation("BranchProductAuditTrails");
 
                     b.Navigation("Inventories");
@@ -2359,8 +2367,6 @@ namespace Pacifica.API.Migrations
 
             modelBuilder.Entity("Pacifica.API.Models.Branch", b =>
                 {
-                    b.Navigation("BeginningInventories");
-
                     b.Navigation("BranchProducts");
 
                     b.Navigation("EmployeeBranches");

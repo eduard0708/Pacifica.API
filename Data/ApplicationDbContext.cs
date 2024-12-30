@@ -48,6 +48,8 @@ namespace Pacifica.API.Data
         public DbSet<WeeklyInventory> WeeklyInventories { get; set; }
         public DbSet<Inventory> Inventories { get; set; }
         public DbSet<InventoryNormalization> InventoryNormalizations { get; set; }
+        public DbSet<BeginningInventory> BeginningInventories { get; set; }
+
 
 
         /// <summary>
@@ -196,6 +198,11 @@ namespace Pacifica.API.Data
                 entity.HasMany(b => b.BranchProducts)
                     .WithOne(bp => bp.Branch)
                     .HasForeignKey(bp => bp.BranchId);
+
+                entity.HasMany(b => b.BeginningInventories)
+                   .WithOne(bp => bp.Branch)
+                   .HasForeignKey(bp => bp.BranchId);
+
             });
 
             // Configure EmployeeBranch entity
@@ -241,7 +248,6 @@ namespace Pacifica.API.Data
                     .HasForeignKey(bpat => new { bpat.BranchId, bpat.ProductId })  // Adjusted to match the composite key
                     .OnDelete(DeleteBehavior.Restrict);
             });
-
 
             // Configure BranchProductAuditTrail entity
             modelBuilder.Entity<BranchProductAuditTrail>(entity =>
@@ -304,7 +310,6 @@ namespace Pacifica.API.Data
                       .HasForeignKey(n => n.InventoryId)
                       .OnDelete(DeleteBehavior.Restrict); // Ensure cascade delete
             });
-
 
             // Configure Supplier entity
             modelBuilder.Entity<Supplier>(entity =>
@@ -488,6 +493,29 @@ namespace Pacifica.API.Data
                       .OnDelete(DeleteBehavior.Restrict); // Cascade delete normalizations when inventory is deleted
             });
 
+            // Configure BeginningInventory table
+            modelBuilder.Entity<BeginningInventory>(entity =>
+            {
+                entity.ToTable("BeginningInventories"); // Set custom table name
+
+                // Configure Primary Key
+                entity.HasKey(e => e.Id);
+
+                // Configure properties
+                entity.Property(e => e.VeterinaryValue).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.SpecialtyFeedsValue).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.AgriculturalFeedsValue).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.DayOldChicksValue).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.ChemicalsOthersValue).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.FertilizersSeedsValue).HasColumnType("decimal(18,2)").IsRequired();
+                entity.Property(e => e.BeginningInventoryDate).IsRequired();
+
+
+                // Configure Index for BeginningInventoryDate column with the updated method
+                entity.HasIndex(e => e.BeginningInventoryDate)
+                      .HasDatabaseName("IX_BeginningInventoryDate");
+            });
+
             // Configure Department entity
             modelBuilder.Entity<Department>(entity =>
             {
@@ -598,6 +626,9 @@ namespace Pacifica.API.Data
                 .HasQueryFilter(sb => sb.F154SalesReport!.DeletedAt == null);  // Apply matching filter for SalesBreakdown             
             modelBuilder.Entity<UserMenu>()
                 .HasQueryFilter(sb => sb.Employee!.DeletedAt == null);  // Apply matching filter for Employee
+            modelBuilder.Entity<BeginningInventory>()
+                .HasQueryFilter(sb => sb.Branch!.DeletedAt == null);  // Apply matching filter for Employee
+
 
 
 

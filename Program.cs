@@ -32,6 +32,7 @@ using Pacifica.API.Models.EmployeManagement;
 using Pacifica.API.Services.EmployeeManagementService;
 using Pacifica.API.Services.F154ReportService;
 using Pacifica.API.Services.MenuService;
+using Pacifica.API.Services.BeginningInventoryService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -98,6 +99,8 @@ builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IPositionService, PositionService>();
 builder.Services.AddScoped<IF154ReportService, F154ReportService>();
 builder.Services.AddScoped<IMenuService, MenuService>();
+builder.Services.AddScoped<IBeginningInventoryService, BeginningInventoryService>();
+
 
 
 builder.Services.AddScoped<ProductAuditTrailHelper>();
