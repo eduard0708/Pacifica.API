@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
+using Pacifica.API.Dtos.Product;
 using Pacifica.API.Models;
 
 namespace Pacifica.API.Controllers
@@ -94,9 +95,6 @@ namespace Pacifica.API.Controllers
             }
         }
     
-    
-    
-     // Endpoint to upload the branch Excel file
      // Endpoint to upload the branch Excel file with only Branch Name and Location
         [HttpPost("branch-excel")]
         public async Task<IActionResult> UploadBranchExcel(IFormFile file)
@@ -139,6 +137,104 @@ namespace Pacifica.API.Controllers
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
+        }
+
+        // POST: api/Product/upload
+        [HttpPost("product-excel")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<ProductDto>>>> UploadProductsAsync(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest(new ApiResponse<IEnumerable<ProductDto>>
+                {
+                    Success = false,
+                    Message = "No file uploaded.",
+                    Data = null
+                });
+            }
+
+            // Check file type (ensure it's an Excel file)
+            if (!file.FileName.EndsWith(".xlsx") && !file.FileName.EndsWith(".xls"))
+            {
+                return BadRequest(new ApiResponse<IEnumerable<ProductDto>>
+                {
+                    Success = false,
+                    Message = "Invalid file format. Please upload an Excel file.",
+                    Data = null
+                });
+            }
+
+            // Process the file and create products
+            var products = await CreateProductsFromExcelAsync(file);
+
+            if (products == null || !products.Any())
+            {
+                return BadRequest(new ApiResponse<IEnumerable<ProductDto>>
+                {
+                    Success = false,
+                    Message = "No valid products found in the uploaded file.",
+                    Data = null
+                });
+            }
+
+            // Return success response with created products
+            return Ok(new ApiResponse<IEnumerable<ProductDto>>
+            {
+                Success = true,
+                Message = $"{products.Count} products created successfully.",
+                Data = products
+            });
+        }
+
+        private async Task<List<ProductDto>> CreateProductsFromExcelAsync(IFormFile file)
+        {
+            List<ProductDto> productDtos = new List<ProductDto>();
+
+            using (var stream = new MemoryStream())
+            {
+                await file.CopyToAsync(stream);
+                using (var package = new ExcelPackage(stream))
+                {
+                    var worksheet = package.Workbook.Worksheets[0];
+
+                    // Assuming the first row contains headers
+                    int rowCount = worksheet.Dimension.Rows;
+
+                    for (int row = 2; row <= rowCount; row++) // Start from row 2 to skip the header
+                    {
+                        string productName = worksheet.Cells[row, 1].Text.Trim();
+                        string sku = worksheet.Cells[row, 2].Text.Trim();
+                        int categoryId = int.TryParse(worksheet.Cells[row, 3].Text.Trim(), out var cId) ? cId : 0;
+                        int supplierId = int.TryParse(worksheet.Cells[row, 4].Text.Trim(), out var sId) ? sId : 0;
+                        string remarks = worksheet.Cells[row, 5].Text.Trim();
+
+                        if (string.IsNullOrEmpty(productName) || string.IsNullOrEmpty(sku) || categoryId == 0 || supplierId == 0)
+                        {
+                            continue; // Skip rows with missing essential data
+                        }
+
+                        var product = new Product
+                        {
+                            ProductName = productName,
+                            SKU = sku,
+                            CategoryId = categoryId,
+                            SupplierId = supplierId,
+                            Remarks = remarks,
+                            CreatedBy = "admin",  // You may want to replace this with dynamic user data
+                            CreatedAt = DateTime.Now
+                        };
+
+                        _context.Products.Add(product);
+                        await _context.SaveChangesAsync();
+
+                        // Map product to DTO
+                        var productDto = _mapper.Map<ProductDto>(product);
+                        productDtos.Add(productDto);
+                    }
+                }
+            }
+
+            return productDtos;
         }
     }
 }

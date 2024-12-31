@@ -255,55 +255,6 @@ namespace Pacifica.API.Services.ProductService
             }
         }
 
-        // public async Task<ApiResponse<ProductDto>> CreateProductAsync(CreateProductDto productDto)
-        // {
-        //     try
-        //     {
-        //         // Map the single CreateProductDto to a single Product entity
-        //         var product = _mapper.Map<Product>(productDto);
-
-        //         // Add the product to the database
-        //         _context.Products.Add(product);
-
-        //         // Save the product to the database
-        //         await _context.SaveChangesAsync();
-
-        //         // Log the creation in ProductAuditTrail
-        //         var auditTrail = new ProductAuditTrail
-        //         {
-        //             ProductId = product.Id,
-        //             Action = "Created",
-        //             NewValue = $"ProductName: {product.ProductName}, SKU: {product.SKU}",
-        //             ActionBy = product.CreatedBy,
-        //             ActionDate = DateTime.Now
-        //         };
-
-        //         // Add the audit trail for the created product
-        //         _context.ProductAuditTrails.Add(auditTrail);
-        //         await _context.SaveChangesAsync();  // Save the audit trail
-
-        //         // Map the created product to a ProductDto
-        //         var createdProduct = _mapper.Map<ProductDto>(product);
-
-        //         // Return success response with the created product DTO
-        //         return new ApiResponse<ProductDto>
-        //         {
-        //             Success = true,
-        //             Message = "Product created successfully.",
-        //             Data = createdProduct
-        //         };
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         // Log exception
-        //         return new ApiResponse<ProductDto>
-        //         {
-        //             Success = false,
-        //             Message = $"Error creating product: {ex.Message}",
-        //             Data = null
-        //         };
-        //     }
-        // }
         public async Task<ApiResponse<ProductDto>> CreateProductAsync(CreateProductDto productDto)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
