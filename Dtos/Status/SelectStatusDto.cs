@@ -1,8 +1,8 @@
 namespace Pacifica.API.Dtos.Status
 {
-    public class CreateStatusDto
+    public class SelectStatusDto
     {
+        public int Id { get; set; }
         public string? StatusName { get; set; }
-        public string? Description { get; set; }
     }
 }

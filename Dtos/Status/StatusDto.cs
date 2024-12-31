@@ -1,4 +1,4 @@
-namespace Pacifica.API.Dtos.TransactionReference
+namespace Pacifica.API.Dtos.Status
 {
     public class StatusDto
     {

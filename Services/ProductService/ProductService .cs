@@ -337,11 +337,12 @@ namespace Pacifica.API.Services.ProductService
                         };
                     }
 
-                    // Create BranchProduct associations
+                    // Create BranchProduct associations assign newly created product to all braches
                     var productBranches = productDto.BranchIds.Select(branchId => new BranchProduct
                     {
                         ProductId = product.Id,
-                        BranchId = branchId
+                        BranchId = branchId,
+                        StatusId = 1  // set status as Comming Soon 
                     }).ToList();
 
                     _context.BranchProducts.AddRange(productBranches);

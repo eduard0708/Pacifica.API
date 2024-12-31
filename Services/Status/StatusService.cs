@@ -1,5 +1,8 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Pacifica.API.Data;
+using Pacifica.API.Dtos.Status;
+using System.Linq.Expressions;
 
 namespace Pacifica.API.Services.StatusService
 {
@@ -16,16 +19,16 @@ namespace Pacifica.API.Services.StatusService
 
         public async Task<ApiResponse<IEnumerable<Status>>> GetAllStatusesAsync()
         {
-            var Status = await _context.Statuses
-                .Where(tr => tr.DeletedAt == null)
+            var statuses = await _context.Statuses
+                .Where(s => s.DeletedAt == null) // Ensure soft delete is respected
                 .ToListAsync();
 
-            if (!Status.Any())
+            if (!statuses.Any())
             {
                 return new ApiResponse<IEnumerable<Status>>
                 {
                     Success = false,
-                    Message = "No transaction references found.",
+                    Message = "No statuses found.",
                     Data = null
                 };
             }
@@ -33,22 +36,106 @@ namespace Pacifica.API.Services.StatusService
             return new ApiResponse<IEnumerable<Status>>
             {
                 Success = true,
-                Message = "Transaction references retrieved successfully.",
-                Data = Status
+                Message = "Statuses retrieved successfully.",
+                Data = statuses
             };
+        }
+
+        public async Task<ApiResponse<IEnumerable<SelectStatusDto>>> GetSelectStatusesAsync()
+        {
+            var statuses = await _context.Statuses
+                .Where(s => s.DeletedAt == null)
+                .Select(s => new SelectStatusDto
+                {
+                    Id = s.Id,
+                    StatusName = s.StatusName
+                })
+                .ToListAsync();
+
+            if (!statuses.Any())
+            {
+                return new ApiResponse<IEnumerable<SelectStatusDto>>
+                {
+                    Success = false,
+                    Message = "No statuses found.",
+                    Data = null
+                };
+            }
+
+            return new ApiResponse<IEnumerable<SelectStatusDto>>
+            {
+                Success = true,
+                Message = "Statuses retrieved successfully.",
+                Data = statuses
+            };
+        }
+
+        public async Task<ApiResponse<IEnumerable<Status>>> GetStatusesByPageAsync(int page, int pageSize, string sortField, int sortOrder)
+        {
+            var sortExpression = GetSortExpression(sortField);
+
+            if (sortExpression == null)
+            {
+                return new ApiResponse<IEnumerable<Status>>
+                {
+                    Success = false,
+                    Message = "Invalid sort expression.",
+                    Data = null,
+                    TotalCount = 0
+                };
+            }
+
+            var totalCount = await _context.Statuses
+                .IgnoreQueryFilters() // Ignore soft delete filter
+                .CountAsync();
+
+            IQueryable<Status> query = _context.Statuses
+                .IgnoreQueryFilters(); // Ignore soft delete filter
+
+            // Apply sorting dynamically
+            query = sortOrder == 1 ? query.OrderBy(sortExpression) : query.OrderByDescending(sortExpression);
+
+            // Apply pagination
+            var statuses = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new ApiResponse<IEnumerable<Status>>
+            {
+                Success = true,
+                Message = "Statuses retrieved successfully.",
+                Data = statuses,
+                TotalCount = totalCount
+            };
+        }
+
+        private Expression<Func<Status, object>> GetSortExpression(string sortField)
+        {
+            switch (sortField)
+            {
+                case "statusName":
+                    return x => x.StatusName!;
+                case "createdAt":
+                    return x => x.CreatedAt;
+                case "isDeleted":
+                    return x => x.IsDeleted!;
+                default:
+                    return null!;
+            }
         }
 
         public async Task<ApiResponse<Status>> GetStatusByIdAsync(int id)
         {
-            var Status = await _context.Statuses
-                .FirstOrDefaultAsync(tr => tr.Id == id && tr.DeletedAt == null);
+            var status = await _context.Statuses
+                .FirstOrDefaultAsync(s => s.Id == id && s.DeletedAt == null);
 
-            if (Status == null)
+            if (status == null)
             {
                 return new ApiResponse<Status>
                 {
                     Success = false,
-                    Message = "Transaction reference not found.",
+                    Message = "Status not found.",
                     Data = null
                 };
             }
@@ -56,25 +143,25 @@ namespace Pacifica.API.Services.StatusService
             return new ApiResponse<Status>
             {
                 Success = true,
-                Message = "Transaction reference retrieved successfully.",
-                Data = Status
+                Message = "Status retrieved successfully.",
+                Data = status
             };
         }
 
-        public async Task<ApiResponse<Status>> CreateStatusAsync(Status Status)
+        public async Task<ApiResponse<Status>> CreateStatusAsync(Status status)
         {
-            _context.Statuses.Add(Status);
+            _context.Statuses.Add(status);
             await _context.SaveChangesAsync();
 
             return new ApiResponse<Status>
             {
                 Success = true,
-                Message = "Transaction reference created successfully.",
-                Data = Status
+                Message = "Status created successfully.",
+                Data = status
             };
         }
 
-        public async Task<ApiResponse<Status>> UpdateStatusAsync(int id, Status Status)
+        public async Task<ApiResponse<Status>> UpdateStatusAsync(int id, Status status)
         {
             var existingStatus = await _context.Statuses.FindAsync(id);
             if (existingStatus == null || existingStatus.DeletedAt != null)
@@ -82,15 +169,15 @@ namespace Pacifica.API.Services.StatusService
                 return new ApiResponse<Status>
                 {
                     Success = false,
-                    Message = "Transaction reference not found or already deleted.",
+                    Message = "Status not found or already deleted.",
                     Data = null
                 };
             }
 
-            existingStatus.StatusName = Status.StatusName;
-            existingStatus.Description = Status.Description;
+            existingStatus.StatusName = status.StatusName;
+            existingStatus.IsDeleted = status.IsDeleted;
             existingStatus.UpdatedAt = DateTime.Now;
-            existingStatus.UpdatedBy = Status.UpdatedBy;
+            existingStatus.UpdatedBy = status.UpdatedBy;
 
             _context.Statuses.Update(existingStatus);
             await _context.SaveChangesAsync();
@@ -98,41 +185,37 @@ namespace Pacifica.API.Services.StatusService
             return new ApiResponse<Status>
             {
                 Success = true,
-                Message = "Transaction reference updated successfully.",
+                Message = "Status updated successfully.",
                 Data = existingStatus
             };
         }
 
-        //     public async Task<ApiResponse<bool>> DeleteStatusAsync(int id)
-        //     {
-        //         var Status = await _context.TransactionTypes.FindAsync(id);
-        //         if (Status == null || Status.DeletedAt != null)
-        //         {
-        //             return new ApiResponse<bool>
-        //             {
-        //                 Success = false,
-        //                 Message = "Transaction reference not found or already deleted.",
-        //                 Data = false
-        //             };
-        //         }
+        public async Task<ApiResponse<bool>> DeleteStatusAsync(int id)
+        {
+            var status = await _context.Statuses.FindAsync(id);
+            if (status == null || status.DeletedAt != null)
+            {
+                return new ApiResponse<bool>
+                {
+                    Success = false,
+                    Message = "Status not found or already deleted.",
+                    Data = false
+                };
+            }
 
-        //         Status.DeletedAt = DateTime.Now;
-        //         _context.TransactionTypes.Update(Status);
-        //         await _context.SaveChangesAsync();
+            status.DeletedAt = DateTime.Now;
+            _context.Statuses.Update(status);
+            await _context.SaveChangesAsync();
 
-        //         return new ApiResponse<bool>
-        //         {
-        //             Success = true,
-        //             Message = "Transaction reference deleted successfully.",
-        //             Data = true
-        //         };
-        //     }
-        // }
+            return new ApiResponse<bool>
+            {
+                Success = true,
+                Message = "Status deleted successfully.",
+                Data = true
+            };
+        }
     }
 }
-
-
-
 
 
 
