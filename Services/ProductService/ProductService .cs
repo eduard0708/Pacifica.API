@@ -255,8 +255,58 @@ namespace Pacifica.API.Services.ProductService
             }
         }
 
+        // public async Task<ApiResponse<ProductDto>> CreateProductAsync(CreateProductDto productDto)
+        // {
+        //     try
+        //     {
+        //         // Map the single CreateProductDto to a single Product entity
+        //         var product = _mapper.Map<Product>(productDto);
+
+        //         // Add the product to the database
+        //         _context.Products.Add(product);
+
+        //         // Save the product to the database
+        //         await _context.SaveChangesAsync();
+
+        //         // Log the creation in ProductAuditTrail
+        //         var auditTrail = new ProductAuditTrail
+        //         {
+        //             ProductId = product.Id,
+        //             Action = "Created",
+        //             NewValue = $"ProductName: {product.ProductName}, SKU: {product.SKU}",
+        //             ActionBy = product.CreatedBy,
+        //             ActionDate = DateTime.Now
+        //         };
+
+        //         // Add the audit trail for the created product
+        //         _context.ProductAuditTrails.Add(auditTrail);
+        //         await _context.SaveChangesAsync();  // Save the audit trail
+
+        //         // Map the created product to a ProductDto
+        //         var createdProduct = _mapper.Map<ProductDto>(product);
+
+        //         // Return success response with the created product DTO
+        //         return new ApiResponse<ProductDto>
+        //         {
+        //             Success = true,
+        //             Message = "Product created successfully.",
+        //             Data = createdProduct
+        //         };
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         // Log exception
+        //         return new ApiResponse<ProductDto>
+        //         {
+        //             Success = false,
+        //             Message = $"Error creating product: {ex.Message}",
+        //             Data = null
+        //         };
+        //     }
+        // }
         public async Task<ApiResponse<ProductDto>> CreateProductAsync(CreateProductDto productDto)
         {
+            using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 // Map the single CreateProductDto to a single Product entity
@@ -264,9 +314,39 @@ namespace Pacifica.API.Services.ProductService
 
                 // Add the product to the database
                 _context.Products.Add(product);
+                await _context.SaveChangesAsync(); // Save the product and get the Id
 
-                // Save the product to the database
-                await _context.SaveChangesAsync();
+                // Validate BranchIds if provided
+                if (productDto.BranchIds != null && productDto.BranchIds.Any())
+                {
+                    // Get valid BranchIds from the Branches table
+                    var validBranchIds = await _context.Branches
+                        .Where(b => productDto.BranchIds.Contains(b.Id))
+                        .Select(b => b.Id)
+                        .ToListAsync();
+
+                    if (validBranchIds.Count != productDto.BranchIds.Count)
+                    {
+                        // Some BranchIds are invalid (not found in the Branches table)
+                        var invalidBranchIds = productDto.BranchIds.Except(validBranchIds).ToList();
+                        return new ApiResponse<ProductDto>
+                        {
+                            Success = false,
+                            Message = $"Invalid BranchIds: {string.Join(", ", invalidBranchIds)}",
+                            Data = null
+                        };
+                    }
+
+                    // Create BranchProduct associations
+                    var productBranches = productDto.BranchIds.Select(branchId => new BranchProduct
+                    {
+                        ProductId = product.Id,
+                        BranchId = branchId
+                    }).ToList();
+
+                    _context.BranchProducts.AddRange(productBranches);
+                    await _context.SaveChangesAsync(); // Save the product-branch relationships
+                }
 
                 // Log the creation in ProductAuditTrail
                 var auditTrail = new ProductAuditTrail
@@ -280,7 +360,10 @@ namespace Pacifica.API.Services.ProductService
 
                 // Add the audit trail for the created product
                 _context.ProductAuditTrails.Add(auditTrail);
-                await _context.SaveChangesAsync();  // Save the audit trail
+                await _context.SaveChangesAsync(); // Save the audit trail
+
+                // Commit the transaction after all operations are successful
+                await transaction.CommitAsync();
 
                 // Map the created product to a ProductDto
                 var createdProduct = _mapper.Map<ProductDto>(product);
@@ -295,7 +378,10 @@ namespace Pacifica.API.Services.ProductService
             }
             catch (Exception ex)
             {
-                // Log exception
+                // Rollback transaction if any error occurs
+                await transaction.RollbackAsync();
+
+                // Log the exception (you might want to log it here as well)
                 return new ApiResponse<ProductDto>
                 {
                     Success = false,

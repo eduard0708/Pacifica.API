@@ -4,7 +4,7 @@ using Pacifica.API.Services.StatusService;
 
 namespace Pacifica.API.Controllers
 {
-    [ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
+    //[ApiExplorerSettings(IgnoreApi = true)] // Exclude this controller from Swagger UI
     [Route("api/[controller]")]
     [ApiController]
     public class StatusController : ControllerBase
@@ -19,7 +19,7 @@ namespace Pacifica.API.Controllers
         }
 
         // GET: api/TransactionReference
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<ActionResult<ApiResponse<IEnumerable<StatusDto>>>> GetTransactionType()
         {
             var response = await _StatusService.GetAllStatusesAsync();
