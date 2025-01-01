@@ -1,4 +1,6 @@
 
+using Pacifica.API.Dtos.Branch;
+
 namespace Pacifica.API.Dtos.Inventory
 {
     public class BeginningInventoryDto
@@ -11,6 +13,6 @@ namespace Pacifica.API.Dtos.Inventory
         public decimal ChemicalsOthersValue { get; set; }
         public decimal FertilizersSeedsValue { get; set; }
         public DateTime BeginningInventoryDate { get; set; }
-        public int BranchId { get; set; }
+        public BranchDto? Branch { get; set; }
     }
 }

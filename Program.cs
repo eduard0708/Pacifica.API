@@ -33,6 +33,7 @@ using Pacifica.API.Services.EmployeeManagementService;
 using Pacifica.API.Services.F154ReportService;
 using Pacifica.API.Services.MenuService;
 using Pacifica.API.Services.BeginningInventoryService;
+using Pacifica.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -149,15 +150,21 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Ensure HTTPS redirection is done early
 app.UseHttpsRedirection();
 
 // **Use CORS Middleware** - Add this line to enable CORS globally
 app.UseCors("AllowLocalhost"); // This will apply the CORS policy
 
 // Add middleware for Authentication & Authorization (if using JWT)
-app.UseAuthentication();
-app.UseAuthorization(); // **Ensure this is present**
+app.UseAuthentication();  // Handle authentication (JWT token parsing)
+app.UseAuthorization();   // Handle authorization (roles, claims, etc.)
 
+// Register the DateTimeLocalTimeMiddleware (your custom middleware)
+app.UseMiddleware<DateTimeLocalTimeMiddleware>(); // This middleware modifies DateTime values in requests.
+
+// Map controllers for your API
 app.MapControllers();
 
+// Final run statement
 app.Run();

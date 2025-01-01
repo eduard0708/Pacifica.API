@@ -22,6 +22,7 @@ using Pacifica.API.Dtos.Employee;
 using Pacifica.API.Dtos.Menu;
 using Pacifica.API.Models.Menu;
 using Pacifica.API.Dtos.Status;
+using Pacifica.API.Dtos.Role;
 
 namespace Pacifica.API.Mapper
 {
@@ -34,7 +35,8 @@ namespace Pacifica.API.Mapper
                         CreateMap<LoginDto, Employee>().ReverseMap();
                         CreateMap<RegisterDto, Employee>().ReverseMap();
 
-                        CreateMap<TransactionReference, TransactionReferenceDto>().ReverseMap();
+                       
+                CreateMap<TransactionReference, TransactionReferenceDto>().ReverseMap();
                         CreateMap<TransactionReference, CreateTransactionReferenceDto>().ReverseMap();
                         CreateMap<TransactionReference, UpdateTransactionReferenceDto>().ReverseMap();
 
