@@ -495,5 +495,45 @@ namespace Pacifica.API.Controllers
         }
 
 
+        [HttpPost("status-excel")]
+        public async Task<IActionResult> UploadProductStatusExcel(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("Invalid file.");
+
+            try
+            {
+                using var stream = new MemoryStream();
+                await file.CopyToAsync(stream);
+                using var package = new ExcelPackage(stream);
+
+                var worksheet = package.Workbook.Worksheets[0]; // Assuming data is in the first sheet
+                var rowCount = worksheet.Dimension.Rows;
+
+                var statuses = new List<Status>();  // Assuming you have a model for Employee Statuses
+                for (int row = 2; row <= rowCount; row++) // Skip header row
+                {
+                    var status = new Status
+                    {
+                        StatusName = worksheet.Cells[row, 1].Text, // Column 1: Status Name
+                        Description = worksheet.Cells[row, 2].Text // Column 2: Description
+                    };
+
+                    statuses.Add(status);
+                }
+
+                // Save statuses to the database
+                _context.Statuses.AddRange(statuses);
+                await _context.SaveChangesAsync();
+
+                return Ok("File processed and employee statuses added.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
     }
 }
