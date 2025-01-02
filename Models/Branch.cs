@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Pacifica.API.Models.Inventory;
+using Pacifica.API.Models.Reports.F152Report;
 using Pacifica.API.Models.Reports.F154Report;
 using Pacifica.API.Models.Transaction;
 
@@ -28,6 +29,8 @@ namespace Pacifica.API.Models
         public ICollection<F154SalesReport>? F154SalesReports { get; set; }  // Many-to-many relation with F154SalesReport
 
         public ICollection<BeginningInventory>? BeginningInventories { get; set; }
+
+        public ICollection<F152ReportTransaction>? F152ReportTransactions { get; set; }
 
     }
 }

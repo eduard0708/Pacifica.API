@@ -783,7 +783,7 @@ namespace Pacifica.API.Services.BranchProductService
             }
         }
 
-        public async Task<ApiResponse<IEnumerable<BranchProductForStockInDTO>>> GetBranchProductsByCategoryAndSupplierAsync(int categoryId, int supplierId, int branchId)
+        public async Task<ApiResponse<IEnumerable<BranchProductForStockInDTO>>> GetBranchProductsByCategoryAndSupplierAsync(int branchId, int categoryId, int supplierId)
         {
             var branchProducts = await _context.BranchProducts
                 .Include(bp => bp.Product)

@@ -23,6 +23,8 @@ using Pacifica.API.Dtos.Menu;
 using Pacifica.API.Models.Menu;
 using Pacifica.API.Dtos.Status;
 using Pacifica.API.Dtos.Role;
+using Pacifica.API.Models.Reports.F152Report;
+using Pacifica.API.Dtos.F152Report;
 
 namespace Pacifica.API.Mapper
 {
@@ -35,8 +37,8 @@ namespace Pacifica.API.Mapper
                         CreateMap<LoginDto, Employee>().ReverseMap();
                         CreateMap<RegisterDto, Employee>().ReverseMap();
 
-                       
-                CreateMap<TransactionReference, TransactionReferenceDto>().ReverseMap();
+
+                        CreateMap<TransactionReference, TransactionReferenceDto>().ReverseMap();
                         CreateMap<TransactionReference, CreateTransactionReferenceDto>().ReverseMap();
                         CreateMap<TransactionReference, UpdateTransactionReferenceDto>().ReverseMap();
 
@@ -175,6 +177,15 @@ namespace Pacifica.API.Mapper
 
                             // Mapping for Position
                             .ForMember(dest => dest.Position, opt => opt.MapFrom(src => src.Position != null ? new List<string> { src.Position.Name! } : new List<string>())); // Null check for Position
+
+
+
+                        // Map from F152ReportTransaction to F152ReportTransactionDto
+                        CreateMap<F152ReportTransaction, F152ReportTransactionDto>()
+                            .ForMember(dest => dest.F152ReportCategories, opt => opt.MapFrom(src => src.F152ReportCategories));
+
+                        // Map from F152ReportCategory to F152ReportCategoryDto
+                        CreateMap<F152ReportCategory, F152ReportCategoryDto>().ReverseMap();
                 }
         }
 }

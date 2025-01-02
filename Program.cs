@@ -34,6 +34,7 @@ using Pacifica.API.Services.F154ReportService;
 using Pacifica.API.Services.MenuService;
 using Pacifica.API.Services.BeginningInventoryService;
 using Pacifica.API.Middleware;
+using Pacifica.API.Services.F152ReportService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -101,6 +102,7 @@ builder.Services.AddScoped<IPositionService, PositionService>();
 builder.Services.AddScoped<IF154ReportService, F154ReportService>();
 builder.Services.AddScoped<IMenuService, MenuService>();
 builder.Services.AddScoped<IBeginningInventoryService, BeginningInventoryService>();
+builder.Services.AddScoped<IF152ReportService, F152ReportService>();
 
 
 

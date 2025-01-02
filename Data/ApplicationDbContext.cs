@@ -6,6 +6,7 @@ using Pacifica.API.Models.EmployeManagement;
 using Pacifica.API.Models.GlobalAuditTrails;
 using Pacifica.API.Models.Inventory;
 using Pacifica.API.Models.Menu;
+using Pacifica.API.Models.Reports.F152Report;
 using Pacifica.API.Models.Reports.F154Report;
 using Pacifica.API.Models.Transaction;
 
@@ -49,8 +50,8 @@ namespace Pacifica.API.Data
         public DbSet<Inventory> Inventories { get; set; }
         public DbSet<InventoryNormalization> InventoryNormalizations { get; set; }
         public DbSet<BeginningInventory> BeginningInventories { get; set; }
-
-
+        public DbSet<F152ReportCategory> F152ReportCategories { get; set; }
+        public DbSet<F152ReportTransaction> F152ReportTransactions { get; set; }
 
         /// <summary>
         ///  Imported form ModelConfigurationF154Reports Class the configuration
@@ -200,6 +201,24 @@ namespace Pacifica.API.Data
                     .HasForeignKey(bp => bp.BranchId);
 
             });
+
+            // Configure the relationship between F152ReportTransaction and Branch
+            modelBuilder.Entity<F152ReportTransaction>()
+                .HasOne(ft => ft.Branch)  // F152ReportTransaction has one Branch
+                .WithMany(b => b.F152ReportTransactions)  // Branch has many F152ReportTransactions
+                .HasForeignKey(ft => ft.BranchId)
+                .OnDelete(DeleteBehavior.Cascade);  // Cascading delete, adjust as needed
+
+            // Configure the relationship between F152ReportTransaction and F152ReportCategory
+            modelBuilder.Entity<F152ReportCategory>()
+                .HasOne(fr => fr.F152ReportTransaction)  // F152ReportCategory has one F152ReportTransaction
+                .WithMany(ft => ft.F152ReportCategories)  // F152ReportTransaction has many F152ReportCategories
+                .HasForeignKey(fr => fr.F152ReportTransactionId)
+                .OnDelete(DeleteBehavior.Cascade);  // Cascading delete, adjust as needed
+
+            // Additional configurations, e.g., table names, column constraints
+            modelBuilder.Entity<F152ReportCategory>().ToTable("F152ReportCategories");
+            modelBuilder.Entity<F152ReportTransaction>().ToTable("F152ReportTransactions");
 
             // Configure EmployeeBranch entity
             modelBuilder.Entity<EmployeeBranch>(entity =>
@@ -632,11 +651,14 @@ namespace Pacifica.API.Data
             modelBuilder.Entity<UserMenu>()
                 .HasQueryFilter(sb => sb.Employee!.DeletedAt == null);  // Apply matching filter for Employee
             modelBuilder.Entity<BeginningInventory>()
-                .HasQueryFilter(sb => sb.Branch!.DeletedAt == null);  // Apply matching filter for Employee
-
-
-
+                .HasQueryFilter(sb => sb.Branch!.DeletedAt == null); 
+            modelBuilder.Entity<F152ReportTransaction>()
+                        .HasQueryFilter(sb => sb.Branch!.DeletedAt == null);
+            modelBuilder.Entity<F152ReportCategory>()
+                        .HasQueryFilter(sb => sb.F152ReportTransaction!.DeletedAt == null);
 
         }
+
+
     }
 }
